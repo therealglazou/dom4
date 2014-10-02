@@ -134,6 +134,17 @@ class NamedNodeMap {
     return oldAttr;
   }
 
+  /*
+   * EXTRA
+   */
+  public function removeAttributeNode(attr:Attr): Attr
+  {
+    var oldAttr = this.getNamedItem(attr.name);
+    if (oldAttr != null)
+      this.attributes.remove(oldAttr);
+    return oldAttr;
+  }
+
   public function new()
   {
     this.attributes = new Array();

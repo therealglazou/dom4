@@ -100,8 +100,179 @@ class Element extends ParentNode {
    */
   public var classList(default, null): DOMTokenList;
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-hasattributes
+   */
+  public function hasAttributes(): Bool
+  {
+    return (this.attributes.length != 0);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-attributes
+   */
+  public var attributes(default, null): NamedNodeMap;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-getattribute
+   */
+  public function getAttribute(name: DOMString): DOMString
+  {
+    var matching = this.attributes.getNamedItem(name);
+    if (matching == null)
+      return null;
+    return matching.value;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-getattributens
+   */
+  public function getAttributeNS(?namespace: DOMString, localName: DOMString): DOMString
+  {
+    var matching = this.attributes.getNamedItemNS(namespace, localName);
+    if (matching == null)
+      return null;
+    return matching.value;
+  }
+
+  /* 
+   * https://dom.spec.whatwg.org/#dom-element-setattribute
+   */
+  public function setAttribute(name: DOMString, value: DOMString): Void
+  {
+    if (!DOMImplementation.NAME_EREG.match(name))
+      throw "Invalid character error";
+
+    if (!DOMImplementation.PREFIXED_NAME_EREG.match(name))
+      throw "Namespace error";
+
+    var matching = this.attributes.getNamedItem(name);
+    if (matching != null) {
+      matching.value = value;
+      return;
+    }
+    var attr = new Attr(null, null, name, value);
+    this.attributes.setNamedItem(attr);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-setattributens
+   */
+  public function setAttributeNS(?namespace: DOMString, name: DOMString, value:DOMString): Void
+  {
+    if (namespace == "")
+      namespace = null;
+
+    if (!DOMImplementation.NAME_EREG.match(name))
+      throw "Invalid character error";
+
+    if (!DOMImplementation.PREFIXED_NAME_EREG.match(name))
+      throw "Namespace error";
+
+    var prefix = null;
+    var localName = name;
+
+    var colonPosition = name.indexOf(":");
+    if (colonPosition != -1) {
+      prefix = name.substr(0, colonPosition);
+      localName = name.substr(colonPosition + 1);
+    }
+
+    if (prefix != null && namespace == null)
+      throw "Namespace error";
+      
+    if (prefix == "xml" && namespace != DOMImplementation.XML_NAMESPACE)
+      throw "Namespace error";
+
+    if (namespace != DOMImplementation.XMLNS_NAMESPACE
+        && (name == "xmlns"
+            || prefix == "xmlns"))
+      throw "Namespace error";
+
+    if (namespace == DOMImplementation.XMLNS_NAMESPACE
+        && name != "xmlns"
+        && prefix != "xmlns")
+      throw "Namespace error";
+
+    var attr = new Attr(namespace, prefix, localName, value);
+    this.attributes.setNamedItem(attr);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-removeattribute
+   */
+  public function removeAttribute(name: DOMString): Void
+  {
+    this.attributes.removeNamedItem(name);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-removeattributens
+   */
+  public function removeAttributeNS(?namespace: DOMString, localName: DOMString): Void
+  {
+    this.attributes.removeNamedItemNS(namespace, localName);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-hasattribute
+   */
+  public function hasAttribute(name: DOMString): Bool
+  {
+    return (null != this.attributes.getNamedItem(name));
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-hasattributens
+   */
+  public function hasAttributeNS(?namespace: DOMString, localName: DOMString): Bool
+  {
+    return (null != this.attributes.getNamedItemNS(namespace, localName));
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-getattributenode
+   */
+  public function getAttributeNode(name: DOMString): Attr
+  {
+    return this.attributes.getNamedItem(name);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-getattributenodens
+   */
+  public function getAttributeNodeNS(?namespace: DOMString, localName: DOMString): Attr
+  {
+    return this.attributes.getNamedItemNS(namespace, localName);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-setattributenode
+   */
+  public function setAttributeNode(attr: Attr): Attr
+  {
+    return this.attributes.setNamedItem(attr);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-setattributenode
+   */
+  public function setAttributeNodeNS(attr: Attr): Attr
+  {
+    return this.attributes.setNamedItemNS(attr);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-removeattributenode
+   */
+  public function removeAttributeNode(attr:Attr): Attr
+  {
+    return this.attributes.removeAttributeNode(attr);
+  }
+
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();
+    this.attributes = new NamedNodeMap();
     this.namespaceURI = namespace;
     this.localName = localName;
     this.prefix = prefix;
