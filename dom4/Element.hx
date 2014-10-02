@@ -43,11 +43,23 @@ class Element extends Node {
   public var namespaceURI(default, null): DOMString;
   public var prefix(default, null): DOMString;
   public var localName(default, null): DOMString;
-  public var tagName(default, null): DOMString;
+  public var tagName(get, null): DOMString;
+      private function get_tagName(): DOMString
+      {
+        var qualifiedName = this.localName;
+        if (this.prefix != "")
+          qualifiedName = this.prefix + ":" + this.localName;
+        if (this.namespaceURI == DOMImplementation.HTML_NAMESPACE
+            && this.ownerDocument.documentElement != null
+            && this.ownerDocument.documentElement.localName.toLowerCase() == "html")
+          qualifiedName = qualifiedName.toUpperCase();
+        return qualifiedName;
+      }
 
-  public function new(namespace: DOMString, localName: DOMString) {
+  public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();
     this.namespaceURI = namespace;
     this.localName = localName;
+    this.prefix = prefix;
   }
 }

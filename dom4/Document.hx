@@ -40,6 +40,13 @@ package dom4;
 
 class Document extends Node {
 
+  public var documentElement(get, null): Element;
+      private function get_documentElement(): Element
+      {
+        var node = cast(this, Node).firstElementChild;
+        return ((null != node) ? cast(node, Element) : null);
+      }
+
   static public function _setNodeOwnerDocument(node: Node, doc: Document): Void
   {
     if (node == null)
@@ -67,9 +74,43 @@ class Document extends Node {
     return node;
   }
 
-  public function createElementNS(namespace: DOMString, qname: DOMString): Element
+  public function createElementNS(namespace: DOMString, qualifiedName: DOMString): Element
   {
-    return new Element(namespace, qname);
+    if (namespace == "")
+      namespace = null;
+
+    if (!DOMImplementation.NAME_EREG.match(qualifiedName))
+      throw "Invalid character error";
+
+    if (!DOMImplementation.PREFIXED_NAME_EREG.match(qualifiedName))
+      throw "Namespace error";
+
+    var prefix = null;
+    var localName = qualifiedName;
+
+    var colonPosition = qualifiedName.indexOf(":");
+    if (colonPosition != -1) {
+      prefix = qualifiedName.substr(0, colonPosition);
+      localName = qualifiedName.substr(colonPosition + 1);
+    }
+
+    if (prefix != null && namespace == null)
+      throw "Namespace error";
+      
+    if (prefix == "xml" && namespace != DOMImplementation.XML_NAMESPACE)
+      throw "Namespace error";
+
+    if (namespace != DOMImplementation.XMLNS_NAMESPACE
+        && (qualifiedName == "xmlns"
+            || prefix == "xmlns"))
+      throw "Namespace error";
+
+    if (namespace == DOMImplementation.XMLNS_NAMESPACE
+        && qualifiedName != "xmlns"
+        && prefix != "xmlns")
+      throw "Namespace error";
+
+    return new Element(namespace, localName, prefix);
   }
 
   public function new() {
