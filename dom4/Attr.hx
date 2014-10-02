@@ -47,6 +47,11 @@ class Attr {
   public var namespaceURI(default, null): DOMString;
   public var prefix(default, null): DOMString;
   public var localName(default, null): DOMString;
+  public var name(get, null): DOMString;
+      private function get_name(): DOMString
+      {
+        return this.localName;
+      }
   public var value: DOMString;
   public var textContent(get, set): DOMString;
       private function get_textContent(): DOMString
