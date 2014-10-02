@@ -113,6 +113,19 @@ class Document extends Node {
     return new Element(namespace, localName, prefix);
   }
 
+  public function createElement(localName: DOMString): Element
+  {
+    if (!DOMImplementation.NAME_EREG.match(localName))
+      throw "Invalid character error";
+
+    if (this.ownerDocument.documentElement != null
+        && this.ownerDocument.documentElement.namespaceURI == DOMImplementation.HTML_NAMESPACE
+        && this.ownerDocument.documentElement.localName.toLowerCase() == "html")
+      localName = localName.toLowerCase();
+
+    return new Element(DOMImplementation.HTML_NAMESPACE, localName, "");
+  }
+
   public function new() {
     super();
   }
