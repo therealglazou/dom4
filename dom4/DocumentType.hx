@@ -40,12 +40,31 @@ package dom4;
 /*
  * http://www.w3.org/TR/domcore/#interface-domimplementation
  */
-class DocumentType {
+class DocumentType extends Node {
 
   /*
    * https://dom.spec.whatwg.org/#interface-documenttype
    */
 
-  public function new() {
+  /*
+   * https://dom.spec.whatwg.org/#dom-documenttype-name
+   */
+  public var name(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-documenttype-publicid
+   */
+  public var publicId(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-documenttype-systemid
+   */
+  public var systemId(default, null): DOMString;
+
+  public function new(name: DOMString, publicId: DOMString, systemId: DOMString) {
+    super();
+    this.name = name;
+    this.publicId = publicId;
+    this.systemId = systemId;
   }
 }
