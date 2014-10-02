@@ -38,7 +38,7 @@
 
 package dom4;
 
-class Document extends Node {
+class Document extends ParentNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-document
@@ -50,7 +50,7 @@ class Document extends Node {
   public var documentElement(get, null): Element;
       private function get_documentElement(): Element
       {
-        var node = cast(this, Node).firstElementChild;
+        var node = cast(this, ParentNode).firstElementChild;
         return ((null != node) ? cast(node, Element) : null);
       }
 

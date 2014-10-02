@@ -35,43 +35,60 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 package dom4;
 
-class NodeList {
+class ParentNode extends Node {
 
   /*
-   * https://dom.spec.whatwg.org/#interface-nodelist
+   * https://dom.spec.whatwg.org/#interface-parentnode
    */
 
-  private var nodes: Array<Node>;
-
-  /*
-   * https://dom.spec.whatwg.org/#dom-nodelist-length
-   */
-  public var length(get, null): UInt;
-      private function get_length(): UInt
+  public var firstElementChild(get, null): Node;
+      private function get_firstElementChild(): Node
       {
-        return this.nodes.length;
+        var child = this.firstChild;
+        while (child != null) {
+          if (child.nodeType == Node.ELEMENT_NODE)
+            return child;
+          child = child.nextSibling;
+        }
+        return null;
+      }
+  public var lastElementChild(get, null): Node;
+      private function get_lastElementChild(): Node
+      {
+        var child = this.lastChild;
+        while (child != null) {
+          if (child.nodeType == Node.ELEMENT_NODE)
+            return child;
+          child = child.previousSibling;
+        }
+        return null;
+      }
+  public var previousElementSibling(get, null): Node;
+      private function get_previousElementSibling(): Node
+      {
+        var node = this.previousSibling;
+        while (node != null) {
+          if (node.nodeType == Node.ELEMENT_NODE)
+            return node;
+          node = node.previousSibling;
+        }
+        return null;
+      }
+  public var nextElementSibling(get, null): Node;
+      private function get_nextElementSibling(): Node
+      {
+        var node = this.nextSibling;
+        while (node != null) {
+          if (node.nodeType == Node.ELEMENT_NODE)
+            return node;
+          node = node.nextSibling;
+        }
+        return null;
       }
 
-  /*
-   * https://dom.spec.whatwg.org/#dom-nodelist-item
-   */
-  public function item(index: UInt): Node
-  {
-    if (index >= this.length)
-      return null;
-    return this.nodes[index];
-  }
-
-  public function new(aFirstNode: Node)
-  {
-    this.nodes = new Array();
-    var node = aFirstNode;
-    while (node != null) {
-      this.nodes.push(node);
-      node = node.nextSibling;
-    }
+  private function new() {
+    super();
   }
 }

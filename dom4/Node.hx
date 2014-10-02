@@ -151,51 +151,6 @@ class Node extends EventTarget {
    */
   public var nextSibling(default, null): Node;
 
-  public var firstElementChild(get, null): Node;
-      private function get_firstElementChild(): Node
-      {
-        var child = this.firstChild;
-        while (child != null) {
-          if (child.nodeType == ELEMENT_NODE)
-            return child;
-          child = child.nextSibling;
-        }
-        return null;
-      }
-  public var lastElementChild(get, null): Node;
-      private function get_lastElementChild(): Node
-      {
-        var child = this.lastChild;
-        while (child != null) {
-          if (child.nodeType == ELEMENT_NODE)
-            return child;
-          child = child.previousSibling;
-        }
-        return null;
-      }
-  public var previousElementSibling(get, null): Node;
-      private function get_previousElementSibling(): Node
-      {
-        var node = this.previousSibling;
-        while (node != null) {
-          if (node.nodeType == ELEMENT_NODE)
-            return node;
-          node = node.previousSibling;
-        }
-        return null;
-      }
-  public var nextElementSibling(get, null): Node;
-      private function get_nextElementSibling(): Node
-      {
-        var node = this.nextSibling;
-        while (node != null) {
-          if (node.nodeType == ELEMENT_NODE)
-            return node;
-          node = node.nextSibling;
-        }
-        return null;
-      }
-
   /*
    * https://dom.spec.whatwg.org/#dom-node-nodevalue
    */
@@ -355,7 +310,8 @@ class Node extends EventTarget {
 
     if (this.nodeType == DOCUMENT_NODE) {
       if (node.nodeType == DOCUMENT_FRAGMENT_NODE) {
-        if (node.firstElementChild != null && node.firstElementChild != node.lastElementChild)
+        var n = cast(node, ParentNode);
+        if (n.firstElementChild != null && n.firstElementChild != n.lastElementChild)
           throw "Hierarchy request error";
         var currentNode = node.firstChild;
         while (currentNode != null) {
@@ -364,14 +320,14 @@ class Node extends EventTarget {
           currentNode = child.nextSibling;
         }
 
-        if (node.firstElementChild != null
-            && (this.firstElementChild != null
+        if (n.firstElementChild != null
+            && (cast(this, ParentNode).firstElementChild != null
                 || (child != null && child.nodeType == DOCUMENT_TYPE_NODE)
                 || (child != null && child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE)))
           throw "Hierarchy request error";
       }
       else if (node.nodeType == ELEMENT_NODE) {
-        if (this.firstElementChild != null
+        if (cast(this, ParentNode).firstElementChild != null
             || (child != null && child.nodeType == DOCUMENT_TYPE_NODE)
             || (child != null && child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE))
           throw "Hierarchy request error";
@@ -385,8 +341,8 @@ class Node extends EventTarget {
           currentNode = currentNode.nextSibling;
         }
         if (foundDoctypeInParent
-            || (child != null && child.previousElementSibling != null)
-            || (child == null && this.firstElementChild != null))
+            || (child != null && cast(child, ParentNode).previousElementSibling != null)
+            || (child == null && cast(child, ParentNode).firstElementChild != null))
           throw "Hierarchy request error";
       }
     }

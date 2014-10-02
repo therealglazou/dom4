@@ -38,7 +38,7 @@
 
 package dom4;
 
-class Element extends Node {
+class Element extends ParentNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-element
