@@ -40,6 +40,13 @@ package dom4;
 
 class Document extends Node {
 
+  /*
+   * https://dom.spec.whatwg.org/#interface-document
+   */
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-documentelement
+   */
   public var documentElement(get, null): Element;
       private function get_documentElement(): Element
       {
@@ -59,6 +66,9 @@ class Document extends Node {
     }
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-adoptnode
+   */
   public function adoptNode(node: Node): Node
   {
     if (node == null)
@@ -74,6 +84,9 @@ class Document extends Node {
     return node;
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createelementns
+   */
   public function createElementNS(namespace: DOMString, qualifiedName: DOMString): Element
   {
     if (namespace == "")
@@ -113,6 +126,9 @@ class Document extends Node {
     return new Element(namespace, localName, prefix);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createelement
+   */
   public function createElement(localName: DOMString): Element
   {
     if (!DOMImplementation.NAME_EREG.match(localName))

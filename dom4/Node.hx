@@ -39,7 +39,11 @@
 package dom4;
 
 class Node extends EventTarget {
-  
+
+  /*
+   * https://dom.spec.whatwg.org/#interface-node
+   */
+
   public static inline var ELEMENT_NODE: Int = 1;
   public static inline var ATTRIBUTE_NODE: Int = 2;
   public static inline var TEXT_NODE: Int = 3;
@@ -60,13 +64,48 @@ class Node extends EventTarget {
   public static inline var DOCUMENT_POSITION_CONTAINED_BY: Int = 0x10;
   public static inline var DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: Int = 0x20;
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-nodetype
+   */
   public var nodeType(default, null): Int;
-  public var nodeName(default, null): DOMString;
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-nodename
+   */
+  public var nodeName(get, null): DOMString;
+      private function get_nodeName(): DOMString
+      {
+        return switch (this.nodeType)
+        {
+          case ELEMENT_NODE: cast(this, Element).tagName;
+          case TEXT_NODE: "#text";
+          case PROCESSING_INSTRUCTION_NODE: cast(this, ProcessingInstruction).target;
+          case COMMENT_NODE: "#comment";
+          case DOCUMENT_NODE: "#document";
+          case DOCUMENT_TYPE_NODE: cast(this, DocumentType).name;
+          case DOCUMENT_FRAGMENT_NODE: "#document-fragment";
+          case _: ""; // should never hit
+        } 
+      }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-baseuri
+   */
   public var baseURI(default, null): DOMString;
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-ownerdocument
+   */
   public var ownerDocument(default, null): Document;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-parentnode
+   */
   public var parentNode(default, null): Node;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-parentelement
+   */
   public var parentElement(get, null): Element;
       private function get_parentElement() : Element
       {
@@ -74,18 +113,42 @@ class Node extends EventTarget {
                 ? cast(this.parentNode, Element)
                 : null);
       }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-haschildnodes
+   */
   public function hasChildNodes(): Bool
   {
     return (null != this.firstChild);
   }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-childnodes
+   */
   public var childNodes(get, null): NodeList;
       private function get_childNodes(): NodeList
       {
         return new NodeList(this.firstChild);
       }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-firstchild
+   */
   public var firstChild(default, null): Node;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-lastchild
+   */
   public var lastChild(default, null): Node;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-previoussibling
+   */
   public var previousSibling(default, null): Node;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-nextsibling
+   */
   public var nextSibling(default, null): Node;
 
   public var firstElementChild(get, null): Node;
@@ -132,6 +195,10 @@ class Node extends EventTarget {
         }
         return null;
       }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-nodevalue
+   */
   public var nodeValue(get, set): DOMString;
       private function get_nodeValue(): DOMString
       {
@@ -150,6 +217,10 @@ class Node extends EventTarget {
         }
         return v;
       }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-textcontent
+   */
   public var textContent(get, set): DOMString;
       private function get_textContent(): DOMString
       {
@@ -177,6 +248,10 @@ class Node extends EventTarget {
         }
         return v;
       }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-normalize
+   */
   public function normalize(): Void
   {
     var node = firstChild;
@@ -206,21 +281,35 @@ class Node extends EventTarget {
     }
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-clonenode
+   */
   public function cloneNode(?deep: Bool = false) : Node
   {
     // TBD
     return null;
   }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-isequalnode
+   */
   public function isEqualNode(node: Node): Bool
   {
     return (node == this);
   }
 
+  /* 
+   * https://dom.spec.whatwg.org/#dom-node-comparedocumentposition
+   */
   public function compareDocumentPosition(other: Node): Int
   {
     // TBD
     return 0;
   }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-contains
+   */
   public function contains(other: Node): Bool
   {
     if (this.isEqualNode(other))
@@ -234,6 +323,9 @@ class Node extends EventTarget {
     return false;
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-insertbefore
+   */
   public function insertBefore(node: Node, child: Node): Node {
     switch (this.nodeType) {
       case DOCUMENT_NODE
@@ -322,11 +414,17 @@ class Node extends EventTarget {
     return node;
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-appendchild
+   */
   public function appendChild(node: Node): Node
   {
     return insertBefore(node, null);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-removechild
+   */
   public function removeChild(child: Node): Node
   {
     if (child == null || child.parentNode == null)

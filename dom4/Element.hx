@@ -40,9 +40,28 @@ package dom4;
 
 class Element extends Node {
 
+  /*
+   * https://dom.spec.whatwg.org/#interface-element
+   */
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-namespaceuri
+   */
   public var namespaceURI(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-prefix
+   */
   public var prefix(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-localname
+   */
   public var localName(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-tagname
+   */
   public var tagName(get, null): DOMString;
       private function get_tagName(): DOMString
       {
@@ -55,6 +74,31 @@ class Element extends Node {
           qualifiedName = qualifiedName.toUpperCase();
         return qualifiedName;
       }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-id
+   * XXX
+   */
+  public var id: DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-classname
+   */
+  public var className: DOMString;
+      private function get_className(): DOMString
+      {
+        return this.classList.toString();
+      }
+      private function set_className(v: DOMString): DOMString
+      {
+        this.classList = new DOMTokenList(v);
+        return this.classList.toString();
+      }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-classlist
+   */
+  public var classList(default, null): DOMTokenList;
 
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();

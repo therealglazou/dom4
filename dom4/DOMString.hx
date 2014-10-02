@@ -37,4 +37,14 @@
 
 package dom4;
 
+/*
+ * http://heycam.github.io/webidl/#idl-DOMString
+ */
 typedef DOMString = String;
+
+abstract StringOrArrayString(Array<String>) from Array<String> to Array<String> {
+    @:from
+    static function fromString(s:String) {
+        return [s];
+    }
+}

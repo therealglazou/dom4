@@ -42,6 +42,10 @@ package dom4;
  */
 class DOMImplementation {
 
+  /*
+   * https://dom.spec.whatwg.org/#interface-domimplementation
+   */
+
   static private inline var NAME_START_CHAR = "A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD";
   static private inline var NAME_CHAR = NAME_START_CHAR + "\\-\\.0-9\u00B7\u0300-\u036F\u203F-\u2040";
   static private inline var NAME = "[:" + NAME_START_CHAR + "][:" + NAME_CHAR + "]*";
@@ -56,6 +60,9 @@ class DOMImplementation {
   public function new() {
   }
 
+  /* 
+   * https://dom.spec.whatwg.org/#dom-domimplementation-createdocument
+   */
   static public function createDocument(namespace: DOMString, qualifiedName: DOMString, ?doctype: DocumentType = null) : Document
   {
     var doc = new Document();
@@ -70,6 +77,9 @@ class DOMImplementation {
     return doc;
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-domimplementation-createdocumenttype
+   */
   static public function createDocumentType(qualifiedName: DOMString, publicId: DOMString, systemId: DOMString): Dynamic
   {
     return 1;

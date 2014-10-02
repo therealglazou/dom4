@@ -40,6 +40,10 @@ package dom4;
 
 class NodeList {
 
+  /*
+   * https://dom.spec.whatwg.org/#interface-nodelist
+   */
+
   private var firstNode: Node;
 
   public function new(aFirstNode: Node)

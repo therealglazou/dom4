@@ -40,7 +40,17 @@ package dom4;
 
 class CharacterData extends Node {
 
+  /*
+   * https://dom.spec.whatwg.org/#characterdata
+   */
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-characterdata-data
+   */
   public var data: DOMString;
+  /*
+   * https://dom.spec.whatwg.org/#dom-characterdata-length
+   */
   public var length(get, null): Int;
       private function get_length(): Int
       {

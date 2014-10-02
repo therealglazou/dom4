@@ -40,6 +40,10 @@ package dom4;
 
 class Text extends CharacterData {
 
+  /*
+   * https://dom.spec.whatwg.org/#interface-text
+   */
+
   public function new(v: DOMString) {
     super(v);
   }

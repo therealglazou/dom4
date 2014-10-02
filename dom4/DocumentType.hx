@@ -42,14 +42,10 @@ package dom4;
  */
 class DocumentType {
 
-  public function new() {
-  }
+  /*
+   * https://dom.spec.whatwg.org/#interface-documenttype
+   */
 
-/*
- * http://www.w3.org/TR/domcore/#dom-domimplementation-createdocumenttype
- */
-  static public function createDocumentType(qualifiedName: DOMString, publicId: DOMString, systemId: DOMString): Dynamic
-  {
-    return 1;
+  public function new() {
   }
 }
