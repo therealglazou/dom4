@@ -42,9 +42,3 @@ package dom4;
  */
 typedef DOMString = String;
 
-abstract StringOrArrayString(Array<String>) from Array<String> to Array<String> {
-    @:from
-    static function fromString(s:String) {
-        return [s];
-    }
-}

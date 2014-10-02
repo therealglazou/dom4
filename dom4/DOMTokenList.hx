@@ -81,14 +81,17 @@ class DOMTokenList {
   /*
    * https://dom.spec.whatwg.org/#dom-domtokenlist-add
    */
-  private function add(token: DOMString): Void
+  private function add(tokens: StringOrArrayString): Void
   {
-    if (token == "")
-      throw "Syntax error";
-    if (SPACE_MATCHING_EREG.match(token))
-      throw "Invalid character error";
-    if (!this.contains(token))
-      this.stringArray.push(token);
+    var a:Array<String> = tokens; 
+    for (token in a) {
+      if (token == "")
+        throw "Syntax error";
+      if (SPACE_MATCHING_EREG.match(token))
+        throw "Invalid character error";
+      if (!this.contains(token))
+        this.stringArray.push(token);
+    }
   }
 
   /*
@@ -102,15 +105,18 @@ class DOMTokenList {
   /*
    * https://dom.spec.whatwg.org/#dom-domtokenlist-remove
    */
-  public function remove(token: DOMString): Void
+  public function remove(tokens: StringOrArrayString): Void
   {
-    if (token == "")
-      throw "Syntax error";
-    if (SPACE_MATCHING_EREG.match(token))
-      throw "Invalid character error";
-    this.stringArray = this.stringArray.filter(function(f) {
-      return (f != token);
-    });
+    var a:Array<String> = tokens; 
+    for (token in a) {
+      if (token == "")
+        throw "Syntax error";
+      if (SPACE_MATCHING_EREG.match(token))
+        throw "Invalid character error";
+      this.stringArray = this.stringArray.filter(function(f) {
+        return (f != token);
+      });
+    }
   }
 
   /*
@@ -139,4 +145,11 @@ class DOMTokenList {
   {
     this.stringArray = StringTools.trim(DOMTokenList.SPACE_MATCHING_EREG.replace(v, " ")).split(" ");
   }
+}
+
+abstract StringOrArrayString(Array<DOMString>) from Array<DOMString> to Array<DOMString> {
+    @:from
+    static function fromString(s:DOMString) {
+        return [s];
+    }
 }
