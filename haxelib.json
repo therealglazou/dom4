@@ -1,0 +1,11 @@
+{
+  "name": "dom4",
+  "url": "http://glazman.org/",
+  "license": "MPL",
+  "tags": ["xml", "W3C", "DOM"],
+  "description": "haxe implementation of DOM 4",
+  "version": "0.0.1",
+  "releasenote": "none",
+  "contributors": ["glazou"],
+  "dependencies": { "unifill", "" }
+}
