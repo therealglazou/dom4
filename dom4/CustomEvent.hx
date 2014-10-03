@@ -41,9 +41,7 @@ package dom4;
  * STUB
  */
 
-class EventTarget {
-
-  public function new() {
-  }
-
+class CustomEvent extends Event {
+  
+  public new() {}
 }
