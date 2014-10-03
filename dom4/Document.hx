@@ -272,6 +272,14 @@ class Document extends ParentNode {
     return new Element(DOMImplementation.HTML_NAMESPACE, localName, "");
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createtextnode
+   */
+  public function createTextNode(data: DOMString): Text
+  {
+    return new Text(data);
+  }
+
   public function new() {
     super();
   }
