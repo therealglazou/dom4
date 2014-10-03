@@ -104,6 +104,57 @@ class Document extends ParentNode {
         return ((null != node) ? cast(node, Element) : null);
       }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-getelementsbytagname
+   */
+  public function getElementsByTagName(localName: DOMString): HTMLCollection
+  {
+    var node = cast(this, Node);
+    var rv: Array<Element> = [];
+    var p: Node;
+    while (node != null) {
+      if (node.nodeType == Node.ELEMENT_NODE
+          && (localName == "*" || node.nodeName == localName))
+        rv.push(cast(node, Element));
+      if (node.firstChild != null)
+        node = node.firstChild;
+      else if (node.nextSibling != null)
+        node = node.nextSibling;
+      else {
+        while (node != null && node.nextSibling == null)
+          node = node.parentNode;
+      }
+    }
+    return new HTMLCollection(rv);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-getelementsbytagnamens
+   */
+  public function getElementsByTagNameNS(?namespace: DOMString, localName: DOMString): HTMLCollection
+  {
+    var node = cast(this, Node);
+    var rv: Array<Element> = [];
+    var p: Node;
+    while (node != null) {
+      if (node.nodeType == Node.ELEMENT_NODE) {
+        var elt = cast(node, Element);
+        if ((localName == "*" || elt.localName == localName)
+            && (namespace == "*" || elt.namespaceURI == namespace))
+          rv.push(elt);
+        if (node.firstChild != null)
+          node = node.firstChild;
+        else if (node.nextSibling != null)
+          node = node.nextSibling;
+        else {
+          while (node != null && node.nextSibling == null)
+            node = node.parentNode;
+        }
+      }
+    }
+    return new HTMLCollection(rv);
+  }
+
   static public function _setNodeOwnerDocument(node: Node, doc: Document): Void
   {
     if (node == null)
