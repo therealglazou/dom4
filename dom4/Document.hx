@@ -280,6 +280,14 @@ class Document extends ParentNode {
     return new Text(data);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createcomment
+   */
+  public function createComment(data: DOMString): Comment
+  {
+    return new Comment(data);
+  }
+
   public function new() {
     super();
   }
