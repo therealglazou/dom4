@@ -45,6 +45,56 @@ class Document extends ParentNode {
    */
 
   /*
+   * https://dom.spec.whatwg.org/#dom-document-implementation
+   */
+  public var implementation(default, null): DOMImplementation;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-url
+   */
+  public var URL(default, null): DOMString; 
+  public var documentURI(get, null): DOMString;
+      private function get_documentURI(): DOMString
+      {
+        return this.URL;
+      }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-origin
+   */
+  public var origin(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-compatmode
+   */
+  public var compatMode(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-characterset
+   */
+  public var characterSet(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-contenttype
+   */
+  public var contentType(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-doctype
+   */
+  public var doctype(get, null): DocumentType;
+      private function get_doctype(): DocumentType
+      {
+        var child = cast(this, Node).firstChild;
+        while (child != null) {
+          if (child.nodeType == Node.DOCUMENT_TYPE_NODE)
+            return cast(child, DocumentType);
+          child = child.nextSibling;
+        }
+        return null;
+      }
+
+  /*
    * https://dom.spec.whatwg.org/#dom-document-documentelement
    */
   public var documentElement(get, null): Element;
