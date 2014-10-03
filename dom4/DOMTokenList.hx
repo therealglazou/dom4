@@ -141,9 +141,28 @@ class DOMTokenList {
     return true;
   }
 
+  /*
+   * EXTRA
+   */
+  public function supersets(tokenList: DOMTokenList): Bool
+  {
+    if (this.length < tokenList.length)
+      return false;
+    for (index in 0...tokenList.length-1)
+      if (!this.contains(tokenList.item(index)))
+        return false;
+    return true;
+  }
+
   public function new(v:DOMString)
   {
     this.stringArray = StringTools.trim(DOMTokenList.SPACE_MATCHING_EREG.replace(v, " ")).split(" ");
+    this.stringArray.sort( function(a:String, b:String):Int
+                           {
+                             if (a < b) return -1;
+                             if (a > b) return 1;
+                               return 0;
+                           } );
   }
 }
 
