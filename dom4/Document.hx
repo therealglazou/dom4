@@ -288,6 +288,14 @@ class Document extends ParentNode {
     return new Comment(data);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createprocessinginstruction
+   */
+  public function createProcessingInstruction(target: DOMString, data: DOMString): ProcessingInstruction
+  {
+    return new ProcessingInstruction(target, data);
+  }
+
   public function new() {
     super();
   }
