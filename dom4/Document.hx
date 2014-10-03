@@ -109,9 +109,8 @@ class Document extends ParentNode {
    */
   public function getElementsByTagName(localName: DOMString): HTMLCollection
   {
-    var node = cast(this, Node);
+    var node = cast(this.documentElement, Node);
     var rv: Array<Element> = [];
-    var p: Node;
     while (node != null) {
       if (node.nodeType == Node.ELEMENT_NODE
           && (localName == "*" || node.nodeName == localName))
@@ -133,23 +132,53 @@ class Document extends ParentNode {
    */
   public function getElementsByTagNameNS(?namespace: DOMString, localName: DOMString): HTMLCollection
   {
-    var node = cast(this, Node);
+    var node = cast(this.documentElement, Node);
     var rv: Array<Element> = [];
-    var p: Node;
     while (node != null) {
       if (node.nodeType == Node.ELEMENT_NODE) {
         var elt = cast(node, Element);
         if ((localName == "*" || elt.localName == localName)
             && (namespace == "*" || elt.namespaceURI == namespace))
           rv.push(elt);
-        if (node.firstChild != null)
-          node = node.firstChild;
-        else if (node.nextSibling != null)
-          node = node.nextSibling;
-        else {
-          while (node != null && node.nextSibling == null)
-            node = node.parentNode;
-        }
+      }
+      if (node.firstChild != null)
+        node = node.firstChild;
+      else if (node.nextSibling != null)
+        node = node.nextSibling;
+      else {
+        while (node != null && node.nextSibling == null)
+          node = node.parentNode;
+      }
+    }
+    return new HTMLCollection(rv);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-getelementsbyclassname
+   */
+  public function getElementsByClassName(classNames: DOMString): HTMLCollection
+  {
+    var node = cast(this.documentElement, Node);
+    var domTokens = new DOMTokenList(classNames);
+    // early way out if we can
+    if (domTokens.length == 0)
+      return new HTMLCollection();
+
+    var rv: Array<Element> = [];
+    while (node != null) {
+      if (node.nodeType == Node.ELEMENT_NODE) {
+        var elt = cast(node, Element);
+        var elementDomTokens = new DOMTokenList(elt.className);
+        if (elementDomTokens.supersets(domTokens))
+          rv.push(elt);
+      }
+      if (node.firstChild != null)
+        node = node.firstChild;
+      else if (node.nextSibling != null)
+        node = node.nextSibling;
+      else {
+        while (node != null && node.nextSibling == null)
+          node = node.parentNode;
       }
     }
     return new HTMLCollection(rv);
