@@ -241,8 +241,31 @@ class Node extends EventTarget {
    */
   public function cloneNode(?deep: Bool = false) : Node
   {
-    // TBD
+    // XXX
     return null;
+  }
+
+  private function _cloneOneNode() : Node
+  {
+    switch (this.nodeType) {
+      case DOCUMENT_TYPE_NODE: {
+        var dt = cast(this, DocumentType);
+        return cast(this.ownerDocument.implementation.createDocumentType(dt.name, dt.publicId, dt.systemId), Node);
+      }
+      case TEXT_NODE:
+        return cast(this.ownerDocument.createTextNode(cast(this, Text).data), Node);
+      case COMMENT_NODE:
+        return cast(this.ownerDocument.createComment(cast(this, Comment).data), Node);
+      case PROCESSING_INSTRUCTION_NODE: {
+        var pi = cast(this, ProcessingInstruction);
+        return cast(this.ownerDocument.createProcessingInstruction(pi.target, pi.data), Node);
+      }
+      case ELEMENT_NODE: {
+        var e = cast(this, Element);
+        var newElt = this.ownerDocument.createElementNS(e.namespaceURI, e.localName);
+      }
+    }
+    return null; // should never happen
   }
 
   /*
@@ -250,6 +273,7 @@ class Node extends EventTarget {
    */
   public function isEqualNode(node: Node): Bool
   {
+    // XXX must run in depth
     return (node == this);
   }
 

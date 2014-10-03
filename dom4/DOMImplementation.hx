@@ -63,9 +63,9 @@ class DOMImplementation {
   /* 
    * https://dom.spec.whatwg.org/#dom-domimplementation-createdocument
    */
-  static public function createDocument(namespace: DOMString, qualifiedName: DOMString, ?doctype: DocumentType = null) : Document
+  public function createDocument(namespace: DOMString, qualifiedName: DOMString, ?doctype: DocumentType = null) : Document
   {
-    var doc = new Document();
+    var doc = new Document(new DOMImplementation());
     var e = null;
     if (qualifiedName != "")
       e = doc.createElementNS(namespace, qualifiedName);
@@ -80,7 +80,7 @@ class DOMImplementation {
   /*
    * https://dom.spec.whatwg.org/#dom-domimplementation-createdocumenttype
    */
-  static public function createDocumentType(qualifiedName: DOMString, publicId: DOMString, systemId: DOMString): Dynamic
+  public function createDocumentType(qualifiedName: DOMString, publicId: DOMString, systemId: DOMString): Dynamic
   {
     return 1;
   }

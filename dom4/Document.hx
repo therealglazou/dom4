@@ -253,7 +253,9 @@ class Document extends ParentNode {
         && prefix != "xmlns")
       throw "Namespace error";
 
-    return new Element(namespace, localName, prefix);
+    var e = new Element(namespace, localName, prefix);
+    e.ownerDocument = this;
+    return e;
   }
 
   /*
@@ -269,7 +271,9 @@ class Document extends ParentNode {
         && this.ownerDocument.documentElement.localName.toLowerCase() == "html")
       localName = localName.toLowerCase();
 
-    return new Element(DOMImplementation.HTML_NAMESPACE, localName, "");
+    var e = new Element(DOMImplementation.HTML_NAMESPACE, localName, "");
+    e.ownerDocument = this;
+    return e;
   }
 
   /*
@@ -277,7 +281,9 @@ class Document extends ParentNode {
    */
   public function createTextNode(data: DOMString): Text
   {
-    return new Text(data);
+    var t = new Text(data);
+    t.ownerDocument = this;
+    return t;
   }
 
   /*
@@ -285,7 +291,9 @@ class Document extends ParentNode {
    */
   public function createComment(data: DOMString): Comment
   {
-    return new Comment(data);
+    var c = new Comment(data);
+    c.ownerDocument = this;
+    return c;
   }
 
   /*
@@ -293,10 +301,16 @@ class Document extends ParentNode {
    */
   public function createProcessingInstruction(target: DOMString, data: DOMString): ProcessingInstruction
   {
-    return new ProcessingInstruction(target, data);
+    if (!DOMImplementation.NAME_EREG.match(target))
+      throw "Invalid character error";
+    if (data.indexOf("?>") != -1)
+      throw "Invalid character error";
+    var pi = new ProcessingInstruction(target, data);
+    pi.ownerDocument = this;
+    return pi;
   }
 
-  public function new() {
+  public function new(implementation: DOMImplementation) {
     super();
   }
 }
