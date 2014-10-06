@@ -62,7 +62,7 @@ class Test {
           trace("Document serialization:");
           trace("-----------------------");
           var indent = "  ";
-          var node = cast(document.documentElement, Node);
+          var node: Node = document.documentElement;
           while (true) {
             switch (node.nodeType) {
               case Node.TEXT_NODE:
