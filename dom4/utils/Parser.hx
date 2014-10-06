@@ -334,7 +334,6 @@ class Parser
 			return p;
 		}
 
-    trace("state = " + state);
 		throw "Unexpected end";
 	}
 

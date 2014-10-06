@@ -399,6 +399,7 @@ class Node extends EventTarget {
    if (this.firstChild == referenceChild)
      this.firstChild = node;
 
+    node.parentNode = this;
     return node;
   }
 
