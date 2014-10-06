@@ -223,17 +223,17 @@ class Node extends EventTarget {
               currentNode = currentNode.nextSibling;
             }
             if (foundOtherTextNodes) {
-	            var newTextNode = new Text(data);
-	            if (node.parentNode != null && node.parentNode.firstChild == node)
-	              node.parentNode.firstChild = newTextNode;
-	            if (node.parentNode != null) {
-	              if (currentNode == null)
-	                node.parentNode.lastChild = newTextNode;
-	            }
-	            newTextNode.previousSibling = node.previousSibling;
+              var newTextNode = new Text(data);
+              if (node.parentNode != null && node.parentNode.firstChild == node)
+                node.parentNode.firstChild = newTextNode;
+              if (node.parentNode != null) {
+                if (currentNode == null)
+                  node.parentNode.lastChild = newTextNode;
+              }
+              newTextNode.previousSibling = node.previousSibling;
               if (null != newTextNode.previousSibling)
                 newTextNode.previousSibling.nextSibling = newTextNode;
-	            newTextNode.nextSibling = currentNode;
+              newTextNode.nextSibling = currentNode;
               if (null != newTextNode.nextSibling)
                 newTextNode.nextSibling.previousSibling = newTextNode;
               node = newTextNode;

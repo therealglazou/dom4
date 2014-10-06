@@ -52,10 +52,10 @@ class Test {
 
         var parser = new DOMParser();
         try {
-	        var document = parser.parseFromString(str, "text/xml"); 
-	
-	        trace("Return type is: " + document);
-	        trace("Name of the document element is: " + document.documentElement.nodeName);
+          var document = parser.parseFromString(str, "text/xml"); 
+  
+          trace("Return type is: " + document);
+          trace("Name of the document element is: " + document.documentElement.nodeName);
           trace("Document element has " + document.documentElement.childNodes.length + " children");
           trace("Document element has " + document.documentElement.children.length + " element children");
 
