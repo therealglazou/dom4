@@ -48,7 +48,7 @@ class DOMParser {
     
   }
 
-  public function parseFromString(str: DOMString, type: DOMString) : Dynamic
+  public function parseFromString(str: DOMString, type: DOMString) : Document
   {
     switch (type) {
       case "text/xml"
