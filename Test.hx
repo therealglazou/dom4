@@ -48,7 +48,7 @@ class Test {
 
     static function main() : Void {
 
-        var str = "<root><first>1</first> a text node <second foo='1'/><third>aaa<fourth>bbb</fourth></third><fourth/></root>";
+        var str = "<root><first>1</first> a text node <second foo='1'/><third>aaa<fourth>bbb</fourth></third><fifth/></root>";
 
         var parser = new DOMParser();
         try {
