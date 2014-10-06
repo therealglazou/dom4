@@ -332,8 +332,9 @@ class Document extends Node
         return ParentNodeImpl.childElementCount(this);
       }
 
-  public function new(implementation: DOMImplementation) {
+  public function new(?implementation: DOMImplementation = null) {
     super();
+    this.implementation = ((null == implementation) ? new DOMImplementation() : implementation);
     this.nodeType = Node.DOCUMENT_NODE;
   }
 }
