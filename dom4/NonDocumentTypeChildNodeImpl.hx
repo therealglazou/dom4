@@ -70,4 +70,5 @@ class NonDocumentTypeChildNodeImpl {
         }
         return null;
   }
+
 }

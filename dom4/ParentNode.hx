@@ -37,36 +37,24 @@
 
 package dom4;
 
-class ParentNode extends Node {
+interface ParentNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-parentnode
    */
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
+   */
   public var firstElementChild(get, null): Node;
-      private function get_firstElementChild(): Node
-      {
-        var child = this.firstChild;
-        while (child != null) {
-          if (child.nodeType == Node.ELEMENT_NODE)
-            return child;
-          child = child.nextSibling;
-        }
-        return null;
-      }
-  public var lastElementChild(get, null): Node;
-      private function get_lastElementChild(): Node
-      {
-        var child = this.lastChild;
-        while (child != null) {
-          if (child.nodeType == Node.ELEMENT_NODE)
-            return child;
-          child = child.previousSibling;
-        }
-        return null;
-      }
 
-  private function new() {
-    super();
-  }
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-lastelementchild
+   */
+  public var lastElementChild(get, null): Node;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-children
+   */
+  public var children(get, null): HTMLCollection;
 }

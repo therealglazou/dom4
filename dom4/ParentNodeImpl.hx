@@ -36,13 +36,51 @@
  * ***** END LICENSE BLOCK ***** */
 
 package dom4;
+import dom4.Node;
 
-/*
- * https://dom.spec.whatwg.org/#interface-nondocumenttypechildnode
- */
+class ParentNodeImpl {
 
-interface NonDocumentTypeChildNode {
+  /*
+   * https://dom.spec.whatwg.org/#interface-parentnode
+   */
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
+   */
+  static public function firstElementChild(refNode: Node): Node
+  {
+    var child = refNode.firstChild;
+    while (child != null) {
+      if (child.nodeType == Node.ELEMENT_NODE)
+        return child;
+      child = child.nextSibling;
+    }
+    return null;
+  }
   
-  public var previousElementSibling(get, null): Node;
-  public var nextElementSibling(get, null): Node;
+  static public function lastElementChild(refNode: Node): Node
+  {
+    var child = refNode.lastChild;
+    while (child != null) {
+      if (child.nodeType == Node.ELEMENT_NODE)
+        return child;
+      child = child.previousSibling;
+    }
+    return null;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-children
+   */
+  static public function children(refNode: Node): HTMLCollection
+  {
+    var elementArray: Array<Element> = [];
+    var child = refNode.firstChild;
+    while (null != child) {
+      if (child.nodeType == Node.ELEMENT_NODE)
+        elementArray.push(cast(child, Element));
+      child = child.nextSibling;
+    }
+    return new HTMLCollection(elementArray);
+  }
 }

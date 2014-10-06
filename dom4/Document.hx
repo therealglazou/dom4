@@ -38,7 +38,8 @@
 
 package dom4;
 
-class Document extends ParentNode {
+class Document extends Node
+               implements ParentNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-document
@@ -309,6 +310,22 @@ class Document extends ParentNode {
     pi.ownerDocument = this;
     return pi;
   }
+
+  public var firstElementChild(get, null): Node;
+      private function get_firstElementChild(): Node
+      {
+        return ParentNodeImpl.firstElementChild(this);
+      }
+  public var lastElementChild(get, null): Node;
+  private function get_lastElementChild(): Node
+  {
+    return ParentNodeImpl.lastElementChild(this);
+  }
+  public var children(get, null): HTMLCollection;
+      private function get_children(): HTMLCollection
+      {
+        return ParentNodeImpl.children(this);
+      }
 
   public function new(implementation: DOMImplementation) {
     super();

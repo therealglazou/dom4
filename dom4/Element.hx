@@ -38,7 +38,8 @@
 
 package dom4;
 
-class Element extends ParentNode
+class Element extends Node
+              implements ParentNode
               implements NonDocumentTypeChildNode {
 
   /*
@@ -280,6 +281,22 @@ class Element extends ParentNode
       private function get_nextElementSibling(): Node
       {
         return NonDocumentTypeChildNodeImpl.nextElementSibling(this);
+      }
+
+  public var firstElementChild(get, null): Node;
+      private function get_firstElementChild(): Node
+      {
+        return ParentNodeImpl.firstElementChild(this);
+      }
+  public var lastElementChild(get, null): Node;
+      private function get_lastElementChild(): Node
+      {
+        return ParentNodeImpl.lastElementChild(this);
+      }
+  public var children(get, null): HTMLCollection;
+      private function get_children(): HTMLCollection
+      {
+        return ParentNodeImpl.children(this);
       }
 
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
