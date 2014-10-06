@@ -209,30 +209,40 @@ class Node extends EventTarget {
    */
   public function normalize(): Void
   {
-    var node = firstChild;
+    var node = this.firstChild;
     while (node != null) {
       switch (node.nodeType) {
         case TEXT_NODE: {
           if (node.nextSibling != null && node.nextSibling.nodeType == TEXT_NODE) {
-            var currentNode = node;
-            var data = "";
+            var currentNode = node.nextSibling;
+            var data = cast(node, Text).data;
+            var foundOtherTextNodes = false;
             while (currentNode != null && currentNode.nodeType == TEXT_NODE) {
-              data += cast(currentNode, CharacterData).data;
+              if (!foundOtherTextNodes) foundOtherTextNodes = true;
+              data += cast(currentNode, Text).data;
               currentNode = currentNode.nextSibling;
             }
-            var newTextNode = new Text(data);
-            if (node.parentNode != null && node.parentNode.firstChild == node)
-              node.parentNode.firstChild = newTextNode;
-            if (node.parentNode != null) {
-              if (currentNode == null)
-                node.parentNode.lastChild = newTextNode;
+            if (foundOtherTextNodes) {
+	            var newTextNode = new Text(data);
+	            if (node.parentNode != null && node.parentNode.firstChild == node)
+	              node.parentNode.firstChild = newTextNode;
+	            if (node.parentNode != null) {
+	              if (currentNode == null)
+	                node.parentNode.lastChild = newTextNode;
+	            }
+	            newTextNode.previousSibling = node.previousSibling;
+              if (null != newTextNode.previousSibling)
+                newTextNode.previousSibling.nextSibling = newTextNode;
+	            newTextNode.nextSibling = currentNode;
+              if (null != newTextNode.nextSibling)
+                newTextNode.nextSibling.previousSibling = newTextNode;
+              node = newTextNode;
             }
-            newTextNode.previousSibling = node.previousSibling;
-            newTextNode.nextSibling = currentNode;
           }
         }
       case ELEMENT_NODE: node.normalize();
       }
+      node = node.nextSibling;
     }
   }
 
