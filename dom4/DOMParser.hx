@@ -36,10 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 package dom4;
+import dom4.utils.Parser;
 
 /*
  * https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#the-domparser-interface
  */
+
 class DOMParser {
 
   public function new() {
@@ -53,8 +55,7 @@ class DOMParser {
            | "application/xml"
            | "application/xhtml+xml"
            | "image/svg+xml" :
-        return null; // XXX
-        // return Parser.parse(str);
+        return (new Parser()).parse(str);
       case _: return null;
     }
   }

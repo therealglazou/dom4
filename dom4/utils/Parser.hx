@@ -208,8 +208,8 @@ class Parser
 							throw("Expected attribute name");
 						tmp = str.substr(start,p-start);
 						aname = tmp;
-						/*if( xml.exists(aname) ) XXX
-							throw("Duplicate attribute"); */
+						if( cast(xml, Element).hasAttribute(aname) )
+							throw("Duplicate attribute");
 						state = S.IGNORE_SPACES;
 						next = S.EQUALS;
 						continue;
