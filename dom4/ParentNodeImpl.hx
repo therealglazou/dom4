@@ -36,7 +36,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 package dom4;
-import dom4.Node;
 
 class ParentNodeImpl {
 
