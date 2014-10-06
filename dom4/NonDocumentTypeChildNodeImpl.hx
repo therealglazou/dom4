@@ -37,36 +37,37 @@
 
 package dom4;
 
-class ParentNode extends Node {
+/*
+ * https://dom.spec.whatwg.org/#interface-nondocumenttypechildnode
+ */
+
+class NonDocumentTypeChildNodeImpl {
 
   /*
-   * https://dom.spec.whatwg.org/#interface-parentnode
+   * https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-previouselementsibling
    */
-
-  public var firstElementChild(get, null): Node;
-      private function get_firstElementChild(): Node
-      {
-        var child = this.firstChild;
-        while (child != null) {
-          if (child.nodeType == Node.ELEMENT_NODE)
-            return child;
-          child = child.nextSibling;
+  static public function previousElementSibling(refNode: Node): Node
+  {
+        var node = refNode.previousSibling;
+        while (node != null) {
+          if (node.nodeType == Node.ELEMENT_NODE)
+            return node;
+          node = node.previousSibling;
         }
         return null;
-      }
-  public var lastElementChild(get, null): Node;
-      private function get_lastElementChild(): Node
-      {
-        var child = this.lastChild;
-        while (child != null) {
-          if (child.nodeType == Node.ELEMENT_NODE)
-            return child;
-          child = child.previousSibling;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-nextelementsibling
+   */
+  static public function nextElementSibling(refNode: Node): Node
+  {
+        var node = refNode.nextSibling;
+        while (node != null) {
+          if (node.nodeType == Node.ELEMENT_NODE)
+            return node;
+          node = node.nextSibling;
         }
         return null;
-      }
-
-  private function new() {
-    super();
   }
 }

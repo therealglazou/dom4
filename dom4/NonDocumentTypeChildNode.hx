@@ -41,7 +41,8 @@ package dom4;
  * STUB
  */
 
-class NonDocumentTypeChildNode {
+interface NonDocumentTypeChildNode {
   
-  public new() {}
+  public var previousElementSibling(get, null): Node;
+  public var nextElementSibling(get, null): Node;
 }

@@ -38,7 +38,8 @@
 
 package dom4;
 
-class Element extends ParentNode {
+class Element extends ParentNode
+              implements NonDocumentTypeChildNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-element
@@ -270,11 +271,23 @@ class Element extends ParentNode {
     return this.attributes.removeAttributeNode(attr);
   }
 
+  public var previousElementSibling(get, null): Node;
+      private function get_previousElementSibling(): Node
+      {
+        return NonDocumentTypeChildNodeImpl.previousElementSibling(this);
+      }
+  public var nextElementSibling(get, null): Node;
+      private function get_nextElementSibling(): Node
+      {
+        return NonDocumentTypeChildNodeImpl.nextElementSibling(this);
+      }
+
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();
     this.attributes = new NamedNodeMap();
     this.namespaceURI = namespace;
     this.localName = localName;
     this.prefix = prefix;
+    this.nodeType = Node.ELEMENT_NODE;
   }
 }

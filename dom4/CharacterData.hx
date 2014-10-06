@@ -38,7 +38,8 @@
 
 package dom4;
 
-class CharacterData extends Node {
+class CharacterData extends Node
+                    implements NonDocumentTypeChildNode {
 
   /*
    * https://dom.spec.whatwg.org/#characterdata
@@ -55,6 +56,17 @@ class CharacterData extends Node {
       private function get_length(): Int
       {
         return this.data.length;
+      }
+
+  public var previousElementSibling(get, null): Node;
+      private function get_previousElementSibling(): Node
+      {
+        return NonDocumentTypeChildNodeImpl.previousElementSibling(this);
+      }
+  public var nextElementSibling(get, null): Node;
+      private function get_nextElementSibling(): Node
+      {
+        return NonDocumentTypeChildNodeImpl.nextElementSibling(this);
       }
 
   public function new(v: DOMString) {

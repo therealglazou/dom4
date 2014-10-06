@@ -310,14 +310,12 @@ class Node extends EventTarget {
       case DOCUMENT_NODE
            | DOCUMENT_FRAGMENT_NODE
            | ELEMENT_NODE: {}
-      case _: throw "Hierarchy request error";
+      case _: throw "Hierarchy request error ";
     }
 
     if (child != null && child.parentNode != this)
       throw "Not found error";
 
-    if (node == null)
-      throw "Hierarchy request error";
     switch (node.nodeType) {
       case DOCUMENT_FRAGMENT_NODE
            | DOCUMENT_TYPE_NODE
@@ -365,7 +363,7 @@ class Node extends EventTarget {
           currentNode = currentNode.nextSibling;
         }
         if (foundDoctypeInParent
-            || (child != null && cast(child, ParentNode).previousElementSibling != null)
+            || (child != null && cast(child, NonDocumentTypeChildNode).previousElementSibling != null)
             || (child == null && cast(child, ParentNode).firstElementChild != null))
           throw "Hierarchy request error";
       }
@@ -399,7 +397,7 @@ class Node extends EventTarget {
    */
   public function appendChild(node: Node): Node
   {
-    return insertBefore(node, null);
+    return this.insertBefore(node, null);
   }
 
   /*

@@ -46,5 +46,6 @@ class Text extends CharacterData {
 
   public function new(v: DOMString) {
     super(v);
+    this.nodeType = Node.TEXT_NODE;
   }
 }

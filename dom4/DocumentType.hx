@@ -66,5 +66,6 @@ class DocumentType extends Node {
     this.name = name;
     this.publicId = publicId;
     this.systemId = systemId;
+    this.nodeType = Node.DOCUMENT_TYPE_NODE;
   }
 }

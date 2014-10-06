@@ -312,5 +312,6 @@ class Document extends ParentNode {
 
   public function new(implementation: DOMImplementation) {
     super();
+    this.nodeType = Node.DOCUMENT_NODE;
   }
 }

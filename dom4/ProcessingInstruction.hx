@@ -52,5 +52,6 @@ class ProcessingInstruction extends CharacterData {
   public function new(target: DOMString, data: DOMString) {
     super(data);
     this.target = target;
+    this.nodeType = Node.PROCESSING_INSTRUCTION_NODE;
   }
 }
