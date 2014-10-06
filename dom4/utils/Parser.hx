@@ -64,7 +64,6 @@ class Parser
   public function parse(str:String)
   {
     document = new Document();
-    trace(1);
     doParse(str, 0, cast(document, Node));
     return document;
   }
