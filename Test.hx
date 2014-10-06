@@ -48,11 +48,11 @@ class Test {
 
     static function main() : Void {
 
-        var str = "<root><first>1</first> a text node <second foo='1'/><third>aaa<fourth>bbb</fourth></third></root>";
+        var str = "<root><first>1</first> a text node <second foo='1'/><third>aaa<fourth>bbb</fourth></third><fourth/></root>";
 
         var parser = new DOMParser();
         try {
-	        var document:Document = parser.parseFromString(str, "text/xml"); 
+	        var document = parser.parseFromString(str, "text/xml"); 
 	
 	        trace("Return type is: " + document);
 	        trace("Name of the document element is: " + document.documentElement.nodeName);
@@ -75,7 +75,8 @@ class Test {
                 trace (indent + "ELEMENT " + node.nodeName);
                 var elt = cast(node, Element);
                 for (i in 0...elt.attributes.length) {
-                  trace(indent + "  ATTRIBUTE " + elt.attributes.item(i).name + "=\"" + elt.attributes.item(i).value + "\"");
+                  var attr = elt.attributes.item(i);
+                  trace(indent + "  ATTRIBUTE " + attr.name + "=\"" + attr.value + "\"");
                 }
             }
 
