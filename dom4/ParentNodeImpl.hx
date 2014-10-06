@@ -82,4 +82,12 @@ class ParentNodeImpl {
     }
     return new HTMLCollection(elementArray);
   }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-childelementcount
+   */
+  static public function childElementCount(refNode: Node): UInt
+  {
+    return children(refNode).length;
+  }
 }

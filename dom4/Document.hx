@@ -326,6 +326,11 @@ class Document extends Node
       {
         return ParentNodeImpl.children(this);
       }
+  public var childElementCount(get, null): UInt;
+      private function get_childElementCount(): UInt
+      {
+        return ParentNodeImpl.childElementCount(this);
+      }
 
   public function new(implementation: DOMImplementation) {
     super();

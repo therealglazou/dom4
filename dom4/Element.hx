@@ -298,6 +298,11 @@ class Element extends Node
       {
         return ParentNodeImpl.children(this);
       }
+  public var childElementCount(get, null): UInt;
+      private function get_childElementCount(): UInt
+      {
+        return ParentNodeImpl.childElementCount(this);
+      }
 
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();

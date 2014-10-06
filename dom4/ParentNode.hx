@@ -57,4 +57,9 @@ interface ParentNode {
    * https://dom.spec.whatwg.org/#dom-parentnode-children
    */
   public var children(get, null): HTMLCollection;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-childelementcount
+   */
+  public var childElementCount(get, null): UInt;
 }
