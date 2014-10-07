@@ -38,7 +38,7 @@
 
 package dom4;
 
-class NodeList {
+class NodeList implements ArrayAccess<Node> {
 
   /*
    * https://dom.spec.whatwg.org/#interface-nodelist
@@ -74,4 +74,6 @@ class NodeList {
       node = node.nextSibling;
     }
   }
+
+  @:arrayAccess public inline function __get(key:UInt) return this.item(key);
 }

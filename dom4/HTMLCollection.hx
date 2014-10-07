@@ -38,7 +38,7 @@
 
 package dom4;
 
-class HTMLCollection {
+class HTMLCollection implements ArrayAccess<Element> {
 
   /*
    * https://dom.spec.whatwg.org/#interface-htmlcollection
@@ -76,6 +76,8 @@ class HTMLCollection {
       return matching[0];
     return null;
   }
+
+  @:arrayAccess public inline function __get(key:UInt) return this.item(key);
 
   public function new(?collection: Array<Element>)
   {

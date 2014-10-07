@@ -38,7 +38,7 @@
 
 package dom4;
 
-class NamedNodeMap {
+class NamedNodeMap implements ArrayAccess<Attr> {
 
   /*
    * https://dom.spec.whatwg.org/#namednodemap
@@ -144,6 +144,8 @@ class NamedNodeMap {
       this.attributes.remove(oldAttr);
     return oldAttr;
   }
+
+  @:arrayAccess public inline function __get(key:UInt) return this.item(key);
 
   public function new()
   {

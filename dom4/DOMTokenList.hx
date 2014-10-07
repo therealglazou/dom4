@@ -38,7 +38,7 @@
 
 package dom4;
 
-class DOMTokenList {
+class DOMTokenList implements ArrayAccess<DOMString> {
 
   /*
    * https://dom.spec.whatwg.org/#interface-domtokenlist
@@ -47,7 +47,7 @@ class DOMTokenList {
   static private inline var SPACE_MATCHING = "[\u0009\u000a\u000c\u000d\u0020]";
   static public         var SPACE_MATCHING_EREG  = new EReg(SPACE_MATCHING, "g");
   
-  private var stringArray: Array<String>;
+  private var stringArray: Array<DOMString>;
 
   /*
    * https://dom.spec.whatwg.org/#dom-domtokenlist-length
@@ -153,6 +153,8 @@ class DOMTokenList {
         return false;
     return true;
   }
+
+  @:arrayAccess public inline function __get(key:UInt) return this.item(key);
 
   public function new(v:DOMString)
   {
