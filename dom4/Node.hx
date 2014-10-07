@@ -367,22 +367,36 @@ class Node extends EventTarget {
     else
       this.ownerDocument.adoptNode(node);
 
+    function _doInsertBefore(n: Node) {
+      if (null != referenceChild) {
+        n.previousSibling = referenceChild.previousSibling;
+        referenceChild.previousSibling = n;
+      }
+      else {
+        n.previousSibling = this.lastChild;
+        this.lastChild = n;
+      }
+      if (null != n.previousSibling) {
+        n.previousSibling.nextSibling = n;
+      }
+      else {
+        this.firstChild = n;
+      }
+      n.parentNode = this;
+    }
+
     node.nextSibling = referenceChild;
-    if (null != referenceChild) {
-      node.previousSibling = referenceChild.previousSibling;
-      referenceChild.previousSibling = node;
+    if (node.nodeType == DOCUMENT_FRAGMENT_NODE) {
+      while (node.firstChild != null) {
+        var f = node.firstChild;
+        node.removeChild(f);
+        _doInsertBefore(f);
+      }
     }
     else {
-      node.previousSibling = this.lastChild;
-      this.lastChild = node;
+        _doInsertBefore(node);
     }
-    if (null != node.previousSibling) {
-      node.previousSibling.nextSibling = node;
-    }
-    else {
-      this.firstChild = node;
-    }
-    node.parentNode = this;
+
     return node;
   }
 
