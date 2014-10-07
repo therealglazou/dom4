@@ -106,7 +106,7 @@ class ParentNodeImpl {
     var index = nodesAsNodesArray.length - 1;
     while (index >= 0) {
       if (null == nodes[index])
-        throw "Hierarchy request error";
+        throw (new DOMException("Hierarchy request error"));
       index--;
     }
     index = nodesAsNodesArray.length - 1;
@@ -129,7 +129,7 @@ class ParentNodeImpl {
     var nodesAsNodesArray: Array<Node> = nodes;
     for (index in 0...nodesAsNodesArray.length) {
       if (null == nodes[index])
-        throw "Hierarchy request error";
+        throw (new DOMException("Hierarchy request error"));
     }
     for (index in 0...nodesAsNodesArray.length) {
       refNode.appendChild(nodes[index]);

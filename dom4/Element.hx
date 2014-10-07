@@ -144,10 +144,10 @@ class Element extends Node
   public function setAttribute(name: DOMString, value: DOMString): Void
   {
     if (!DOMImplementation.NAME_EREG.match(name))
-      throw "Invalid character error";
+      throw (new DOMException("Invalid character error"));
 
     if (!DOMImplementation.PREFIXED_NAME_EREG.match(name))
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     var matching = this.attributes.getNamedItem(name);
     if (matching != null) {
@@ -167,10 +167,10 @@ class Element extends Node
       namespace = null;
 
     if (!DOMImplementation.NAME_EREG.match(name))
-      throw "Invalid character error";
+      throw (new DOMException("Invalid character error"));
 
     if (!DOMImplementation.PREFIXED_NAME_EREG.match(name))
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     var prefix = null;
     var localName = name;
@@ -182,20 +182,20 @@ class Element extends Node
     }
 
     if (prefix != null && namespace == null)
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
       
     if (prefix == "xml" && namespace != DOMImplementation.XML_NAMESPACE)
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     if (namespace != DOMImplementation.XMLNS_NAMESPACE
         && (name == "xmlns"
             || prefix == "xmlns"))
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     if (namespace == DOMImplementation.XMLNS_NAMESPACE
         && name != "xmlns"
         && prefix != "xmlns")
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     var attr = new Attr(namespace, prefix, localName, value);
     this.attributes.setNamedItem(attr);

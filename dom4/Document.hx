@@ -205,9 +205,9 @@ class Document extends Node
   public function adoptNode(node: Node): Node
   {
     if (node == null)
-      throw "Hierarchy request error";
+      throw (new DOMException("Hierarchy request error"));
     if (node.nodeType == Node.DOCUMENT_NODE)
-      throw "Not supported error";
+      throw (new DOMException("Not supported error"));
 
     var oldDocument = node.ownerDocument;
     if (node.parentNode != null)
@@ -226,10 +226,10 @@ class Document extends Node
       namespace = null;
 
     if (!DOMImplementation.NAME_EREG.match(qualifiedName))
-      throw "Invalid character error";
+      throw (new DOMException("Invalid character error"));
 
     if (!DOMImplementation.PREFIXED_NAME_EREG.match(qualifiedName))
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     var prefix = null;
     var localName = qualifiedName;
@@ -241,20 +241,20 @@ class Document extends Node
     }
 
     if (prefix != null && namespace == null)
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
       
     if (prefix == "xml" && namespace != DOMImplementation.XML_NAMESPACE)
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     if (namespace != DOMImplementation.XMLNS_NAMESPACE
         && (qualifiedName == "xmlns"
             || prefix == "xmlns"))
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     if (namespace == DOMImplementation.XMLNS_NAMESPACE
         && qualifiedName != "xmlns"
         && prefix != "xmlns")
-      throw "Namespace error";
+      throw (new DOMException("Namespace error"));
 
     var e = new Element(namespace, localName, prefix);
     e.ownerDocument = this;
@@ -267,7 +267,7 @@ class Document extends Node
   public function createElement(localName: DOMString): Element
   {
     if (!DOMImplementation.NAME_EREG.match(localName))
-      throw "Invalid character error";
+      throw (new DOMException("Invalid character error"));
 
     if (this.ownerDocument.documentElement != null
         && this.ownerDocument.documentElement.namespaceURI == DOMImplementation.HTML_NAMESPACE
@@ -305,9 +305,9 @@ class Document extends Node
   public function createProcessingInstruction(target: DOMString, data: DOMString): ProcessingInstruction
   {
     if (!DOMImplementation.NAME_EREG.match(target))
-      throw "Invalid character error";
+      throw (new DOMException("Invalid character error"));
     if (data.indexOf("?>") != -1)
-      throw "Invalid character error";
+      throw (new DOMException("Invalid character error"));
     var pi = new ProcessingInstruction(target, data);
     pi.ownerDocument = this;
     return pi;
