@@ -26,24 +26,25 @@ using StringTools;
 /* poor'man enum : reduce code size + a bit faster since inlined */
 extern private class S {
   public static inline var IGNORE_SPACES   = 0;
-  public static inline var BEGIN      = 1;
-  public static inline var BEGIN_NODE    = 2;
-  public static inline var TAG_NAME    = 3;
-  public static inline var BODY      = 4;
-  public static inline var ATTRIB_NAME  = 5;
-  public static inline var EQUALS      = 6;
-  public static inline var ATTVAL_BEGIN  = 7;
-  public static inline var ATTRIB_VAL    = 8;
-  public static inline var CHILDS      = 9;
-  public static inline var CLOSE      = 10;
-  public static inline var WAIT_END    = 11;
-  public static inline var WAIT_END_RET  = 12;
-  public static inline var PCDATA      = 13;
-  public static inline var HEADER      = 14;
-  public static inline var COMMENT    = 15;
-  public static inline var DOCTYPE    = 16;
-  public static inline var CDATA      = 17;
-  public static inline var ESCAPE      = 18;
+  public static inline var BEGIN           = 1;
+  public static inline var BEGIN_NODE      = 2;
+  public static inline var TAG_NAME        = 3;
+  public static inline var BODY            = 4;
+  public static inline var ATTRIB_NAME     = 5;
+  public static inline var EQUALS          = 6;
+  public static inline var ATTVAL_BEGIN    = 7;
+  public static inline var ATTRIB_VAL      = 8;
+  public static inline var CHILDS          = 9;
+  public static inline var CLOSE           = 10;
+  public static inline var WAIT_END        = 11;
+  public static inline var WAIT_END_RET    = 12;
+  public static inline var PCDATA          = 13;
+  public static inline var PI_TARGET       = 14;
+  public static inline var PI_DATA         = 15;
+  public static inline var COMMENT         = 16;
+  public static inline var DOCTYPE         = 17;
+  public static inline var CDATA           = 18;
+  public static inline var ESCAPE          = 19;
 }
 
 class Parser
@@ -161,7 +162,7 @@ class Parser
                 start = p + 1;
               }
             case '?'.code:
-              state = S.HEADER;
+              state = S.PI_TARGET;
               start = p;
             case '/'.code:
               if( parent == null )
@@ -292,12 +293,22 @@ class Parser
             parent.appendChild(document.implementation.createDocumentType(str.substr(start, p - start), "", ""));
             state = S.BEGIN;
           }
-        case S.HEADER:
+        case S.PI_TARGET:
+          if (!isValidChar(c))
+          {
+            p++;
+            aname = str.substr(start + 1, p - start - 2);
+            trace(aname);
+            start = p - 1;
+            state = S.IGNORE_SPACES;
+            next = S.PI_DATA;
+          }
+        case S.PI_DATA:
           if (c == '?'.code && str.fastCodeAt(p + 1) == '>'.code)
           {
             p++;
             var str = str.substr(start + 1, p - start - 2);
-            parent.appendChild(document.createProcessingInstruction(str, ""));
+            parent.appendChild(document.createProcessingInstruction(aname, str));
             state = S.BEGIN;
           }
         case S.ESCAPE:
