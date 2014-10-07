@@ -35,13 +35,54 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
 package dom4;
+import dom4.utils.Either;
 
-/*
- * STUB
- */
+class DocumentFragment extends Node
+                       implements ParentNode
+                       implements NonParentElementNode {
 
-class DocumentFragment {
-  
-  public new() {}
+  /*
+   * https://dom.spec.whatwg.org/#interface-documentfragment
+   */
+
+  public var firstElementChild(get, null): Node;
+      private function get_firstElementChild(): Node
+      {
+        return ParentNodeImpl.firstElementChild(this);
+      }
+  public var lastElementChild(get, null): Node;
+      private function get_lastElementChild(): Node
+      {
+        return ParentNodeImpl.lastElementChild(this);
+      }
+  public var children(get, null): HTMLCollection;
+      private function get_children(): HTMLCollection
+      {
+        return ParentNodeImpl.children(this);
+      }
+  public var childElementCount(get, null): UInt;
+      private function get_childElementCount(): UInt
+      {
+        return ParentNodeImpl.childElementCount(this);
+      }
+  public function prepend(nodes: Either<Node, Array<Node>>): Void
+  {
+    return ParentNodeImpl.prepend(this, nodes);
+  }
+  public function append(nodes: Either<Node, Array<Node>>): Void
+  {
+    return ParentNodeImpl.append(this, nodes);
+  }
+
+  public function getElementById(elementID: DOMString): Element
+  {
+    return NonParentElementNodeImpl.getElementById(this, elementID);
+  }
+
+  public function new() {
+    super();
+    this.nodeType = Node.DOCUMENT_FRAGMENT_NODE;
+  }
 }
