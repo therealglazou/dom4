@@ -313,6 +313,16 @@ class Document extends Node
     return pi;
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createdocumentfragment
+   */
+  public function createDocumentFragment(): DocumentFragment
+  {
+    var df = new DocumentFragment();
+    df.ownerDocument = this;
+    return df;
+  }
+
   public var firstElementChild(get, null): Node;
       private function get_firstElementChild(): Node
       {
