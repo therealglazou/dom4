@@ -36,6 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 package dom4;
+import dom4.ParentNode;
 
 class ParentNodeImpl {
 
@@ -90,4 +91,28 @@ class ParentNodeImpl {
   {
     return children(refNode).length;
   }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-prepend
+   */
+  static public function prepend(refNode: Node, nodes: Either<Node, Array<Node>>): Void
+  {
+    if (Std.is(nodes, Node)) {
+      refNode.insertBefore(nodes, refNode.firstChild);
+      return;
+    }
+
+    var nodesAsNodesArray: Array<Node> = nodes;
+    var index = nodesAsNodesArray.length - 1;
+    while (index >= 0) {
+      if (null == nodes[index])
+        throw "Hierarchy request error";
+      index--;
+    }
+    index = nodesAsNodesArray.length - 1;
+    while (index >= 0) {
+      refNode.insertBefore(nodes[index], refNode.firstChild);
+      index--;
+    }
+  }  
 }

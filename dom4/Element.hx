@@ -37,6 +37,7 @@
 
 
 package dom4;
+import dom4.ParentNode;
 
 class Element extends Node
               implements ParentNode
@@ -303,6 +304,10 @@ class Element extends Node
       {
         return ParentNodeImpl.childElementCount(this);
       }
+  public function prepend(nodes: Either<Node, Array<Node>>): Void
+  {
+    return ParentNodeImpl.prepend(this, nodes);
+  }
 
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();
