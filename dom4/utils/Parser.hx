@@ -269,7 +269,7 @@ class Parser
 
             var v = str.substr(start,p - start);
             if (v != parent.nodeName)
-              throw "Expected </" +parent.nodeName + ">";
+              throw (new DOMException("Expected </" +parent.nodeName + ">"));
 
             state = S.IGNORE_SPACES;
             next = S.WAIT_END_RET;
@@ -333,7 +333,7 @@ class Parser
       return p;
     }
 
-    throw "Unexpected end";
+    throw (new DOMException("Unexpected end"));
   }
 
   static inline function isValidChar(c) {
