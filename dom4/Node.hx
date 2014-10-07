@@ -270,8 +270,77 @@ class Node extends EventTarget {
    */
   public function compareDocumentPosition(other: Node): Int
   {
-    // TBD
-    return 0;
+    if (this == other)
+      return 0;
+
+    var referenceRoot = this;
+    var referenceAncestors: Array<Node> = [];
+    while (referenceRoot.parentNode != null
+           && (referenceRoot.parentNode.nodeType == ELEMENT_NODE
+               ||  referenceRoot.parentNode.nodeType == TEXT_NODE
+               ||  referenceRoot.parentNode.nodeType == COMMENT_NODE
+               ||  referenceRoot.parentNode.nodeType == PROCESSING_INSTRUCTION_NODE)) {
+      referenceRoot = referenceRoot.parentNode;
+      referenceAncestors.push(referenceRoot);
+      if (referenceRoot == other)
+        return DOCUMENT_POSITION_CONTAINS | DOCUMENT_POSITION_PRECEDING;
+    }
+
+    var otherRoot = other;
+    var otherAncestors: Array<Node> = [];
+    while (otherRoot.parentNode != null
+           && (otherRoot.parentNode.nodeType == ELEMENT_NODE
+               ||  otherRoot.parentNode.nodeType == TEXT_NODE
+               ||  otherRoot.parentNode.nodeType == COMMENT_NODE
+               ||  otherRoot.parentNode.nodeType == PROCESSING_INSTRUCTION_NODE)) {
+      otherRoot = otherRoot.parentNode;
+      otherAncestors.push(otherRoot);
+      if (otherRoot == this)
+        return  DOCUMENT_POSITION_CONTAINED_BY | DOCUMENT_POSITION_FOLLOWING;
+    }
+
+    if (referenceRoot != otherRoot)
+      return  DOCUMENT_POSITION_DISCONNECTED
+              | DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+              | DOCUMENT_POSITION_PRECEDING;
+
+    // find deepest common ancestor
+    var index = 0;
+    var commonAncestor: Node = null;
+    while (index < Math.min(referenceAncestors.length, otherAncestors.length)) {
+      if (referenceAncestors[index] == otherAncestors[index])
+        commonAncestor = referenceAncestors[index];
+    }
+
+    // there _is_ a common ancestor because they belong to same tree
+    var node: Node = commonAncestor;
+    while (true) {
+      if (node == other)
+        return DOCUMENT_POSITION_PRECEDING;
+      if (node == this)
+        return DOCUMENT_POSITION_FOLLOWING;
+
+      if (null != node.firstChild) {
+        node = node.firstChild;
+      }
+      else if (null != node.nextSibling)
+        node = node.nextSibling;
+      else if (null == node.parentNode)
+        break;
+      else {
+        while (null == node.nextSibling
+               && null != node.parentNode
+               && node.parentNode.nodeType == Node.ELEMENT_NODE) {
+          node = node.parentNode;
+        }
+        node = node.nextSibling;
+        if (null == node)
+          break;
+      }
+    }
+
+    // sanity case
+    throw (new DOMException("ShouldNeverHitError"));
   }
 
   /*
