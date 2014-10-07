@@ -308,6 +308,10 @@ class Element extends Node
   {
     return ParentNodeImpl.prepend(this, nodes);
   }
+  public function append(nodes: Either<Node, Array<Node>>): Void
+  {
+    return ParentNodeImpl.append(this, nodes);
+  }
 
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();

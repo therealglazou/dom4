@@ -67,6 +67,11 @@ interface ParentNode {
    * https://dom.spec.whatwg.org/#dom-parentnode-prepend
    */
   public function prepend(nodes: Either<Node, Array<Node>>): Void;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-append
+   */
+  public function append(nodes: Either<Node, Array<Node>>): Void;
 }
 
 abstract Either<T1, T2>(Dynamic) from T1 from T2 to T1 to T2 {}

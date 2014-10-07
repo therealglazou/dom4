@@ -115,4 +115,24 @@ class ParentNodeImpl {
       index--;
     }
   }  
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-append
+   */
+  static public function append(refNode: Node, nodes: Either<Node, Array<Node>>): Void
+  {
+    if (Std.is(nodes, Node)) {
+      refNode.appendChild(nodes);
+      return;
+    }
+
+    var nodesAsNodesArray: Array<Node> = nodes;
+    for (index in 0...nodesAsNodesArray.length) {
+      if (null == nodes[index])
+        throw "Hierarchy request error";
+    }
+    for (index in 0...nodesAsNodesArray.length) {
+      refNode.appendChild(nodes[index]);
+    }
+  }  
 }

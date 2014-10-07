@@ -336,6 +336,10 @@ class Document extends Node
   {
     return ParentNodeImpl.prepend(this, nodes);
   }
+  public function append(nodes: Either<Node, Array<Node>>): Void
+  {
+    return ParentNodeImpl.append(this, nodes);
+  }
 
   public function new(?implementation: DOMImplementation = null) {
     super();
