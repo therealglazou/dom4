@@ -213,34 +213,12 @@ class Node extends EventTarget {
     while (node != null) {
       switch (node.nodeType) {
         case TEXT_NODE: {
-          if (node.nextSibling != null && node.nextSibling.nodeType == TEXT_NODE) {
-            var currentNode = node.nextSibling;
-            var data = cast(node, Text).data;
-            var foundOtherTextNodes = false;
-            while (currentNode != null && currentNode.nodeType == TEXT_NODE) {
-              if (!foundOtherTextNodes) foundOtherTextNodes = true;
-              data += cast(currentNode, Text).data;
-              currentNode = currentNode.nextSibling;
-            }
-            if (foundOtherTextNodes) {
-              var newTextNode = new Text(data);
-              if (node.parentNode != null && node.parentNode.firstChild == node)
-                node.parentNode.firstChild = newTextNode;
-              if (node.parentNode != null) {
-                if (currentNode == null)
-                  node.parentNode.lastChild = newTextNode;
-              }
-              newTextNode.previousSibling = node.previousSibling;
-              if (null != newTextNode.previousSibling)
-                newTextNode.previousSibling.nextSibling = newTextNode;
-              newTextNode.nextSibling = currentNode;
-              if (null != newTextNode.nextSibling)
-                newTextNode.nextSibling.previousSibling = newTextNode;
-              node = newTextNode;
-            }
+          while (node.nextSibling != null && node.nextSibling.nodeType == TEXT_NODE) {
+            cast(node, Text).data += cast(node.nextSibling, Text).data;
+            node.parentNode.removeChild(node.nextSibling);
           }
         }
-      case ELEMENT_NODE: node.normalize();
+        case ELEMENT_NODE: node.normalize();
       }
       node = node.nextSibling;
     }
@@ -379,26 +357,31 @@ class Node extends EventTarget {
       }
     }
 
-   var referenceChild = child;
-   if (referenceChild == node) {
-     referenceChild = node.nextSibling;
-   }
+    var referenceChild = child;
+    if (referenceChild == node) {
+      referenceChild = node.nextSibling;
+    }
 
-   if (referenceChild == null) {
-     node.previousSibling = this.lastChild;
-     if (this.lastChild != null) {
-       this.lastChild.nextSibling = node;
-     }
-     this.lastChild = node;
-   }
-   else {
-     node.previousSibling = referenceChild.previousSibling;
-     node.nextSibling = referenceChild;
-     referenceChild.previousSibling = node;
-   }
-   if (this.firstChild == referenceChild)
-     this.firstChild = node;
+    if (this.nodeType == DOCUMENT_NODE)
+      cast(this, Document).adoptNode(node);
+    else
+      this.ownerDocument.adoptNode(node);
 
+    node.nextSibling = referenceChild;
+    if (null != referenceChild) {
+      node.previousSibling = referenceChild.previousSibling;
+      referenceChild.previousSibling = node;
+    }
+    else {
+      node.previousSibling = this.lastChild;
+      this.lastChild = node;
+    }
+    if (null != node.previousSibling) {
+      node.previousSibling.nextSibling = node;
+    }
+    else {
+      this.firstChild = node;
+    }
     node.parentNode = this;
     return node;
   }
@@ -433,6 +416,85 @@ class Node extends EventTarget {
       parent.lastChild = null;
 
     Document._setNodeOwnerDocument(child, null);
+    return child;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-node-replacechild
+   */
+  public function replaceChild(node: Node, child: Node): Node
+  {
+    switch (this.nodeType) {
+      case DOCUMENT_NODE
+           | DOCUMENT_FRAGMENT_NODE
+           | ELEMENT_NODE: {}
+      case _: throw "Hierarchy request error ";
+    }
+
+    if (child != null && child.parentNode != this)
+      throw "Not found error";
+
+    switch (node.nodeType) {
+      case DOCUMENT_FRAGMENT_NODE
+           | DOCUMENT_TYPE_NODE
+           | ELEMENT_NODE
+           | TEXT_NODE
+           | PROCESSING_INSTRUCTION_NODE
+           | COMMENT_NODE: {}
+      case _: throw "Hierarchy request error";
+    }
+
+    if ((node.nodeType == TEXT_NODE && this.nodeType == DOCUMENT_NODE)
+        || (node.nodeType == DOCUMENT_TYPE_NODE && this.nodeType != DOCUMENT_NODE))
+      throw "Hierarchy request error";
+
+    var t = cast(this, ParentNode);
+    if (this.nodeType == DOCUMENT_NODE) {
+      if (node.nodeType == DOCUMENT_FRAGMENT_NODE) {
+        var n = cast(node, ParentNode);
+        if (n.firstElementChild != null && n.firstElementChild != n.lastElementChild)
+          throw "Hierarchy request error";
+        var currentNode = node.firstChild;
+        while (currentNode != null) {
+          if (currentNode.nodeType == TEXT_NODE)
+            throw "Hierarchy request error";
+          currentNode = child.nextSibling;
+        }
+
+        if (n.firstElementChild != null
+            && ((t.firstElementChild != null && t.firstElementChild != child)
+                || (child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE)))
+          throw "Hierarchy request error";
+      }
+      else if (node.nodeType == ELEMENT_NODE) {
+        if ((t.firstElementChild != null && t.firstElementChild != child)
+            || (child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE))
+          throw "Hierarchy request error";
+      }
+      else if (node.nodeType == DOCUMENT_TYPE_NODE) {
+        var currentNode = this.firstChild;
+        var foundDoctypeInParent = false;
+        while (!foundDoctypeInParent && child != null) {
+          if (currentNode.nodeType == DOCUMENT_TYPE_NODE && currentNode != child)
+            foundDoctypeInParent = true;
+          currentNode = currentNode.nextSibling;
+        }
+        if (foundDoctypeInParent
+            || (child == null && cast(child, ParentNode) != null && cast(child, ParentNode).firstElementChild != null))
+          throw "Hierarchy request error";
+      }
+    }
+
+    var reference = child.nextSibling;
+    if (reference == node)
+      reference = node.nextSibling;
+
+    if (this.nodeType == DOCUMENT_NODE)
+      cast(this, Document).adoptNode(node);
+    else
+      this.ownerDocument.adoptNode(node);
+    this.removeChild(child);
+    this.insertBefore(node, reference);
     return child;
   }
 
