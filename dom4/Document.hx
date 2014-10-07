@@ -37,7 +37,7 @@
 
 
 package dom4;
-import dom4.ParentNode;
+import dom4.utils.Either;
 
 class Document extends Node
                implements ParentNode {

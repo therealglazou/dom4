@@ -35,43 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package dom4;
-import dom4.utils.Either;
+package dom4.utils;
 
-interface ParentNode {
-
-  /*
-   * https://dom.spec.whatwg.org/#interface-parentnode
-   */
-
-  /*
-   * https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
-   */
-  public var firstElementChild(get, null): Node;
-
-  /*
-   * https://dom.spec.whatwg.org/#dom-parentnode-lastelementchild
-   */
-  public var lastElementChild(get, null): Node;
-
-  /*
-   * https://dom.spec.whatwg.org/#dom-parentnode-children
-   */
-  public var children(get, null): HTMLCollection;
-
-  /*
-   * https://dom.spec.whatwg.org/#dom-parentnode-childelementcount
-   */
-  public var childElementCount(get, null): UInt;
-
-  /*
-   * https://dom.spec.whatwg.org/#dom-parentnode-prepend
-   */
-  public function prepend(nodes: Either<Node, Array<Node>>): Void;
-
-  /*
-   * https://dom.spec.whatwg.org/#dom-parentnode-append
-   */
-  public function append(nodes: Either<Node, Array<Node>>): Void;
-}
-
+abstract Either<T1, T2>(Dynamic) from T1 from T2 to T1 to T2 {}

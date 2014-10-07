@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 package dom4;
-import dom4.ParentNode;
+import dom4.utils.Either;
 
 class ParentNodeImpl {
 
