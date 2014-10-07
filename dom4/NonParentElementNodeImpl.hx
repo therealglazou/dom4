@@ -41,10 +41,40 @@ package dom4;
  * https://dom.spec.whatwg.org/#interface-nonelementparentnode
  */
 
-interface NonParentElementNode {
+class NonParentElementNodeImpl {
   
   /*
    * https://dom.spec.whatwg.org/#dom-nonelementparentnode-getelementbyid
    */
-  public function getElementById(elementID: DOMString): Element;
+  static public function getElementById(refNode: Node, elementID: DOMString): Element
+  {
+    var node: Node = refNode;
+    while (true) {
+      switch (node.nodeType) {
+        case Node.ELEMENT_NODE:
+          var elt = cast(node, Element);
+          if (elt.hasAttribute("id") && elt.getAttribute("id") == elementID)
+            return elt;
+      }
+  
+      if (null != node.firstChild) {
+        node = node.firstChild;
+      }
+      else if (null != node.nextSibling)
+        node = node.nextSibling;
+      else if (null == node.parentNode)
+        break;
+      else {
+        while (null == node.nextSibling
+               && null != node.parentNode
+               && node.parentNode.nodeType == Node.ELEMENT_NODE) {
+          node = node.parentNode;
+        }
+        node = node.nextSibling;
+        if (null == node)
+          break;
+      }
+    }
+    return null;
+  }
 }

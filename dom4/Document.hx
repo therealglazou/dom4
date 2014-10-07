@@ -40,7 +40,8 @@ package dom4;
 import dom4.utils.Either;
 
 class Document extends Node
-               implements ParentNode {
+               implements ParentNode
+               implements NonParentElementNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-document
@@ -339,6 +340,11 @@ class Document extends Node
   public function append(nodes: Either<Node, Array<Node>>): Void
   {
     return ParentNodeImpl.append(this, nodes);
+  }
+
+  public function getElementById(elementID: DOMString): Element
+  {
+    return NonParentElementNodeImpl.getElementById(this, elementID);
   }
 
   public function new(?implementation: DOMImplementation = null) {
