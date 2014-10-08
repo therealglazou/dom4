@@ -43,5 +43,5 @@ package dom4;
 
 class ChildNode {
   
-  public new() {}
+  public function new() {}
 }

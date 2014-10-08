@@ -43,5 +43,5 @@ package dom4;
 
 class MutationObserver {
   
-  public new() {}
+  public function new() {}
 }

@@ -43,5 +43,5 @@ package dom4;
 
 class NodeIterator {
   
-  public new() {}
+  public function new() {}
 }

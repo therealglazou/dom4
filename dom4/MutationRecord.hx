@@ -43,5 +43,5 @@ package dom4;
 
 class MutationRecord {
   
-  public new() {}
+  public function new() {}
 }

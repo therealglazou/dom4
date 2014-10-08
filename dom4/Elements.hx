@@ -43,5 +43,5 @@ package dom4;
 
 class Elements {
   
-  public new() {}
+  public function new() {}
 }

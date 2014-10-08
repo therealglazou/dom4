@@ -38,10 +38,118 @@
 package dom4;
 
 /*
- * STUB
+ * https://dom.spec.whatwg.org/#interface-range
  */
 
 class Range {
-  
-  public new() {}
+
+  public var startContainer(default, null): Node;
+  public var startOffset(default, null): UInt;
+  public var endContainer(default, null): Node;
+  public var endOffset(default, null): UInt;
+  public var collapsed(get, null): Bool;
+      private function get_collapsed(): Bool
+      {
+        return (this.startContainer == this.endContainer
+                && this.startOffset == this.endOffset);
+      }
+
+  public var commonAncestorContainer(get, null): Node;
+      private function get_commonAncestorContainer(): Node
+      {
+        var startAncestors: Array<Node> = [];
+        var node = this.startContainer;
+        while (node != null) {
+          startAncestors.insert(0, node);
+          node = node.parentNode;
+        }
+
+        var endAncestors: Array<Node> = [];
+        var node = this.endContainer;
+        while (node != null) {
+          endAncestors.insert(0, node);
+          node = node.parentNode;
+        }
+
+        var index = Std.int( Math.min(startAncestors.length - 1, endAncestors.length - 1) ); // >= 0
+        while (index >= 0) {
+          if (startAncestors[index] == endAncestors[index])
+            return startAncestors[index];
+          index--;
+        }
+
+        throw (new DOMException("ShouldNeverHitError"));
+      }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-range-bp-set
+   */
+  public function setStart(node: Node, offset: UInt): Void
+  {
+    if (node == null)
+      throw (new DOMException("InvalidAccessError"));
+
+    // the following differs from the spec on several counts:
+    //   DocumentFragment are forbidden because I have no idea what means
+    //     a range starting in a document and ending in a document fragment
+    //   Comment and ProcessingInstruction are forbidden because starting
+    //     or ending a range in the middle of such a node seems meaningless
+    switch (node.nodeType) {
+      case Node.DOCUMENT_TYPE_NODE
+           | Node.DOCUMENT_FRAGMENT_NODE:
+        throw (new DOMException("InvalidNodeTypeError"));
+
+      case Node.TEXT_NODE:
+        if (offset > cast(node, Text).data.length)
+          throw (new DOMException("IndexSizeError"));
+
+      case Node.COMMENT_NODE
+           | Node.PROCESSING_INSTRUCTION_NODE:
+        throw (new DOMException("InvalidNodeTypeError"));
+
+      case Node.ELEMENT_NODE:        
+        if (offset > cast(node, Element).childNodes.length)
+          throw (new DOMException("IndexSizeError"));
+    }
+
+    this.startContainer = node;
+    this.startOffset = offset;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-range-bp-set
+   */
+  public function setEnd(node: Node, offset: UInt): Void
+  {
+    if (node == null)
+      throw (new DOMException("InvalidAccessError"));
+
+    // the following differs from the spec on several counts:
+    //   DocumentFragment are forbidden because I have no idea what means
+    //     a range starting in a document and ending in a document fragment
+    //   Comment and ProcessingInstruction are forbidden because starting
+    //     or ending a range in the middle of such a node seems meaningless
+    switch (node.nodeType) {
+      case Node.DOCUMENT_TYPE_NODE
+           | Node.DOCUMENT_FRAGMENT_NODE:
+        throw (new DOMException("InvalidNodeTypeError"));
+
+      case Node.TEXT_NODE:
+        if (offset > cast(node, Text).data.length)
+          throw (new DOMException("IndexSizeError"));
+
+      case Node.COMMENT_NODE
+           | Node.PROCESSING_INSTRUCTION_NODE:
+        throw (new DOMException("InvalidNodeTypeError"));
+
+      case Node.ELEMENT_NODE:        
+        if (offset > cast(node, Element).childNodes.length)
+          throw (new DOMException("IndexSizeError"));
+    }
+
+    this.endContainer = node;
+    this.endOffset = offset;
+  }
+
+  public function new() {}
 }

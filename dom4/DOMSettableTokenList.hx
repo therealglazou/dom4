@@ -43,5 +43,5 @@ package dom4;
 
 class DOMSettableTokenList {
   
-  public new() {}
+  public function new() {}
 }

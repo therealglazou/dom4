@@ -43,5 +43,5 @@ package dom4;
 
 class TreeWalker {
   
-  public new() {}
+  public function new() {}
 }

@@ -43,5 +43,5 @@ package dom4;
 
 class CustomEvent extends Event {
   
-  public new() {}
+  public function new() {}
 }
