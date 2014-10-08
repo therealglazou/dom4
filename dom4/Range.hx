@@ -211,6 +211,21 @@ class Range {
     this._setStartOrEndBeforeOrAfter(node, _POSITION_END_BEFORE);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-range-collapse
+   */
+  public function collapse(toStart: Bool): Void
+  {
+    if (toStart) {
+	    this.endContainer = this.startContainer;
+	    this.endOffset =    this.startOffset;
+    }
+    else {
+	    this.startContainer = this.endContainer;
+	    this.startOffset    = this.endOffset;
+    }
+  }
+
   public function new(startContainer: Node,
                       startOffset: UInt,
                       endContainer: Node,
