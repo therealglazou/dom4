@@ -37,6 +37,12 @@
 
 package dom4;
 
+enum _Position {
+  _POSITION_START_BEFORE;
+  _POSITION_START_AFTER;
+  _POSITION_END_BEFORE;
+  _POSITION_END_AFTER;
+}
 /*
  * https://dom.spec.whatwg.org/#interface-range
  */
@@ -149,6 +155,60 @@ class Range {
 
     this.endContainer = node;
     this.endOffset = offset;
+  }
+
+  private function _setStartOrEndBeforeOrAfter(node: Node, position: _Position): Void
+  {
+    if (node == null)
+      throw (new DOMException("InvalidAccessError"));
+    if (node.parentNode == null)
+      throw (new DOMException("InvalidNodeTypeError"));
+
+    var index = -1;
+    var currentNode = node;
+    while (null != currentNode) {
+      index++;
+      currentNode = currentNode.previousSibling;
+    }
+
+    switch (position) {
+      case _POSITION_START_BEFORE: this.setStart(node.parentNode, index);
+      case _POSITION_START_AFTER:  this.setStart(node.parentNode, index + 1);
+      case _POSITION_END_BEFORE:   this.setEnd(node.parentNode, index);
+      case _POSITION_END_AFTER:    this.setEnd(node.parentNode, index + 1);
+    }
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-range-setstartbefore
+   */
+  public function setStartBefore(node: Node): Void
+  {
+    this._setStartOrEndBeforeOrAfter(node, _POSITION_START_BEFORE);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-range-setstartafter
+   */
+  public function setStartAfter(node: Node): Void
+  {
+    this._setStartOrEndBeforeOrAfter(node, _POSITION_START_AFTER);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-range-setendbefore
+   */
+  public function setEndBefore(node: Node): Void
+  {
+    this._setStartOrEndBeforeOrAfter(node, _POSITION_END_AFTER);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-range-setendafter
+   */
+  public function setEndAfter(node: Node): Void
+  {
+    this._setStartOrEndBeforeOrAfter(node, _POSITION_END_BEFORE);
   }
 
   public function new(startContainer: Node,
