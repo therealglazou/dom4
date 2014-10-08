@@ -357,6 +357,13 @@ class Document extends Node
     return NonParentElementNodeImpl.getElementById(this, elementID);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createrange
+   */
+  public function createRange(): Range {
+    return (new Range(this, 0, this, 0));
+  }
+
   public function new(?implementation: DOMImplementation = null) {
     super();
     this.implementation = ((null == implementation) ? new DOMImplementation() : implementation);

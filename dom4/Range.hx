@@ -151,5 +151,13 @@ class Range {
     this.endOffset = offset;
   }
 
-  public function new() {}
+  public function new(startContainer: Node,
+                      startOffset: UInt,
+                      endContainer: Node,
+                      endOffset: UInt) {
+    this.startContainer = startContainer;
+    this.startOffset = startOffset;
+    this.endContainer = endContainer;
+    this.endOffset = endOffset;
+  }
 }
