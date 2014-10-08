@@ -38,6 +38,7 @@
 package dom4;
 
 enum _Position {
+  _POSITION_WHOLE_NODE;
   _POSITION_START_BEFORE;
   _POSITION_START_AFTER;
   _POSITION_END_BEFORE;
@@ -176,6 +177,11 @@ class Range {
       case _POSITION_START_AFTER:  this.setStart(node.parentNode, index + 1);
       case _POSITION_END_BEFORE:   this.setEnd(node.parentNode, index);
       case _POSITION_END_AFTER:    this.setEnd(node.parentNode, index + 1);
+      case _POSITION_WHOLE_NODE:
+      {
+        this.setStart(node.parentNode, index);
+        this.setEnd(node.parentNode, index + 1);
+      }
     }
   }
 
@@ -224,6 +230,28 @@ class Range {
 	    this.startContainer = this.endContainer;
 	    this.startOffset    = this.endOffset;
     }
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-range-select
+   */
+  public function selectNode(node: Node): Void
+  {
+    this._setStartOrEndBeforeOrAfter(node, _POSITION_WHOLE_NODE);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-range-selectnodecontents
+   */
+  public function selectNodeContents(node: Node): Void
+  {
+    if (node == null)
+      throw (new DOMException("InvalidAccessError"));
+    if (node.parentNode == null)
+      throw (new DOMException("InvalidNodeTypeError"));
+
+    this.setStart(node, 0);
+    this.setEnd(node, node.childNodes.length);
   }
 
   public function new(startContainer: Node,
