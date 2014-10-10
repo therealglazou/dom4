@@ -46,6 +46,11 @@ class NodeList implements ArrayAccess<Node> {
 
   private var nodes: Array<Node>;
 
+  public function _getNodes(): Array<Node>
+  {
+    return this.nodes;
+  }
+
   /*
    * https://dom.spec.whatwg.org/#dom-nodelist-length
    */

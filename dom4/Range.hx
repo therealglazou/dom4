@@ -37,7 +37,7 @@
 
 package dom4;
 
-enum _Position {
+private enum _Position {
   _POSITION_WHOLE_NODE;
   _POSITION_START_BEFORE;
   _POSITION_START_AFTER;
@@ -50,6 +50,8 @@ enum _Position {
 
 class Range {
 
+  private var detached: Bool = false;
+  
   public var startContainer(default, null): Node;
   public var startOffset(default, null): UInt;
   public var endContainer(default, null): Node;
@@ -57,6 +59,8 @@ class Range {
   public var collapsed(get, null): Bool;
       private function get_collapsed(): Bool
       {
+		    if (this.detached)
+		      throw (new DOMException("InvalidStateError"));
         return (this.startContainer == this.endContainer
                 && this.startOffset == this.endOffset);
       }
@@ -64,6 +68,8 @@ class Range {
   public var commonAncestorContainer(get, null): Node;
       private function get_commonAncestorContainer(): Node
       {
+		    if (this.detached)
+		      throw (new DOMException("InvalidStateError"));
         var startAncestors: Array<Node> = [];
         var node = this.startContainer;
         while (node != null) {
@@ -93,6 +99,8 @@ class Range {
    */
   public function setStart(node: Node, offset: UInt): Void
   {
+    if (this.detached)
+      throw (new DOMException("InvalidStateError"));
     if (node == null)
       throw (new DOMException("InvalidAccessError"));
 
@@ -128,6 +136,8 @@ class Range {
    */
   public function setEnd(node: Node, offset: UInt): Void
   {
+    if (this.detached)
+      throw (new DOMException("InvalidStateError"));
     if (node == null)
       throw (new DOMException("InvalidAccessError"));
 
@@ -158,8 +168,13 @@ class Range {
     this.endOffset = offset;
   }
 
+  /*
+   * Helper for setStart*, setEnd* and selectNode
+   */
   private function _setStartOrEndBeforeOrAfter(node: Node, position: _Position): Void
   {
+    if (this.detached)
+      throw (new DOMException("InvalidStateError"));
     if (node == null)
       throw (new DOMException("InvalidAccessError"));
     if (node.parentNode == null)
@@ -222,6 +237,8 @@ class Range {
    */
   public function collapse(toStart: Bool): Void
   {
+    if (this.detached)
+      throw (new DOMException("InvalidStateError"));
     if (toStart) {
 	    this.endContainer = this.startContainer;
 	    this.endOffset =    this.startOffset;
@@ -245,6 +262,8 @@ class Range {
    */
   public function selectNodeContents(node: Node): Void
   {
+    if (this.detached)
+      throw (new DOMException("InvalidStateError"));
     if (node == null)
       throw (new DOMException("InvalidAccessError"));
     if (node.parentNode == null)
@@ -252,6 +271,41 @@ class Range {
 
     this.setStart(node, 0);
     this.setEnd(node, node.childNodes.length);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-range-deletecontents
+   */
+  public function deleteContents(): Void
+  {
+    if (this.detached)
+      throw (new DOMException("InvalidStateError"));
+    if (this.collapsed)
+      return;
+
+    var oStartNode   = this.startContainer;
+    var oStartOffset = this.startOffset;
+    var oEndNode     = this.endContainer;
+    var oEndOffset   = this.endOffset;
+
+    if (oStartNode == oEndNode
+        && (oStartNode.nodeType == Node.TEXT_NODE
+            || oStartNode.nodeType == Node.COMMENT_NODE
+            || oStartNode.nodeType == Node.PROCESSING_INSTRUCTION_NODE)) {
+      var cd = cast(oStartNode, CharacterData);
+      cd.data = cd.data.substr(0, oStartOffset) + cd.data.substr(oEndOffset);
+      return;
+    }
+
+    var nodesToRemove:Array<Node> = [];
+    // TBD
+  }
+
+  public function detach(): Void
+  {
+    if (this.detached)
+      throw (new DOMException("InvalidStateError"));
+    this.detached = true;
   }
 
   public function new(startContainer: Node,
@@ -262,5 +316,6 @@ class Range {
     this.startOffset = startOffset;
     this.endContainer = endContainer;
     this.endOffset = endOffset;
+    this.detached = false;
   }
 }

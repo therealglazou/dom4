@@ -47,6 +47,8 @@ class Document extends Node
    * https://dom.spec.whatwg.org/#interface-document
    */
 
+  public var _ranges: Array<Range> = [];
+
   /*
    * https://dom.spec.whatwg.org/#dom-document-implementation
    */
@@ -187,18 +189,6 @@ class Document extends Node
     return new HTMLCollection(rv);
   }
 
-  static public function _setNodeOwnerDocument(node: Node, doc: Document): Void
-  {
-    if (node == null)
-      return;
-    node.ownerDocument = doc;
-    var child = node.firstChild;
-    while (child != null) {
-      _setNodeOwnerDocument(child, doc);
-      child = child.nextSibling;
-    }
-  }
-
   /*
    * https://dom.spec.whatwg.org/#dom-document-adoptnode
    */
@@ -209,9 +199,8 @@ class Document extends Node
     if (node.nodeType == Node.DOCUMENT_NODE)
       throw (new DOMException("Not supported error"));
 
-    var oldDocument = node.ownerDocument;
     if (node.parentNode != null)
-      node.parentNode.removeChild(node);
+      node.parentNode._remove(node);
     _setNodeOwnerDocument(node, this);
 
     return node;
@@ -361,8 +350,33 @@ class Document extends Node
    * https://dom.spec.whatwg.org/#dom-document-createrange
    */
   public function createRange(): Range {
-    return (new Range(this, 0, this, 0));
+    var range = new Range(this, 0, this, 0);
+    this._ranges.push(range);
+    return range;
   }
+
+  public function _detachRange(r: Range): Void {
+    this._ranges.remove(r);
+  }
+
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  static public function _setNodeOwnerDocument(node: Node, doc: Document): Void
+  {
+    if (node == null)
+      return;
+    node.ownerDocument = doc;
+    var child = node.firstChild;
+    while (child != null) {
+      _setNodeOwnerDocument(child, doc);
+      child = child.nextSibling;
+    }
+  }
+
+  /**********************************************
+   * HELPERS DEFINED BY SPECIFICATION
+   **********************************************/
 
   public function new(?implementation: DOMImplementation = null) {
     super();

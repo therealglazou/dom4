@@ -38,6 +38,8 @@
 
 package dom4;
 
+import dom4.utils.MutationUtils;
+
 class Node extends EventTarget {
 
   /*
@@ -261,7 +263,7 @@ class Node extends EventTarget {
    */
   public function isEqualNode(node: Node): Bool
   {
-    // XXX must run in depth
+    // TBD must run in depth
     return (node == this);
   }
 
@@ -363,110 +365,7 @@ class Node extends EventTarget {
    * https://dom.spec.whatwg.org/#dom-node-insertbefore
    */
   public function insertBefore(node: Node, child: Node): Node {
-    switch (this.nodeType) {
-      case DOCUMENT_NODE
-           | DOCUMENT_FRAGMENT_NODE
-           | ELEMENT_NODE: {}
-      case _: throw (new DOMException("Hierarchy request error "));
-    }
-
-    if (child != null && child.parentNode != this)
-      throw (new DOMException("Not found error"));
-
-    switch (node.nodeType) {
-      case DOCUMENT_FRAGMENT_NODE
-           | DOCUMENT_TYPE_NODE
-           | ELEMENT_NODE
-           | TEXT_NODE
-           | PROCESSING_INSTRUCTION_NODE
-           | COMMENT_NODE: {}
-      case _: throw (new DOMException("Hierarchy request error"));
-    }
-
-    if ((node.nodeType == TEXT_NODE && this.nodeType == DOCUMENT_NODE)
-        || (node.nodeType == DOCUMENT_TYPE_NODE && this.nodeType != DOCUMENT_NODE))
-      throw (new DOMException("Hierarchy request error"));
-
-    if (this.nodeType == DOCUMENT_NODE) {
-      if (node.nodeType == DOCUMENT_FRAGMENT_NODE) {
-        var n = cast(node, ParentNode);
-        if (n.firstElementChild != null && n.firstElementChild != n.lastElementChild)
-          throw (new DOMException("Hierarchy request error"));
-        var currentNode = node.firstChild;
-        while (currentNode != null) {
-          if (currentNode.nodeType == TEXT_NODE)
-            throw (new DOMException("Hierarchy request error"));
-          currentNode = child.nextSibling;
-        }
-
-        if (n.firstElementChild != null
-            && (cast(this, ParentNode).firstElementChild != null
-                || (child != null && child.nodeType == DOCUMENT_TYPE_NODE)
-                || (child != null && child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE)))
-          throw (new DOMException("Hierarchy request error"));
-      }
-      else if (node.nodeType == ELEMENT_NODE) {
-        if (cast(this, ParentNode).firstElementChild != null
-            || (child != null && child.nodeType == DOCUMENT_TYPE_NODE)
-            || (child != null && child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE))
-          throw (new DOMException("Hierarchy request error"));
-      }
-      else if (node.nodeType == DOCUMENT_TYPE_NODE) {
-        var currentNode = this.firstChild;
-        var foundDoctypeInParent = false;
-        while (!foundDoctypeInParent && child != null) {
-          if (currentNode.nodeType == DOCUMENT_TYPE_NODE)
-            foundDoctypeInParent = true;
-          currentNode = currentNode.nextSibling;
-        }
-        if (foundDoctypeInParent
-            || (child != null && cast(child, NonDocumentTypeChildNode).previousElementSibling != null)
-            || (child == null && cast(child, ParentNode).firstElementChild != null))
-          throw (new DOMException("Hierarchy request error"));
-      }
-    }
-
-    var referenceChild = child;
-    if (referenceChild == node) {
-      referenceChild = node.nextSibling;
-    }
-
-    if (this.nodeType == DOCUMENT_NODE)
-      cast(this, Document).adoptNode(node);
-    else
-      this.ownerDocument.adoptNode(node);
-
-    function _doInsertBefore(n: Node) {
-      if (null != referenceChild) {
-        n.previousSibling = referenceChild.previousSibling;
-        referenceChild.previousSibling = n;
-      }
-      else {
-        n.previousSibling = this.lastChild;
-        this.lastChild = n;
-      }
-      if (null != n.previousSibling) {
-        n.previousSibling.nextSibling = n;
-      }
-      else {
-        this.firstChild = n;
-      }
-      n.parentNode = this;
-    }
-
-    node.nextSibling = referenceChild;
-    if (node.nodeType == DOCUMENT_FRAGMENT_NODE) {
-      while (node.firstChild != null) {
-        var f = node.firstChild;
-        node.removeChild(f);
-        _doInsertBefore(f);
-      }
-    }
-    else {
-        _doInsertBefore(node);
-    }
-
-    return node;
+    return this._preInsert(node, child);
   }
 
   /*
@@ -482,23 +381,8 @@ class Node extends EventTarget {
    */
   public function removeChild(child: Node): Node
   {
-    if (child == null || child.parentNode == null)
-      throw (new DOMException("Hierarchy request error"));
+    this._remove(child);
 
-    if (child.parentNode != this)
-      throw (new DOMException("Not found error"));
-
-    var parent = child.parentNode;
-    if (child.previousSibling != null)
-      child.previousSibling.nextSibling = child.nextSibling;
-    if (child.nextSibling != null)
-      child.nextSibling.previousSibling = child.previousSibling;
-    if (parent.firstChild == child)
-      parent.firstChild = child.nextSibling;
-    if (parent.lastChild == child)
-      parent.lastChild = null;
-
-    Document._setNodeOwnerDocument(child, null);
     return child;
   }
 
@@ -581,6 +465,283 @@ class Node extends EventTarget {
     return child;
   }
 
+  public function _doInsertBefore(n: Node, referenceChild: Node): Void
+  {
+	  if (null != referenceChild) {
+	    n.previousSibling = referenceChild.previousSibling;
+	    referenceChild.previousSibling = n;
+	  }
+	  else {
+	    n.previousSibling = this.lastChild;
+	    this.lastChild = n;
+	  }
+	  if (null != n.previousSibling) {
+	    n.previousSibling.nextSibling = n;
+	  }
+	  else {
+	    this.firstChild = n;
+	  }
+	  n.parentNode = this;
+	}
+
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  public var _childIndex(get, null): UInt;
+    private function get__childIndex(): UInt
+    {
+      // sanity check
+      if (this.parentNode == null)
+        throw (new DOMException("Hierarchy request error "));
+      var index = -1;
+      var node = this;
+      while (node != null) {
+        index++;
+        node = node.previousSibling;
+      }
+      return index;
+    }
+
+  /**********************************************
+   * HELPERS DEFINED BY SPECIFICATION
+   **********************************************/
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-node-ensure-pre-insertion-validity
+   */
+  public function _preInsertValidation(node:Node, child: Node): Void
+  {
+    switch (this.nodeType) {
+      case Node.DOCUMENT_NODE
+           | Node.DOCUMENT_FRAGMENT_NODE
+           | Node.ELEMENT_NODE: {}
+      case _: throw (new DOMException("Hierarchy request error "));
+    }
+
+    if (node._isInclusiveAncestor(this))
+      throw (new DOMException("Hierarchy request error "));
+
+    if (child != null && child.parentNode != this)
+      throw (new DOMException("Not found error"));
+
+    switch (node.nodeType) {
+      case Node.DOCUMENT_FRAGMENT_NODE
+           | Node.DOCUMENT_TYPE_NODE
+           | Node.ELEMENT_NODE
+           | Node.TEXT_NODE
+           | Node.PROCESSING_INSTRUCTION_NODE
+           | Node.COMMENT_NODE: {}
+      case _: throw (new DOMException("Hierarchy request error"));
+    }
+
+    if ((node.nodeType == Node.TEXT_NODE
+         && this.nodeType == Node.DOCUMENT_NODE)
+        || (node.nodeType == Node.DOCUMENT_TYPE_NODE
+            && this.nodeType != Node.DOCUMENT_NODE))
+      throw (new DOMException("Hierarchy request error"));
+
+    if (this.nodeType == Node.DOCUMENT_NODE) {
+      if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
+        var n = cast(node, ParentNode);
+        if (n.firstElementChild != null && n.firstElementChild != n.lastElementChild)
+          throw (new DOMException("Hierarchy request error"));
+        var currentNode = node.firstChild;
+        while (currentNode != null) {
+          if (currentNode.nodeType == Node.TEXT_NODE)
+            throw (new DOMException("Hierarchy request error"));
+          currentNode = child.nextSibling;
+        }
+
+        if (n.firstElementChild != null
+            && (cast(this, ParentNode).firstElementChild != null
+                || (child != null
+                    && child.nodeType == Node.DOCUMENT_TYPE_NODE)
+                || (child != null
+                    && child.nextSibling != null
+                    && child.nextSibling.nodeType == Node.DOCUMENT_TYPE_NODE)))
+          throw (new DOMException("Hierarchy request error"));
+      }
+      else if (node.nodeType == Node.ELEMENT_NODE) {
+        if (cast(this, ParentNode).firstElementChild != null
+            || (child != null
+                && child.nodeType == Node.DOCUMENT_TYPE_NODE)
+            || (child != null
+                && child.nextSibling != null
+                && child.nextSibling.nodeType == Node.DOCUMENT_TYPE_NODE))
+          throw (new DOMException("Hierarchy request error"));
+      }
+      else if (node.nodeType == Node.DOCUMENT_TYPE_NODE) {
+        var currentNode = this.firstChild;
+        var foundDoctypeInParent = false;
+        while (!foundDoctypeInParent
+               && child != null) {
+          if (currentNode.nodeType == Node.DOCUMENT_TYPE_NODE)
+            foundDoctypeInParent = true;
+          currentNode = currentNode.nextSibling;
+        }
+        if (foundDoctypeInParent
+            || (child != null
+                && cast(child, NonDocumentTypeChildNode).previousElementSibling != null)
+            || (child == null
+                && cast(child, ParentNode).firstElementChild != null))
+          throw (new DOMException("Hierarchy request error"));
+      }
+    }
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-tree-inclusive-ancestor
+   */
+  public function _isInclusiveAncestor(refNode: Node): Bool
+  {
+    if (refNode.parentNode == null)
+      return false;
+    var currentNode = refNode.parentNode;
+    while (currentNode != null) {
+      if (currentNode == this)
+        return true;
+      currentNode = currentNode.parentNode;
+    }
+    return false;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-tree-inclusive-descendant
+   */
+  public function _isInclusiveDescendant(refNode: Node): Bool
+  {
+    var currentNode = this;
+    while (currentNode != null) {
+      if (currentNode == refNode)
+        return true;
+      currentNode = currentNode.parentNode;
+    }
+    return false;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-node-pre-insert
+   * 
+   */
+  public function _preInsert(node:Node, child: Node): Node
+  {
+    this._preInsertValidation(node, child);
+
+    var referenceChild = child;
+    if (referenceChild == node)
+      referenceChild = node.nextSibling;
+
+    if (this.nodeType == Node.DOCUMENT_NODE)
+      cast(this, Document).adoptNode(node);
+    else
+      this.ownerDocument.adoptNode(node);
+
+    this._insert(node, referenceChild);
+    return node;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-node-insert
+   */
+  public function _insert(node:Node, child:Node, ?suppressObservers: Bool = false): Void
+  {
+    // STEP 1
+    var count = ((node.nodeType == Node.DOCUMENT_FRAGMENT_NODE)
+                 ? node.childNodes.length
+                 : 1);
+    // STEP 2
+    if (child != null) {
+      var index = child._childIndex;
+      var ranges = this.ownerDocument._ranges;
+      // STEP 2.1
+      ranges.map(function(r) {
+          if (r.startContainer == this && r.startOffset > index)
+            r.setStart(r.startContainer, r.startOffset + count);
+        });
+      // STEP 2.2
+      ranges.map(function(r) {
+          if (r.endContainer == this && r.endOffset > index)
+            r.setEnd(r.endContainer, r.endOffset + count);
+        });
+    }
+
+    // STEP 3
+    var nodes = ((node.nodeType == Node.DOCUMENT_FRAGMENT_NODE)
+                 ? node.childNodes._getNodes().copy()
+                 : [node]);
+    // STEP 4
+    if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
+      MutationUtils.queueMutationRecord(node, "childList", null, null, null, null, nodes, null, null);
+    }
+    // STEP 5
+    if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
+      node._removeChildren(true);
+    }
+    // STEP 6
+    if (!suppressObservers) {
+      MutationUtils.queueMutationRecord(this, "childList", null, null, null, nodes, null,
+                                        ((child == null) ? this.lastChild : child.previousSibling),
+                                        child);
+    }
+    // STEP 7
+    nodes.map(function(n){
+      this._doInsertBefore(n, child);
+    });
+  }
+
+  public function _removeChildren(?suppressObservers: Bool = false): Void
+  {
+    while (this.firstChild != null) {
+      this._remove(this.firstChild, suppressObservers);
+    }
+  }
+
+  public function _remove(node: Node, ?suppressObservers: Bool = false): Void
+  {
+    // STEP 1
+    var index = node._childIndex;
+
+    var ranges = this.ownerDocument._ranges;
+    // STEP 2
+    ranges.map(function(r) {
+        if (r.startContainer._isInclusiveDescendant(node))
+          r.setStart(this, index);
+      });
+    // STEP 3
+    ranges.map(function(r) {
+        if (r.endContainer._isInclusiveDescendant(node))
+          r.setEnd(this, index);
+      });
+    // STEP 4
+    ranges.map(function(r) {
+        if (r.startContainer == this && r.startOffset > index)
+          r.setStart(r.startContainer, r.startOffset - 1);
+      });
+    // STEP 5
+    ranges.map(function(r) {
+        if (r.endContainer == this && r.endOffset > index)
+          r.setEnd(r.endContainer, r.endOffset - 1);
+      });
+    // STEP 6
+    var oldPreviousSibling = node.previousSibling;
+    // STEP 7
+    if (!suppressObservers) {
+      MutationUtils.queueMutationRecord(this, "childList", null, null, null, null, [node],
+                                        node.nextSibling,
+                                        oldPreviousSibling);
+    }
+    // STEP 8 TBD
+    // STEP 9
+    if (node.previousSibling != null)
+      node.previousSibling.nextSibling = node.nextSibling;
+    if (node.nextSibling != null)
+      node.nextSibling.previousSibling = node.previousSibling;
+    if (this.firstChild == node)
+      this.firstChild = node.nextSibling;
+    if (this.lastChild == node)
+      this.lastChild = null;
+  }
+  
   public function new() {
     super();
   }
