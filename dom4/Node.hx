@@ -395,11 +395,11 @@ class Node extends EventTarget {
       case DOCUMENT_NODE
            | DOCUMENT_FRAGMENT_NODE
            | ELEMENT_NODE: {}
-      case _: throw (new DOMException("Hierarchy request error "));
+      case _: throw (new DOMException("HierarchyRequestError"));
     }
 
     if (child != null && child.parentNode != this)
-      throw (new DOMException("Not found error"));
+      throw (new DOMException("NotFoundError"));
 
     switch (node.nodeType) {
       case DOCUMENT_FRAGMENT_NODE
@@ -408,35 +408,35 @@ class Node extends EventTarget {
            | TEXT_NODE
            | PROCESSING_INSTRUCTION_NODE
            | COMMENT_NODE: {}
-      case _: throw (new DOMException("Hierarchy request error"));
+      case _: throw (new DOMException("HierarchyRequestError"));
     }
 
     if ((node.nodeType == TEXT_NODE && this.nodeType == DOCUMENT_NODE)
         || (node.nodeType == DOCUMENT_TYPE_NODE && this.nodeType != DOCUMENT_NODE))
-      throw (new DOMException("Hierarchy request error"));
+      throw (new DOMException("HierarchyRequestError"));
 
     var t = cast(this, ParentNode);
     if (this.nodeType == DOCUMENT_NODE) {
       if (node.nodeType == DOCUMENT_FRAGMENT_NODE) {
         var n = cast(node, ParentNode);
         if (n.firstElementChild != null && n.firstElementChild != n.lastElementChild)
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
         var currentNode = node.firstChild;
         while (currentNode != null) {
           if (currentNode.nodeType == TEXT_NODE)
-            throw (new DOMException("Hierarchy request error"));
+            throw (new DOMException("HierarchyRequestError"));
           currentNode = child.nextSibling;
         }
 
         if (n.firstElementChild != null
             && ((t.firstElementChild != null && t.firstElementChild != child)
                 || (child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE)))
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
       }
       else if (node.nodeType == ELEMENT_NODE) {
         if ((t.firstElementChild != null && t.firstElementChild != child)
             || (child.nextSibling != null && child.nextSibling.nodeType == DOCUMENT_TYPE_NODE))
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
       }
       else if (node.nodeType == DOCUMENT_TYPE_NODE) {
         var currentNode = this.firstChild;
@@ -448,7 +448,7 @@ class Node extends EventTarget {
         }
         if (foundDoctypeInParent
             || (child == null && cast(child, ParentNode) != null && cast(child, ParentNode).firstElementChild != null))
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
       }
     }
 
@@ -492,7 +492,7 @@ class Node extends EventTarget {
     {
       // sanity check
       if (this.parentNode == null)
-        throw (new DOMException("Hierarchy request error "));
+        throw (new DOMException("HierarchyRequestError"));
       var index = -1;
       var node = this;
       while (node != null) {
@@ -515,14 +515,14 @@ class Node extends EventTarget {
       case Node.DOCUMENT_NODE
            | Node.DOCUMENT_FRAGMENT_NODE
            | Node.ELEMENT_NODE: {}
-      case _: throw (new DOMException("Hierarchy request error "));
+      case _: throw (new DOMException("HierarchyRequestError"));
     }
 
     if (node._isInclusiveAncestor(this))
-      throw (new DOMException("Hierarchy request error "));
+      throw (new DOMException("HierarchyRequestError"));
 
     if (child != null && child.parentNode != this)
-      throw (new DOMException("Not found error"));
+      throw (new DOMException("NotFoundError"));
 
     switch (node.nodeType) {
       case Node.DOCUMENT_FRAGMENT_NODE
@@ -531,24 +531,24 @@ class Node extends EventTarget {
            | Node.TEXT_NODE
            | Node.PROCESSING_INSTRUCTION_NODE
            | Node.COMMENT_NODE: {}
-      case _: throw (new DOMException("Hierarchy request error"));
+      case _: throw (new DOMException("HierarchyRequestError"));
     }
 
     if ((node.nodeType == Node.TEXT_NODE
          && this.nodeType == Node.DOCUMENT_NODE)
         || (node.nodeType == Node.DOCUMENT_TYPE_NODE
             && this.nodeType != Node.DOCUMENT_NODE))
-      throw (new DOMException("Hierarchy request error"));
+      throw (new DOMException("HierarchyRequestError"));
 
     if (this.nodeType == Node.DOCUMENT_NODE) {
       if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
         var n = cast(node, ParentNode);
         if (n.firstElementChild != null && n.firstElementChild != n.lastElementChild)
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
         var currentNode = node.firstChild;
         while (currentNode != null) {
           if (currentNode.nodeType == Node.TEXT_NODE)
-            throw (new DOMException("Hierarchy request error"));
+            throw (new DOMException("HierarchyRequestError"));
           currentNode = child.nextSibling;
         }
 
@@ -559,7 +559,7 @@ class Node extends EventTarget {
                 || (child != null
                     && child.nextSibling != null
                     && child.nextSibling.nodeType == Node.DOCUMENT_TYPE_NODE)))
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
       }
       else if (node.nodeType == Node.ELEMENT_NODE) {
         if (cast(this, ParentNode).firstElementChild != null
@@ -568,7 +568,7 @@ class Node extends EventTarget {
             || (child != null
                 && child.nextSibling != null
                 && child.nextSibling.nodeType == Node.DOCUMENT_TYPE_NODE))
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
       }
       else if (node.nodeType == Node.DOCUMENT_TYPE_NODE) {
         var currentNode = this.firstChild;
@@ -584,7 +584,7 @@ class Node extends EventTarget {
                 && cast(child, NonDocumentTypeChildNode).previousElementSibling != null)
             || (child == null
                 && cast(child, ParentNode).firstElementChild != null))
-          throw (new DOMException("Hierarchy request error"));
+          throw (new DOMException("HierarchyRequestError"));
       }
     }
   }

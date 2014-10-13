@@ -72,9 +72,9 @@ class DOMTokenList implements ArrayAccess<DOMString> {
   public function contains(token: DOMString): Bool
   {
     if (token == "")
-      throw (new DOMException("Syntax error"));
+      throw (new DOMException("SyntaxError"));
     if (SPACE_MATCHING_EREG.match(token))
-      throw (new DOMException("Invalid character error"));
+      throw (new DOMException("InvalidCharacterError"));
     return (-1 != this.stringArray.indexOf(token));
   }
 
@@ -86,9 +86,9 @@ class DOMTokenList implements ArrayAccess<DOMString> {
     var a:Array<String> = tokens; 
     for (token in a) {
       if (token == "")
-        throw (new DOMException("Syntax error"));
+        throw (new DOMException("SyntaxError"));
       if (SPACE_MATCHING_EREG.match(token))
-        throw (new DOMException("Invalid character error"));
+        throw (new DOMException("InvalidCharacterError"));
       if (!this.contains(token))
         this.stringArray.push(token);
     }
@@ -110,9 +110,9 @@ class DOMTokenList implements ArrayAccess<DOMString> {
     var a:Array<String> = tokens; 
     for (token in a) {
       if (token == "")
-        throw (new DOMException("Syntax error"));
+        throw (new DOMException("SyntaxError"));
       if (SPACE_MATCHING_EREG.match(token))
-        throw (new DOMException("Invalid character error"));
+        throw (new DOMException("InvalidCharacterError"));
       this.stringArray = this.stringArray.filter(function(f) {
         return (f != token);
       });

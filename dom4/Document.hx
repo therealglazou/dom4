@@ -196,9 +196,9 @@ class Document extends Node
   public function adoptNode(node: Node): Node
   {
     if (node == null)
-      throw (new DOMException("Hierarchy request error"));
+      throw (new DOMException("HierarchyRequestError"));
     if (node.nodeType == Node.DOCUMENT_NODE)
-      throw (new DOMException("Not supported error"));
+      throw (new DOMException("NotSupportedError"));
 
     if (node.parentNode != null)
       node.parentNode._remove(node);

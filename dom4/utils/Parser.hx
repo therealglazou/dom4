@@ -344,7 +344,7 @@ class Parser
       return p;
     }
 
-    throw (new DOMException("Unexpected end"));
+    throw (new DOMException("Unexpected end error"));
   }
 
   static inline function isValidChar(c) {
