@@ -68,7 +68,7 @@ class ParentNodeImpl {
     // STEP 3
     if (nodes.length > 1) {
       node = doc.createDocumentFragment();
-      nodes.map(function(n){
+      nodes.map(function(n) {
         node.appendChild(n);
       });
     }

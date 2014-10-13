@@ -59,8 +59,8 @@ class Range {
   public var collapsed(get, null): Bool;
       private function get_collapsed(): Bool
       {
-		    if (this.detached)
-		      throw (new DOMException("InvalidStateError"));
+	     if (this.detached)
+	       throw (new DOMException("InvalidStateError"));
         return (this.startContainer == this.endContainer
                 && this.startOffset == this.endOffset);
       }
@@ -68,8 +68,8 @@ class Range {
   public var commonAncestorContainer(get, null): Node;
       private function get_commonAncestorContainer(): Node
       {
-		    if (this.detached)
-		      throw (new DOMException("InvalidStateError"));
+	     if (this.detached)
+	       throw (new DOMException("InvalidStateError"));
         var startAncestors: Array<Node> = [];
         var node = this.startContainer;
         while (node != null) {
@@ -240,12 +240,12 @@ class Range {
     if (this.detached)
       throw (new DOMException("InvalidStateError"));
     if (toStart) {
-	    this.endContainer = this.startContainer;
-	    this.endOffset =    this.startOffset;
+     this.endContainer = this.startContainer;
+     this.endOffset =    this.startOffset;
     }
     else {
-	    this.startContainer = this.endContainer;
-	    this.startOffset    = this.endOffset;
+     this.startContainer = this.endContainer;
+     this.startOffset    = this.endOffset;
     }
   }
 

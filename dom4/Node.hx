@@ -465,21 +465,21 @@ class Node extends EventTarget {
 
   public function _doInsertBefore(n: Node, referenceChild: Node): Void
   {
-	  if (null != referenceChild) {
-	    n.previousSibling = referenceChild.previousSibling;
-	    referenceChild.previousSibling = n;
-	  }
-	  else {
-	    n.previousSibling = this.lastChild;
-	    this.lastChild = n;
-	  }
-	  if (null != n.previousSibling) {
-	    n.previousSibling.nextSibling = n;
-	  }
-	  else {
-	    this.firstChild = n;
-	  }
-	  n.parentNode = this;
+    if (null != referenceChild) {
+      n.previousSibling = referenceChild.previousSibling;
+      referenceChild.previousSibling = n;
+    }
+    else {
+      n.previousSibling = this.lastChild;
+      this.lastChild = n;
+    }
+    if (null != n.previousSibling) {
+      n.previousSibling.nextSibling = n;
+    }
+    else {
+      this.firstChild = n;
+    }
+    n.parentNode = this;
 	}
 
   /**********************************************
