@@ -37,12 +37,14 @@
 
 
 package dom4;
+
 import dom4.utils.Either;
 import dom4.utils.Namespaces;
 
 class Element extends Node
               implements ParentNode
-              implements NonDocumentTypeChildNode {
+              implements NonDocumentTypeChildNode
+              implements ChildNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-element
@@ -282,6 +284,49 @@ class Element extends Node
   public function queryAll(relativeSelectors: DOMString): Elements {throw (new DOMException("Not yet implemented")); }
   public function querySelector(selectors: DOMString): Element     {throw (new DOMException("Not yet implemented")); }
   public function querySelectorAll(selectors: DOMString): NodeList {throw (new DOMException("Not yet implemented")); }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-before
+   */
+  public function before(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.insertBefore(node, this);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-after
+   */
+  public function after(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.insertBefore(node, this.nextSibling);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-replace
+   */
+  public function replace(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.replaceChild(node, this);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-remove
+   */
+  public function remove(): Void
+  {
+    if (this.parentNode == null)
+      return;
+    this.parentNode.removeChild(this);
+  }
 
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();

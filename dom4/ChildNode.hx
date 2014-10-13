@@ -37,11 +37,31 @@
 
 package dom4;
 
+import dom4.utils.Either;
+
 /*
- * STUB
+ * https://dom.spec.whatwg.org/#interface-nondocumenttypechildnode
  */
 
-class ChildNode {
-  
-  public function new() {}
+interface ChildNode {
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-before
+   */
+  public function before(nodes: Array<Either<Node, DOMString>>): Void;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-after
+   */
+  public function after(nodes: Array<Either<Node, DOMString>>): Void;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-replace
+   */
+  public function replace(nodes: Array<Either<Node, DOMString>>): Void;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-remove
+   */
+  public function remove(): Void;
 }

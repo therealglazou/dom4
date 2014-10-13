@@ -52,8 +52,11 @@ class ParentNodeImpl {
   /*
    * https://dom.spec.whatwg.org/#mutation-method-macro
    */
-  static private function _mutationMethod(doc: Document, nodes: Array<Either<Node, DOMString>>): Node
+  static public function _mutationMethod(refNode: Node, nodes: Array<Either<Node, DOMString>>): Node
   {
+    var doc = (refNode.nodeType == Node.DOCUMENT_NODE)
+              ? cast(refNode, Document)
+              : refNode.ownerDocument;
     // STEP 1
     var node: Node = null;
     // STEP 2
@@ -138,10 +141,7 @@ class ParentNodeImpl {
       return;
 
     // STEP 1
-    var node = ParentNodeImpl._mutationMethod((refNode.nodeType == Node.DOCUMENT_NODE)
-                                              ? cast(refNode, Document)
-                                              : refNode.ownerDocument,
-                                              nodes);
+    var node = ParentNodeImpl._mutationMethod(refNode, nodes);
     refNode.insertBefore(node, refNode.firstChild);
   }  
 
@@ -157,10 +157,7 @@ class ParentNodeImpl {
       return;
 
     // STEP 1
-    var node = ParentNodeImpl._mutationMethod((refNode.nodeType == Node.DOCUMENT_NODE)
-                                              ? cast(refNode, Document)
-                                              : refNode.ownerDocument,
-                                              nodes);
+    var node = ParentNodeImpl._mutationMethod(refNode, nodes);
     refNode.appendChild(node);
   }  
 }

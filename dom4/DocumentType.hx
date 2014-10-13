@@ -37,10 +37,13 @@
 
 package dom4;
 
+import dom4.utils.Either;
+
 /*
  * http://www.w3.org/TR/domcore/#interface-domimplementation
  */
-class DocumentType extends Node {
+class DocumentType extends Node
+                   implements ChildNode {
 
   /*
    * https://dom.spec.whatwg.org/#interface-documenttype
@@ -60,6 +63,49 @@ class DocumentType extends Node {
    * https://dom.spec.whatwg.org/#dom-documenttype-systemid
    */
   public var systemId(default, null): DOMString;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-before
+   */
+  public function before(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.insertBefore(node, this);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-after
+   */
+  public function after(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.insertBefore(node, this.nextSibling);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-replace
+   */
+  public function replace(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.replaceChild(node, this);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-remove
+   */
+  public function remove(): Void
+  {
+    if (this.parentNode == null)
+      return;
+    this.parentNode.removeChild(this);
+  }
 
   public function new(name: DOMString, publicId: DOMString, systemId: DOMString) {
     super();

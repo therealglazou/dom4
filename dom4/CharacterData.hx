@@ -38,8 +38,11 @@
 
 package dom4;
 
+import dom4.utils.Either;
+
 class CharacterData extends Node
-                    implements NonDocumentTypeChildNode {
+                    implements NonDocumentTypeChildNode
+                    implements ChildNode{
 
   /*
    * https://dom.spec.whatwg.org/#characterdata
@@ -68,6 +71,49 @@ class CharacterData extends Node
       {
         return NonDocumentTypeChildNodeImpl.nextElementSibling(this);
       }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-before
+   */
+  public function before(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.insertBefore(node, this);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-after
+   */
+  public function after(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.insertBefore(node, this.nextSibling);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-replace
+   */
+  public function replace(nodes: Array<Either<Node, DOMString>>): Void
+  {
+    if (this.parentNode == null)
+      return;
+    var node = ParentNodeImpl._mutationMethod(this, nodes);
+    this.parentNode.replaceChild(node, this);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-childnode-remove
+   */
+  public function remove(): Void
+  {
+    if (this.parentNode == null)
+      return;
+    this.parentNode.removeChild(this);
+  }
 
   public function new(v: DOMString) {
     super();
