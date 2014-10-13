@@ -726,7 +726,8 @@ class Node extends EventTarget {
     var oldPreviousSibling = node.previousSibling;
     // STEP 7
     if (!suppressObservers) {
-      MutationUtils.queueMutationRecord(this, "childList", null, null, null, null, [node],
+      MutationUtils.queueMutationRecord(this, "childList", null, null, null
+                                        null, [node],
                                         node.nextSibling,
                                         oldPreviousSibling);
     }
