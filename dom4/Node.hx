@@ -480,7 +480,7 @@ class Node extends EventTarget {
       this.firstChild = n;
     }
     n.parentNode = this;
-	}
+  }
 
   /**********************************************
    * IMPLEMENTATION HELPERS
