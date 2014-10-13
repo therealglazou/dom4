@@ -38,6 +38,7 @@
 
 package dom4;
 import dom4.utils.Either;
+import dom4.utils.Namespaces;
 
 class Element extends Node
               implements ParentNode
@@ -71,7 +72,7 @@ class Element extends Node
         var qualifiedName = this.localName;
         if (this.prefix != "")
           qualifiedName = this.prefix + ":" + this.localName;
-        if (this.namespaceURI == DOMImplementation.HTML_NAMESPACE
+        if (this.namespaceURI == Namespaces.HTML_NAMESPACE
             && this.ownerDocument.documentElement != null
             && this.ownerDocument.documentElement.localName.toLowerCase() == "html")
           qualifiedName = qualifiedName.toUpperCase();
@@ -143,11 +144,7 @@ class Element extends Node
    */
   public function setAttribute(name: DOMString, value: DOMString): Void
   {
-    if (!DOMImplementation.NAME_EREG.match(name))
-      throw (new DOMException("Invalid character error"));
-
-    if (!DOMImplementation.PREFIXED_NAME_EREG.match(name))
-      throw (new DOMException("Namespace error"));
+    Namespaces._validateQualifiedName(name);
 
     var matching = this.attributes.getNamedItem(name);
     if (matching != null) {
@@ -163,41 +160,9 @@ class Element extends Node
    */
   public function setAttributeNS(?namespace: DOMString, name: DOMString, value:DOMString): Void
   {
-    if (namespace == "")
-      namespace = null;
+    var v = Namespaces._validateAndExtract(namespace, name);
 
-    if (!DOMImplementation.NAME_EREG.match(name))
-      throw (new DOMException("Invalid character error"));
-
-    if (!DOMImplementation.PREFIXED_NAME_EREG.match(name))
-      throw (new DOMException("Namespace error"));
-
-    var prefix = null;
-    var localName = name;
-
-    var colonPosition = name.indexOf(":");
-    if (colonPosition != -1) {
-      prefix = name.substr(0, colonPosition);
-      localName = name.substr(colonPosition + 1);
-    }
-
-    if (prefix != null && namespace == null)
-      throw (new DOMException("Namespace error"));
-      
-    if (prefix == "xml" && namespace != DOMImplementation.XML_NAMESPACE)
-      throw (new DOMException("Namespace error"));
-
-    if (namespace != DOMImplementation.XMLNS_NAMESPACE
-        && (name == "xmlns"
-            || prefix == "xmlns"))
-      throw (new DOMException("Namespace error"));
-
-    if (namespace == DOMImplementation.XMLNS_NAMESPACE
-        && name != "xmlns"
-        && prefix != "xmlns")
-      throw (new DOMException("Namespace error"));
-
-    var attr = new Attr(namespace, prefix, localName, value);
+    var attr = new Attr(v.namespace, v.prefix, v.localName, value);
     this.attributes.setNamedItem(attr);
   }
 

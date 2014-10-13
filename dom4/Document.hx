@@ -38,6 +38,7 @@
 
 package dom4;
 import dom4.utils.Either;
+import dom4.utils.Namespaces;
 
 class Document extends Node
                implements ParentNode
@@ -211,41 +212,9 @@ class Document extends Node
    */
   public function createElementNS(namespace: DOMString, qualifiedName: DOMString): Element
   {
-    if (namespace == "")
-      namespace = null;
+    var v = Namespaces._validateAndExtract(namespace, qualifiedName);
 
-    if (!DOMImplementation.NAME_EREG.match(qualifiedName))
-      throw (new DOMException("Invalid character error"));
-
-    if (!DOMImplementation.PREFIXED_NAME_EREG.match(qualifiedName))
-      throw (new DOMException("Namespace error"));
-
-    var prefix = null;
-    var localName = qualifiedName;
-
-    var colonPosition = qualifiedName.indexOf(":");
-    if (colonPosition != -1) {
-      prefix = qualifiedName.substr(0, colonPosition);
-      localName = qualifiedName.substr(colonPosition + 1);
-    }
-
-    if (prefix != null && namespace == null)
-      throw (new DOMException("Namespace error"));
-      
-    if (prefix == "xml" && namespace != DOMImplementation.XML_NAMESPACE)
-      throw (new DOMException("Namespace error"));
-
-    if (namespace != DOMImplementation.XMLNS_NAMESPACE
-        && (qualifiedName == "xmlns"
-            || prefix == "xmlns"))
-      throw (new DOMException("Namespace error"));
-
-    if (namespace == DOMImplementation.XMLNS_NAMESPACE
-        && qualifiedName != "xmlns"
-        && prefix != "xmlns")
-      throw (new DOMException("Namespace error"));
-
-    var e = new Element(namespace, localName, prefix);
+    var e = new Element(v.namespace, v.localName, v.prefix);
     e.ownerDocument = this;
     return e;
   }
@@ -255,15 +224,14 @@ class Document extends Node
    */
   public function createElement(localName: DOMString): Element
   {
-    if (!DOMImplementation.NAME_EREG.match(localName))
-      throw (new DOMException("Invalid character error"));
+    Namespaces._validateAsXMLName(localName);
 
     if (this.ownerDocument.documentElement != null
-        && this.ownerDocument.documentElement.namespaceURI == DOMImplementation.HTML_NAMESPACE
+        && this.ownerDocument.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE
         && this.ownerDocument.documentElement.localName.toLowerCase() == "html")
       localName = localName.toLowerCase();
 
-    var e = new Element(DOMImplementation.HTML_NAMESPACE, localName, "");
+    var e = new Element(Namespaces.HTML_NAMESPACE, localName, "");
     e.ownerDocument = this;
     return e;
   }
@@ -293,10 +261,11 @@ class Document extends Node
    */
   public function createProcessingInstruction(target: DOMString, data: DOMString): ProcessingInstruction
   {
-    if (!DOMImplementation.NAME_EREG.match(target))
-      throw (new DOMException("Invalid character error"));
+    Namespaces._validateAsXMLName(target);
+
     if (data.indexOf("?>") != -1)
       throw (new DOMException("Invalid character error"));
+
     var pi = new ProcessingInstruction(target, data);
     pi.ownerDocument = this;
     return pi;

@@ -590,6 +590,17 @@ class Node extends EventTarget {
   }
 
   /*
+   * https://dom.spec.whatwg.org/#concept-tree-host-including-inclusive-ancestor
+   */
+  public function _isHostIncludingInclusiveAncestor(refNode: Node): Bool
+  {
+    /*
+     * XXX this is not implemented for the time being
+     */
+    return this._isInclusiveAncestor(refNode);
+  }
+
+  /*
    * https://dom.spec.whatwg.org/#concept-tree-inclusive-ancestor
    */
   public function _isInclusiveAncestor(refNode: Node): Bool
@@ -726,7 +737,7 @@ class Node extends EventTarget {
     var oldPreviousSibling = node.previousSibling;
     // STEP 7
     if (!suppressObservers) {
-      MutationUtils.queueMutationRecord(this, "childList", null, null, null
+      MutationUtils.queueMutationRecord(this, "childList", null, null, null,
                                         null, [node],
                                         node.nextSibling,
                                         oldPreviousSibling);
