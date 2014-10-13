@@ -38,10 +38,25 @@
 package dom4;
 
 /*
- * STUB
+ * https://dom.spec.whatwg.org/#elements
  */
 
-class Elements {
-  
-  public function new() {}
+@:forward(length, concat, copy, filter, indexOf, insert, iterator, join, lastIndexOf, map, pop, push, remove, reverse, shift, slice, sort, splice, toString, unshift)
+abstract Elements(Array<Element>) {
+
+  public inline function new() {
+    this = [];
+  }
+
+  public function query(relativeSelectors: DOMString): Element
+  {
+    throw (new DOMException("Not yet implemented"));
+  }
+
+  public function queryAll(relativeSelectors: DOMString): Elements
+  {
+    throw (new DOMException("Not yet implemented"));
+  }
+
+  @:arrayAccess public inline function __get(key:UInt) return this[key];
 }
