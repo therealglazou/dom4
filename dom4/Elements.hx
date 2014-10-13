@@ -48,11 +48,17 @@ abstract Elements(Array<Element>) {
     this = [];
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-elements-query
+   */
   public function query(relativeSelectors: DOMString): Element
   {
     throw (new DOMException("Not yet implemented"));
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-elements-queryall
+   */
   public function queryAll(relativeSelectors: DOMString): Elements
   {
     throw (new DOMException("Not yet implemented"));
