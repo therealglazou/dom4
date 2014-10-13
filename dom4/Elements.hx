@@ -41,25 +41,19 @@ package dom4;
  * https://dom.spec.whatwg.org/#elements
  */
 
-@:forward(length, concat, copy, filter, indexOf, insert, iterator, join, lastIndexOf, map, pop, push, remove, reverse, shift, slice, sort, splice, toString, unshift)
+@:forward()
 abstract Elements(Array<Element>) {
 
   public inline function new() {
     this = [];
   }
 
-  /*
-   * https://dom.spec.whatwg.org/#dom-elements-query
-   */
   public function query(relativeSelectors: DOMString): Element
   {
     // TBD
     throw (new DOMException("Not yet implemented"));
   }
 
-  /*
-   * https://dom.spec.whatwg.org/#dom-elements-queryall
-   */
   public function queryAll(relativeSelectors: DOMString): Elements
   {
     // TBD
