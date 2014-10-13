@@ -53,6 +53,7 @@ abstract Elements(Array<Element>) {
    */
   public function query(relativeSelectors: DOMString): Element
   {
+    // TBD
     throw (new DOMException("Not yet implemented"));
   }
 
@@ -61,6 +62,7 @@ abstract Elements(Array<Element>) {
    */
   public function queryAll(relativeSelectors: DOMString): Elements
   {
+    // TBD
     throw (new DOMException("Not yet implemented"));
   }
 
