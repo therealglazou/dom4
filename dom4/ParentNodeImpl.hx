@@ -36,6 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 package dom4;
+
 import dom4.utils.Either;
 
 class ParentNodeImpl {
@@ -43,6 +44,39 @@ class ParentNodeImpl {
   /*
    * https://dom.spec.whatwg.org/#interface-parentnode
    */
+
+  /**********************************************
+   * HELPERS DEFINED BY SPECIFICATION
+   **********************************************/
+
+  /*
+   * https://dom.spec.whatwg.org/#mutation-method-macro
+   */
+  static private function _mutationMethod(doc: Document, nodes: Array<Either<Node, DOMString>>): Node
+  {
+    // STEP 1
+    var node: Node = null;
+    // STEP 2
+    for (index in 0...nodes.length) {
+      if (Std.is(nodes[index], DOMString)) {
+        nodes[index] = doc.createTextNode(nodes[index]);
+      }
+    }
+    // STEP 3
+    if (nodes.length > 1) {
+      node = doc.createDocumentFragment();
+      nodes.map(function(n){
+        node.appendChild(n);
+      });
+    }
+    else
+      node = nodes[0];
+    return node;
+  }
+
+  /**********************************************
+   * IDL
+   **********************************************/
 
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
@@ -95,44 +129,38 @@ class ParentNodeImpl {
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-prepend
    */
-  static public function prepend(refNode: Node, nodes: Either<Node, Array<Node>>): Void
+  static public function prepend(refNode: Node, nodes: Array<Either<Node, DOMString>>): Void
   {
-    if (Std.is(nodes, Node)) {
-      refNode.insertBefore(nodes, refNode.firstChild);
+    // extra sanity case
+    if (null == refNode)
+      throw (new DOMException("HierarchyRequestError"));
+    if (nodes.length == 0)
       return;
-    }
 
-    var nodesAsNodesArray: Array<Node> = nodes;
-    var index = nodesAsNodesArray.length - 1;
-    while (index >= 0) {
-      if (null == nodes[index])
-        throw (new DOMException("Hierarchy request error"));
-      index--;
-    }
-    index = nodesAsNodesArray.length - 1;
-    while (index >= 0) {
-      refNode.insertBefore(nodes[index], refNode.firstChild);
-      index--;
-    }
+    // STEP 1
+    var node = ParentNodeImpl._mutationMethod((refNode.nodeType == Node.DOCUMENT_NODE)
+                                              ? cast(refNode, Document)
+                                              : refNode.ownerDocument,
+                                              nodes);
+    refNode.insertBefore(node, refNode.firstChild);
   }  
 
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-append
    */
-  static public function append(refNode: Node, nodes: Either<Node, Array<Node>>): Void
+  static public function append(refNode: Node, nodes: Array<Either<Node, DOMString>>): Void
   {
-    if (Std.is(nodes, Node)) {
-      refNode.appendChild(nodes);
+    // extra sanity case
+    if (null == refNode)
+      throw (new DOMException("HierarchyRequestError"));
+    if (nodes.length == 0)
       return;
-    }
 
-    var nodesAsNodesArray: Array<Node> = nodes;
-    for (index in 0...nodesAsNodesArray.length) {
-      if (null == nodes[index])
-        throw (new DOMException("Hierarchy request error"));
-    }
-    for (index in 0...nodesAsNodesArray.length) {
-      refNode.appendChild(nodes[index]);
-    }
+    // STEP 1
+    var node = ParentNodeImpl._mutationMethod((refNode.nodeType == Node.DOCUMENT_NODE)
+                                              ? cast(refNode, Document)
+                                              : refNode.ownerDocument,
+                                              nodes);
+    refNode.appendChild(node);
   }  
 }

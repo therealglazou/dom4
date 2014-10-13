@@ -67,11 +67,31 @@ interface ParentNode {
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-prepend
    */
-  public function prepend(nodes: Either<Node, Array<Node>>): Void;
+  public function prepend(nodes: Array<Either<Node, DOMString>>): Void;
 
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-append
    */
-  public function append(nodes: Either<Node, Array<Node>>): Void;
+  public function append(nodes: Array<Either<Node, DOMString>>): Void;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-query
+   */
+  public function query(relativeSelectors: DOMString): Element;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-queryall
+   */
+  public function queryAll(relativeSelectors: DOMString): Elements;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-queryselector
+   */
+  public function querySelector(selectors: DOMString): Element;
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-queryselectorall
+   */
+  public function querySelectorAll(selectors: DOMString): NodeList;
 }
 

@@ -381,9 +381,7 @@ class Node extends EventTarget {
    */
   public function removeChild(child: Node): Node
   {
-    this._remove(child);
-
-    return child;
+    return this._preRemove(child);
   }
 
   /*
@@ -754,6 +752,53 @@ class Node extends EventTarget {
       this.lastChild = null;
   }
   
+  /*
+   * https://dom.spec.whatwg.org/#concept-node-replace-all
+   */
+  public function _replaceAll(node: Node): Void
+  {
+    // STEP 1
+    if (null != node) {
+      if (node.nodeType == Node.DOCUMENT_NODE)
+        cast(this, Document).adoptNode(node);
+      else
+        this.ownerDocument.adoptNode(node);
+    }
+    // STEP 2
+    var removedNodes = this.childNodes._getNodes().copy();
+    // STEP 3
+    var addedNodes: Array<Node> = [];
+    if (node != null) {
+      addedNodes = ((node.nodeType == Node.DOCUMENT_FRAGMENT_NODE)
+                    ? addedNodes = node.childNodes._getNodes().copy()
+                    : [node]);
+    }
+    // STEP 4
+    this._removeChildren(true);
+    // STEP 5
+    if (null != node)
+      this._insert(node, null, true);
+    // STEP 6
+    MutationUtils.queueMutationRecord(this, "childList", null, null, null,
+                                      addedNodes, removedNodes,
+                                      null,
+                                      null);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-node-pre-remove
+   */
+  public function _preRemove(child: Node): Node
+  {
+    // STEP 1
+    if (child.parentNode != this)
+      throw (new DOMException("NotFoundError"));
+    // STEP 2
+    this._remove(child);
+    // STEP 3
+    return child;
+  }
+
   public function new() {
     super();
   }

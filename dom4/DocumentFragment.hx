@@ -67,11 +67,11 @@ class DocumentFragment extends Node
       {
         return ParentNodeImpl.childElementCount(this);
       }
-  public function prepend(nodes: Either<Node, Array<Node>>): Void
+  public function prepend(nodes: Array<Either<Node, DOMString>>): Void
   {
     return ParentNodeImpl.prepend(this, nodes);
   }
-  public function append(nodes: Either<Node, Array<Node>>): Void
+  public function append(nodes: Array<Either<Node, DOMString>>): Void
   {
     return ParentNodeImpl.append(this, nodes);
   }
@@ -80,6 +80,11 @@ class DocumentFragment extends Node
   {
     return NonParentElementNodeImpl.getElementById(this, elementID);
   }
+
+  public function query(relativeSelectors: DOMString): Element     {throw (new DOMException("Not yet implemented")); }
+  public function queryAll(relativeSelectors: DOMString): Elements {throw (new DOMException("Not yet implemented")); }
+  public function querySelector(selectors: DOMString): Element     {throw (new DOMException("Not yet implemented")); }
+  public function querySelectorAll(selectors: DOMString): NodeList {throw (new DOMException("Not yet implemented")); }
 
   public function new() {
     super();
