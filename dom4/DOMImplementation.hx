@@ -70,8 +70,8 @@ class DOMImplementation {
   /*
    * https://dom.spec.whatwg.org/#dom-domimplementation-createdocumenttype
    */
-  public function createDocumentType(qualifiedName: DOMString, publicId: DOMString, systemId: DOMString): Dynamic
+  public function createDocumentType(qualifiedName: DOMString, publicId: DOMString, systemId: DOMString): DocumentType
   {
-    return 1;
+    return new DocumentType(qualifiedName, publicId, systemId);
   }
 }

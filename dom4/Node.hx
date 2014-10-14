@@ -170,7 +170,7 @@ class Node extends EventTarget {
       {
         switch (this.nodeType) {
           case TEXT_NODE | PROCESSING_INSTRUCTION_NODE | COMMENT_NODE:
-            cast(this, CharacterData).data = v;
+            cast(this, CharacterData).data = v; // TBD, use "replace data"
         }
         return v;
       }
@@ -515,6 +515,7 @@ class Node extends EventTarget {
            | Node.ELEMENT_NODE: {}
       case _: throw (new DOMException("HierarchyRequestError"));
     }
+    var i = 0;
 
     if (node._isInclusiveAncestor(this))
       throw (new DOMException("HierarchyRequestError"));
@@ -572,7 +573,7 @@ class Node extends EventTarget {
         var currentNode = this.firstChild;
         var foundDoctypeInParent = false;
         while (!foundDoctypeInParent
-               && child != null) {
+               && currentNode != null) {
           if (currentNode.nodeType == Node.DOCUMENT_TYPE_NODE)
             foundDoctypeInParent = true;
           currentNode = currentNode.nextSibling;
@@ -581,7 +582,7 @@ class Node extends EventTarget {
             || (child != null
                 && cast(child, NonDocumentTypeChildNode).previousElementSibling != null)
             || (child == null
-                && cast(child, ParentNode).firstElementChild != null))
+                && cast(this, ParentNode).firstElementChild != null))
           throw (new DOMException("HierarchyRequestError"));
       }
     }
