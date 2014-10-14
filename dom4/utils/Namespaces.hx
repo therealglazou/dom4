@@ -47,7 +47,7 @@ class Namespaces {
   static private inline var NAME = "[:" + NAME_START_CHAR + "][:" + NAME_CHAR + "]*";
   static private inline var NCNAME = "[" + NAME_START_CHAR + "][" + NAME_CHAR + "]*";
   static public         var NAME_EREG  = new EReg("^(" + NAME + ")$", "i");
-  static public         var PREFIXED_NAME_EREG = new EReg("^(" + NCNAME + ")(:(NCNAME))?$", "i");
+  static public         var PREFIXED_NAME_EREG = new EReg("^(" + NCNAME + ")(:(" + NCNAME + "))?$", "i");
 
   static public         var HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
   static public         var XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
