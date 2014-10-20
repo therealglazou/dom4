@@ -51,6 +51,10 @@ class Parser
 {
   var document: Document;
 
+  var elementPrefix = "";
+  var elementName = "";
+  var attributesArray: Array<Array<DOMString>>= [];
+
   static var escapes = {
     var h = new haxe.ds.StringMap();
     h.set("lt", "<");
@@ -69,6 +73,57 @@ class Parser
     return document;
   }
 
+  public function doCreateElement(parent: Node): Node
+  {
+    if (parent == null
+        || this.elementName == ""
+        || this.elementName == null)
+      return parent;
+    var namespace = null;
+    // first, validate the element prefix if we have to
+    if (this.elementPrefix != "") {
+      var namespaceDef = this.attributesArray.filter(function(n) {
+        return (n[0] == "xmlns" && n[1] == this.elementPrefix);
+      });
+      if (namespaceDef.length == 1) {
+        namespace = namespaceDef[0][2];
+      }
+      else {
+        namespace = cast(parent, Node)._locateNamespace(this.elementPrefix);
+      }
+      if (namespace == null || namespace == "")
+        throw (new DOMException("NamespaceError"));
+    }
+    else {
+      if (parent.nodeType == Node.ELEMENT_NODE)
+        namespace = cast(parent, Element).namespaceURI;
+    }
+    var xml = document.createElementNS(namespace, this.elementName);
+    parent.appendChild(xml);
+    if (this.elementPrefix != "")
+      cast(xml, Element)._setPrefix(this.elementPrefix);
+
+    for (attribute in this.attributesArray) {
+      var prefix = attribute[0];
+      var name   = attribute[1];
+      var value  = attribute[2];
+      if (prefix == "")
+        xml.setAttribute(name, value);
+        if (name == "xmlns") {
+          if (this.elementPrefix != "")
+            throw (new DOMException("NamespaceError"));
+          cast(xml, Element)._setNamespaceURI(value);
+        }
+      else {
+        var namespace = cast(xml, Node)._locateNamespace(prefix);
+        xml.setAttributeNS(namespace, (prefix != "" ? prefix + ":" : "") + name, value);
+      }
+    }
+
+    this.elementName = null;
+    return xml;
+  }
+
   private function doParse(str:String, p:Int = 0, ?parent:Node):Int
   {
     var xml:Node = null;
@@ -80,6 +135,7 @@ class Parser
     var nbrackets = 0;
     var c = str.fastCodeAt(p);
     var buf = new StringBuf();
+
     while (!StringTools.isEof(c))
     {
       switch(state)
@@ -110,9 +166,14 @@ class Parser
         case S.PCDATA:
           if (c == '<'.code)
           {
-            var child = document.createTextNode(buf.toString() + str.substr(start, p - start));
+            var toStore = buf.toString() + str.substr(start, p - start);
+            if (parent.nodeType == Node.ELEMENT_NODE) {
+	            var child = document.createTextNode(toStore);
+	            parent.appendChild(child);
+            }
+            else if ((new EReg("[^\n \t\r]", "")).match(toStore))
+              throw (new DOMException("HierarchyRequestError"));
             buf = new StringBuf();
-            parent.appendChild(child);
             nsubs++;
             state = S.IGNORE_SPACES;
             next = S.BEGIN_NODE;
@@ -180,8 +241,21 @@ class Parser
           {
             if( p == start )
               throw("Expected node name");
-            xml = document.createElementNS(null, str.substr(start, p - start));
-            parent.appendChild(xml);
+            var name = str.substr(start, p - start);
+            var match = Namespaces.PREFIXED_NAME_EREG.match(name);
+            if ( match ) {
+              this.attributesArray = [];
+              if (null == Namespaces.PREFIXED_NAME_EREG.matched(3)) {
+                this.elementName = name;
+              }
+              else {
+                this.elementName   = Namespaces.PREFIXED_NAME_EREG.matched(3);
+                this.elementPrefix = Namespaces.PREFIXED_NAME_EREG.matched(1);
+              }
+            }
+            else
+              throw (new DOMException("InvalidCharacterError"));
+            // parent.appendChild(xml);
             state = S.IGNORE_SPACES;
             next = S.BODY;
             continue;
@@ -193,6 +267,7 @@ class Parser
               state = S.WAIT_END;
               nsubs++;
             case '>'.code:
+              xml = doCreateElement(parent);
               state = S.CHILDS;
               nsubs++;
             default:
@@ -208,8 +283,8 @@ class Parser
               throw("Expected attribute name");
             tmp = str.substr(start,p-start);
             aname = tmp;
-            if( cast(xml, Element).hasAttribute(aname) )
-              throw("Duplicate attribute");
+            /*if( cast(xml, Element).hasAttribute(aname) )
+              throw("Duplicate attribute");*/
             state = S.IGNORE_SPACES;
             next = S.EQUALS;
             continue;
@@ -236,7 +311,18 @@ class Parser
           if (c == str.fastCodeAt(start))
           {
             var val = str.substr(start+1,p-start-1);
-            cast(xml, Element).setAttribute(aname, val);
+            var match = Namespaces.PREFIXED_NAME_EREG.match(aname);
+            if ( match ) {
+              if (null == Namespaces.PREFIXED_NAME_EREG.matched(3)) {
+                this.attributesArray.push(["", aname, val]);
+              }
+              else {
+                this.attributesArray.push([Namespaces.PREFIXED_NAME_EREG.matched(1), Namespaces.PREFIXED_NAME_EREG.matched(3), val]);
+              }
+            }
+            else
+              throw (new DOMException("InvalidCharacterError"));
+
             state = S.IGNORE_SPACES;
             next = S.BODY;
           }
@@ -248,6 +334,7 @@ class Parser
           switch(c)
           {
             case '>'.code:
+              xml = doCreateElement(parent);
               state = S.BEGIN;
             default :
               throw("Expected >");
@@ -256,7 +343,8 @@ class Parser
           switch(c)
           {
             case '>'.code:
-              if( nsubs == 0 )
+              xml = doCreateElement(parent);
+              if( nsubs == 0 && parent.nodeType == Node.ELEMENT_NODE)
                 parent.appendChild(document.createTextNode(""));
               return p;
             default :
@@ -269,8 +357,21 @@ class Parser
               throw("Expected node name");
 
             var v = str.substr(start,p - start);
-            if (v != parent.nodeName)
-              throw (new DOMException("Expected </" +parent.nodeName + ">"));
+            var match = Namespaces.PREFIXED_NAME_EREG.match(v);
+            if ( match ) {
+              if (null == Namespaces.PREFIXED_NAME_EREG.matched(3)) {
+                if (v != parent.nodeName)
+                  throw (new DOMException("Expected </" +parent.nodeName + ">"));
+              }
+              else {
+                var prefix = Namespaces.PREFIXED_NAME_EREG.matched(1);
+                var nmsp = cast(parent, Node)._locateNamespace(prefix);
+                if (nmsp != cast(parent, Element).namespaceURI)
+                  throw (new DOMException("Expected </" +parent.nodeName + ">"));
+              }
+            }
+            else
+              throw (new DOMException("InvalidCharacterError"));
 
             state = S.IGNORE_SPACES;
             next = S.WAIT_END_RET;
@@ -298,7 +399,6 @@ class Parser
           {
             p++;
             aname = str.substr(start + 1, p - start - 2);
-            trace(aname);
             start = p - 1;
             state = S.IGNORE_SPACES;
             next = S.PI_DATA;
@@ -339,8 +439,9 @@ class Parser
 
     if (state == S.PCDATA)
     {
-      if (p != start || nsubs == 0)
+      if (p != start || nsubs == 0) {
         parent.appendChild(document.createTextNode(buf.toString() + str.substr(start, p - start)));
+      }
       return p;
     }
 

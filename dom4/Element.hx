@@ -328,6 +328,16 @@ class Element extends Node
     this.parentNode.removeChild(this);
   }
 
+  public function _setPrefix(n: DOMString): Void
+  {
+    this.prefix = n;
+  }
+
+  public function _setNamespaceURI(n: DOMString): Void
+  {
+    this.namespaceURI = n;
+  }
+
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();
     this.attributes = new NamedNodeMap();

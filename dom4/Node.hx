@@ -839,8 +839,13 @@ class Node extends EventTarget {
   /*
    * https://dom.spec.whatwg.org/#locate-a-namespace
    */
-  private function _locateNamespace(prefix: DOMString): DOMString
+  public function _locateNamespace(prefix: DOMString): DOMString
   {
+    if (prefix == "xml")
+      return Namespaces.XML_NAMESPACE;
+    if (prefix == "xmlns")
+      return Namespaces.XMLNS_NAMESPACE;
+
     var node = this;
 
     while (node != null) {
