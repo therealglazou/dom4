@@ -49,6 +49,8 @@ extern private class S {
 
 class Parser
 {
+  private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
+
   var document: Document;
 
   var elementPrefix = "";
@@ -174,7 +176,7 @@ class Parser
               var child = document.createTextNode(toStore);
               parent.appendChild(child);
             }
-            else if ((new EReg("[^\n \t\r]", "")).match(toStore))
+            else if (this.NOT_WHITESPACE_ONLY_EREG.match(toStore))
               throw (new DOMException("HierarchyRequestError"));
             buf = new StringBuf();
             nsubs++;
