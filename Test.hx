@@ -36,77 +36,39 @@
  * ***** END LICENSE BLOCK ***** */
 
 import dom4.Document;
-import dom4.Node;
-import dom4.Element;
-import dom4.Text;
-import dom4.Comment;
-import dom4.ProcessingInstruction;
-
 import dom4.DOMParser;
+
+import dom4.utils.Serializer;
 
 class Test {
 
     static function main() : Void {
 
-        var str = "<root><first>1</first> a text node <second foo='1'/><third>aaa<fourth>bbb</fourth></third><fifth/></root>";
+        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  aaaaa  <p>   foobar<span>blag</span>  sdsdsdf</p>  <myelem label='foo'/></foobar>";
 
         var parser = new DOMParser();
         try {
           var document = parser.parseFromString(str, "text/xml"); 
   
-          trace("Return type is: " + document);
-          trace("Name of the document element is: " + document.documentElement.nodeName);
-          trace("Document element has " + document.documentElement.childNodes.length + " children");
-          trace("Document element has " + document.documentElement.children.length + " element children");
+          Sys.println("-----------------------");
+          Sys.println("Original XML string to parse:\n");
+          Sys.println(str);
+          Sys.println("-----------------------");
+          Sys.println("Name of the document element is: " + document.documentElement.nodeName);
+          Sys.println("Document element has " + document.documentElement.childNodes.length + " children");
+          Sys.println("Document element has " + document.documentElement.children.length + " element children");
 
-          trace("Document serialization:");
-          trace("-----------------------");
-          var indent = "  ";
-          var node: Node = document.documentElement;
-          while (true) {
-            switch (node.nodeType) {
-              case Node.TEXT_NODE:
-                trace(indent + "TEXT \"" + cast(node, Text).data + "\"");
-              case Node.COMMENT_NODE:
-                trace(indent + "COMMENT " + cast(node, Comment).data);
-              case Node.PROCESSING_INSTRUCTION_NODE:
-                trace(indent + "PROCESSING INSTRUCTION " + cast(node, ProcessingInstruction).data);
-              case Node.ELEMENT_NODE:
-                trace (indent + "ELEMENT " + node.nodeName);
-                var elt = cast(node, Element);
-                for (i in 0...elt.attributes.length) {
-                  var attr = elt.attributes.item(i);
-                  trace(indent + "  ATTRIBUTE " + attr.name + "=\"" + attr.value + "\"");
-                }
-            }
+          Sys.println("Document serialization:");
+          Sys.println("-----------------------");
+          var s = new Serializer();
+          s.enableIndentation();
+          s.enableWrapping(72);
+          Sys.println(s.serializeToString(document));
 
-            if (null != node.firstChild) {
-              node = node.firstChild;
-              indent += "  ";
-            }
-            else if (null != node.nextSibling)
-              node = node.nextSibling;
-            else if (null == node.parentNode)
-              break;
-            else {
-              while (null == node.nextSibling
-                     && null != node.parentNode
-                     && node.parentNode.nodeType == Node.ELEMENT_NODE) {
-                node = node.parentNode;
-                if (indent.length > 2)
-                  indent = indent.substr(2);
-              }
-              node = node.nextSibling;
-              if (null == node)
-                break;
-            }
-          }
-          trace("-----------------------");
         }
         catch(e: String) {
           Sys.println("EXCEPTION CAUGHT: " + e);
         }
     }
-
 }
 
