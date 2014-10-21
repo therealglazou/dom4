@@ -813,25 +813,25 @@ class Node extends EventTarget {
     var node = this;
 
     while (node != null) {
-	    var elt = cast(this, Element);
-	    if (elt != null) {
+      var elt = cast(this, Element);
+      if (elt != null) {
         // STEP 1
-	      if (elt.namespaceURI == namespace && elt.prefix != null)
-	        return elt.prefix;
+        if (elt.namespaceURI == namespace && elt.prefix != null)
+          return elt.prefix;
         // STEP 2
-	      var attrs = elt.attributes;
-	      for (index in 0...attrs.length) {
-	        var a = attrs[index];
-	        if (a.prefix == "xmlns" && a.value == namespace)
-	          return a.localName;
-	      }
-	
+        var attrs = elt.attributes;
+        for (index in 0...attrs.length) {
+          var a = attrs[index];
+          if (a.prefix == "xmlns" && a.value == namespace)
+            return a.localName;
+        }
+  
         // STEP 3
-	      if (elt.parentElement != null)
+        if (elt.parentElement != null)
           node = cast(elt.parentElement, Node);
         else
           return null;
-	    }
+      }
     }
     throw (new DOMException("ShouldNeverHitError"));
   }
@@ -849,31 +849,31 @@ class Node extends EventTarget {
     var node = this;
 
     while (node != null) {
-	    switch (node.nodeType) {
-	      case Node.ELEMENT_NODE: {
-	        var elt = cast(node, Element);
+      switch (node.nodeType) {
+        case Node.ELEMENT_NODE: {
+          var elt = cast(node, Element);
           // STEP 1
-	        if (elt.namespaceURI != null && elt.prefix == prefix)
-	          return elt.namespaceURI;
+          if (elt.namespaceURI != null && elt.prefix == prefix)
+            return elt.namespaceURI;
           // STEP 2
-	        var attr: Attr = null;
-	        if (elt.hasAttributeNS(Namespaces.XMLNS_NAMESPACE, prefix)) {
-	          attr = elt.getAttributeNodeNS(Namespaces.XMLNS_NAMESPACE, prefix);
-	          if (attr.prefix == "xmlns") {
-	            return ((attr.value != "") ? attr.value : null);
-	          }
-	        } else if ((prefix == null || prefix == "")
-	                 && elt.hasAttributeNS(Namespaces.XMLNS_NAMESPACE, "xmlns")) {
-	          attr = elt.getAttributeNodeNS(Namespaces.XMLNS_NAMESPACE, "xmlns");
-	          if (attr.prefix == "" || attr.prefix == null)
-	            return ((attr.value != "") ? attr.value : null);
-	        }
+          var attr: Attr = null;
+          if (elt.hasAttributeNS(Namespaces.XMLNS_NAMESPACE, prefix)) {
+            attr = elt.getAttributeNodeNS(Namespaces.XMLNS_NAMESPACE, prefix);
+            if (attr.prefix == "xmlns") {
+              return ((attr.value != "") ? attr.value : null);
+            }
+          } else if ((prefix == null || prefix == "")
+                   && elt.hasAttributeNS(Namespaces.XMLNS_NAMESPACE, "xmlns")) {
+            attr = elt.getAttributeNodeNS(Namespaces.XMLNS_NAMESPACE, "xmlns");
+            if (attr.prefix == "" || attr.prefix == null)
+              return ((attr.value != "") ? attr.value : null);
+          }
           // STEP 3
-	        if (node.parentElement == null)
-	          return null;
+          if (node.parentElement == null)
+            return null;
           // STEP 4
-	        node = cast(node.parentElement, Node);
-	      }
+          node = cast(node.parentElement, Node);
+        }
         case Node.DOCUMENT_NODE: {
           var elt = cast(node, Document).documentElement;
           // STEP 1

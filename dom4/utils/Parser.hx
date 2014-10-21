@@ -171,8 +171,8 @@ class Parser
           {
             var toStore = buf.toString() + str.substr(start, p - start);
             if (parent.nodeType == Node.ELEMENT_NODE) {
-	            var child = document.createTextNode(toStore);
-	            parent.appendChild(child);
+              var child = document.createTextNode(toStore);
+              parent.appendChild(child);
             }
             else if ((new EReg("[^\n \t\r]", "")).match(toStore))
               throw (new DOMException("HierarchyRequestError"));

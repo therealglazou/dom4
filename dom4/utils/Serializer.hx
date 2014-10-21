@@ -45,6 +45,9 @@ class Serializer
   private var maxColumns: UInt = 80;
   private var indentation: Bool = false;
 
+  private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
+  private var TRIM_LEADING_TRAILING_CRS_EREG = new EReg("^[\r\n]*([^\r\n]*)[\r\n]*$", "");
+
   private function addString(node:Node, str: String, toBeAdded: String, indent: String): String
   {
     // should we add a trailing return?
@@ -63,23 +66,22 @@ class Serializer
         case Node.DOCUMENT_TYPE_NODE:
           str += toBeAdded;
         case Node.TEXT_NODE:
-          if (!(new EReg("[^ \t\r\n]", "g").match(toBeAdded))) {
+          if (!this.NOT_WHITESPACE_ONLY_EREG.match(toBeAdded)) {
             // only whitespace, do nothing
             return str;
           }
-	        // alone in its parent element ?
-	        if (node.parentNode != null
-	            && ((node.parentNode.nodeType == Node.ELEMENT_NODE
-	                 && cast(node.parentNode, Element).firstElementChild != null)
-	                || node.parentNode.nodeType != Node.ELEMENT_NODE)) {
+          // alone in its parent element ?
+          if (node.parentNode != null
+              && ((node.parentNode.nodeType == Node.ELEMENT_NODE
+                   && cast(node.parentNode, Element).firstElementChild != null)
+                  || node.parentNode.nodeType != Node.ELEMENT_NODE)) {
             if (!addedCR)
               str += "\n";
-	          str += indent + StringTools.trim(toBeAdded);
-	        }
-	        else { // get rid of trailing and leading CRs
-            var r = new EReg("^[\r\n]*([^\r\n]*)[\r\n]*$", ""); 
-	          if (!r.match(toBeAdded)) {
-              str += r.matched(1);
+            str += indent + StringTools.trim(toBeAdded);
+          }
+          else { // get rid of trailing and leading CRs
+            if (!this.TRIM_LEADING_TRAILING_CRS_EREG.match(toBeAdded)) {
+              str += this.TRIM_LEADING_TRAILING_CRS_EREG.matched(1);
             }
             else
               str += toBeAdded;

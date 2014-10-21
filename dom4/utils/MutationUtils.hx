@@ -48,10 +48,10 @@ class MutationUtils {
    **********************************************/
 
   static public function queueMutationRecord(target: Node, type: DOMString, name: DOMString, namespace: DOMString,
-		                                        oldValue: DOMString,
-		                                        addedNodes: Array<Node>, removedNodes: Array<Node>,
-		                                        previousSibling: Node, nextSibling: Node) : Void
-	{
+                                            oldValue: DOMString,
+                                            addedNodes: Array<Node>, removedNodes: Array<Node>,
+                                            previousSibling: Node, nextSibling: Node) : Void
+  {
    // TBD
-	}
+  }
 }
