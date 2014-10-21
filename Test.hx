@@ -58,13 +58,13 @@ class Test {
           Sys.println("Document element has " + document.documentElement.childNodes.length + " children");
           Sys.println("Document element has " + document.documentElement.children.length + " element children");
 
-          Sys.println("Document serialization:");
           Sys.println("-----------------------");
+          Sys.println("Document serialization:\n");
           var s = new Serializer();
           s.enableIndentation();
           s.enableWrapping(72);
           Sys.println(s.serializeToString(document));
-
+          Sys.println("-----------------------");
         }
         catch(e: String) {
           Sys.println("EXCEPTION CAUGHT: " + e);
