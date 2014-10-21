@@ -88,21 +88,24 @@ class Parser
       if (namespaceDef.length == 1) {
         namespace = namespaceDef[0][2];
       }
-      else {
+      else { // no luck, look for the prefix on the ancestors
         namespace = cast(parent, Node)._locateNamespace(this.elementPrefix);
       }
-      if (namespace == null || namespace == "")
+      if (namespace == null || namespace == "") // unresolved prefix, this is an error
         throw (new DOMException("NamespaceError"));
     }
     else {
       if (parent.nodeType == Node.ELEMENT_NODE)
         namespace = cast(parent, Element).namespaceURI;
     }
-    var xml = document.createElementNS(namespace, this.elementName);
+    var xml = ContentSink.createElement(document, namespace, this.elementName);
     parent.appendChild(xml);
+    // we can't rely on prefix/namespace validation here because
+    // the xmlns attributes are possibly not here yet...
     if (this.elementPrefix != "")
       cast(xml, Element)._setPrefix(this.elementPrefix);
 
+    // don't forget the attributes
     for (attribute in this.attributesArray) {
       var prefix = attribute[0];
       var name   = attribute[1];
