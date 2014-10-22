@@ -39,6 +39,12 @@ package dom4;
 
 import dom4.NodeFilter;
 
+enum TreeWalkerType {
+  TREE_WALKER_FIRST;
+  TREE_WALKER_LAST;
+  TREE_WALKER_NEXT;
+  TREE_WALKER_PREVIOUS;
+}
 /*
  * https://dom.spec.whatwg.org/#treewalker
  */
