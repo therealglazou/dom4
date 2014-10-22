@@ -48,6 +48,8 @@ class DOMTokenList implements ArrayAccess<DOMString> {
   static public         var SPACE_MATCHING_EREG  = new EReg(SPACE_MATCHING, "g");
   
   private var stringArray: Array<DOMString>;
+  private var element: Element;
+  private var attribute: DOMString;
 
   /*
    * https://dom.spec.whatwg.org/#dom-domtokenlist-length
@@ -92,6 +94,7 @@ class DOMTokenList implements ArrayAccess<DOMString> {
       if (!this.contains(token))
         this.stringArray.push(token);
     }
+    this._update();
   }
 
   /*
@@ -117,6 +120,7 @@ class DOMTokenList implements ArrayAccess<DOMString> {
         return (f != token);
       });
     }
+    this._update();
   }
 
   /*
@@ -129,6 +133,7 @@ class DOMTokenList implements ArrayAccess<DOMString> {
         this.stringArray = this.stringArray.filter(function(f) {
           return (f != token);
         });
+        this._update();
         return false;
       }
       return true;
@@ -138,6 +143,7 @@ class DOMTokenList implements ArrayAccess<DOMString> {
       return false;
 
     this.stringArray.push(token);
+    this._update();
     return true;
   }
 
@@ -154,10 +160,31 @@ class DOMTokenList implements ArrayAccess<DOMString> {
     return true;
   }
 
+  private function _sort(): Void
+  {
+		this.stringArray.sort( function(a:String, b:String):Int
+		{
+		    if (a < b) return -1;
+		    if (a > b) return 1;
+		    return 0;
+		} );
+  }
+
+  private function _update(): Void
+  {
+    if (this.element == null || this.attribute == null)
+      return;
+    this._sort();
+    this.element.setAttributeNS(null, this.attribute, this.toString());
+  }
+
   @:arrayAccess public inline function __get(key:UInt) return this.item(key);
 
-  public function new(v:DOMString)
+  public function new(v:DOMString, ?element: Element = null, ?attribute: DOMString = null)
   {
+    this.element = element;
+    this.attribute = attribute;
+
     this.stringArray = StringTools.trim(DOMTokenList.SPACE_MATCHING_EREG.replace(v, " ")).split(" ");
     this.stringArray.sort( function(a:String, b:String):Int
                            {

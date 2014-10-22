@@ -97,7 +97,7 @@ class Element extends Node
       }
       private function set_className(v: DOMString): DOMString
       {
-        this.classList = new DOMTokenList(v);
+        this.classList = new DOMTokenList(v, this, "class");
         return this.classList.toString();
       }
 
