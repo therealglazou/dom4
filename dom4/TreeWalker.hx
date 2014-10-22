@@ -53,6 +53,30 @@ class TreeWalker {
 
   public var currentNode(default, default): Node;
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-treewalker-parentnode
+   */
+  public function parentNode(): Node {
+    // STEP 1
+    var node = this.currentNode;
+    // STEP 2
+    while (node != null && node != this.root) {
+      // STEP 2.1
+      node = node.parentNode;
+      // STEP 2.2
+      if (node != null && NodeIterator._filterNode(node, whatToShow, filter) == FILTER_ACCEPT) {
+        this.currentNode = node;
+        return node;
+      }
+    }
+    // STEP 3
+    return null;
+  }
+
+  /**********************************************
+   * HELPERS DEFINED BY SPECIFICATION
+   **********************************************/
+
   public function new(root: Node, whatToShow: FlagsWithAllState<WhatToShowFlag>, filter: NodeFilter)
   {
     this.root = root;

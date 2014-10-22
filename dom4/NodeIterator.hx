@@ -82,18 +82,18 @@ class NodeIterator {
   /*
    * https://dom.spec.whatwg.org/#concept-node-filter
    */
-  private function _filterNode(node: Node): NodeFilterResponse {
+  static public function _filterNode(node: Node, w: FlagsWithAllState<WhatToShowFlag>, f: NodeFilter): NodeFilterResponse {
     // STEP 1
     var n = node.nodeType - 1;
     // STEP 2
-    if (whatToShow.toInt() & (1 << n) != 0)
+    if (w.toInt() & (1 << n) != 0)
       return FILTER_SKIP;
     // STEP 3
-    if (this.filter == null)
+    if (f == null)
       return FILTER_ACCEPT;
 
     // STEPS 4 and 5
-    return filter.acceptNode(node);
+    return f.acceptNode(node);
   }
 
   /*
@@ -154,7 +154,7 @@ class NodeIterator {
           beforeNode = true;
       }
     }
-    while (node != null && this._filterNode(node) != FILTER_ACCEPT);
+    while (node != null && NodeIterator._filterNode(node, whatToShow, filter) != FILTER_ACCEPT);
 
     // STEP 4
     this.referenceNode = node;
