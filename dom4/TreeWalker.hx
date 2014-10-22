@@ -111,6 +111,94 @@ class TreeWalker {
     return this._traverseSiblings(TREE_WALKER_NEXT);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-treewalker-previousnode
+   */
+  public function previousNode(): Node
+  {
+    // STEP 1
+    var node = this.currentNode;
+    // STEP 2
+    while (node != this.root) {
+      // STEP 2.1
+      var sibling = node.previousSibling;
+      // STEP 2.2
+      while (sibling != null) {
+        // STEP 2.2.1
+        node = sibling;
+        // STEP 2.2.2
+        var result = NodeIterator._filterNode(node, whatToShow, filter);
+        // STEP 2.2.3
+        while (result != FILTER_REJECT
+               && node.firstChild != null) {
+          node = node.lastChild;
+          result = NodeIterator._filterNode(node, whatToShow, filter);
+        }
+        // STEP 2.2.4
+        if (result == FILTER_ACCEPT) {
+          this.currentNode = node;
+          return node;
+        }
+        // STEP 2.2.5
+        sibling = node.previousSibling;
+      }
+      // STEP 2.3
+      if (node == this.root || node.parentNode == null)
+        return null;
+      // STEP 2.4
+      node = node.parentNode;
+      // STEP 2.5
+      if (NodeIterator._filterNode(node, whatToShow, filter) == FILTER_ACCEPT) {
+        this.currentNode = node;
+        return node;
+      }
+    }
+    return null;
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-treewalker-nextnode
+   */
+  public function nextNode(): Node
+  {
+    // STEP 1
+    var node = this.currentNode;
+    // STEP 2
+    var result = FILTER_ACCEPT;
+    // STEP 3
+    do {
+      // STEP 3.1
+      while (result != FILTER_ACCEPT && node.firstChild != null) {
+        // STEP 3.1.1
+        node = node.firstChild;
+        // STEP 3.1.2
+        result = NodeIterator._filterNode(node, whatToShow, filter);
+        // STEP 3.1.3
+        if (result == FILTER_ACCEPT) {
+          this.currentNode = node;
+          return node;
+        }
+      }
+      // STEP 3.2
+      var n = node.nextSibling;
+      var found: Node = null;
+      while (n != null && found == null) {
+        var comparison = n.compareDocumentPosition(this.root);
+        if (comparison & Node.DOCUMENT_POSITION_FOLLOWING == 0)
+          found = n;
+        n = n.nextSibling;
+      }
+      if (found != null) {
+        node = found;
+      }
+      else
+        return null;
+      // STEP 3.3
+      result = NodeIterator._filterNode(node, whatToShow, filter);
+    }
+    while (true);
+  }
+
   /**********************************************
    * HELPERS DEFINED BY SPECIFICATION
    **********************************************/
