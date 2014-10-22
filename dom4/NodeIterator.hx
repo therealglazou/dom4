@@ -79,23 +79,33 @@ class NodeIterator {
    * HELPERS DEFINED BY SPECIFICATION
    **********************************************/
 
+  /*
+   * https://dom.spec.whatwg.org/#concept-node-filter
+   */
   private function _filterNode(node: Node): NodeFilterResponse {
+    // STEP 1
     var n = node.nodeType - 1;
+    // STEP 2
     if (whatToShow.toInt() & (1 << n) != 0)
       return FILTER_SKIP;
+    // STEP 3
     if (this.filter == null)
       return FILTER_ACCEPT;
 
+    // STEPS 4 and 5
     return filter.acceptNode(node);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#concept-nodeiterator-traverse
+   */
   private function _traverse(direction: NodeIteratorDirection): Node {
     // STEP 1
     var node = this.referenceNode;
     // STEP 2
     var beforeNode = this.pointerBeforeRefenceNode;
     // STEP 3
-    while (node != null && this._filterNode(node) != FILTER_ACCEPT) { // STEP 3.2
+    do { // STEP 3.2
       // STEP 3.1.a
 	    if (direction == NODE_ITERATOR_NEXT) {
 	      if (!beforeNode) {
@@ -144,6 +154,7 @@ class NodeIterator {
           beforeNode = true;
       }
     }
+    while (node != null && this._filterNode(node) != FILTER_ACCEPT);
 
     // STEP 4
     this.referenceNode = node;
