@@ -43,6 +43,11 @@ import dom4.NodeFilter;
  * https://dom.spec.whatwg.org/#interface-nodeiterator
  */
 
+enum NodeIteratorDirection {
+  NODE_ITERATOR_NEXT;
+  NODE_ITERATOR_PREVIOUS;
+}
+
 class NodeIterator {
 
   public var root(default, null): Node;
@@ -57,19 +62,93 @@ class NodeIterator {
 
   public function nextNode(): Node
   {
-    // TBD
-    return null;
+    return this._traverse(NODE_ITERATOR_NEXT);
   }
 
   public function previousNode(): Node
   {
-    // TBD
-    return null;
+    return this._traverse(NODE_ITERATOR_PREVIOUS);
   }
 
   public function detach(): Void
   {
     // TBD
+  }
+
+  /**********************************************
+   * HELPERS DEFINED BY SPECIFICATION
+   **********************************************/
+
+  private function _filterNode(node: Node): NodeFilterResponse {
+    var n = node.nodeType - 1;
+    if (whatToShow.toInt() & (1 << n) != 0)
+      return FILTER_SKIP;
+    if (this.filter == null)
+      return FILTER_ACCEPT;
+
+    return filter.acceptNode(node);
+  }
+
+  private function _traverse(direction: NodeIteratorDirection): Node {
+    // STEP 1
+    var node = this.referenceNode;
+    // STEP 2
+    var beforeNode = this.pointerBeforeRefenceNode;
+    // STEP 3
+    while (node != null && this._filterNode(node) != FILTER_ACCEPT) { // STEP 3.2
+      // STEP 3.1.a
+	    if (direction == NODE_ITERATOR_NEXT) {
+	      if (!beforeNode) {
+	        if (node.firstChild != null)
+            node = node.firstChild;
+          else if (node.nextSibling != null) {
+            if (node == this.root)
+              return null;
+            node = node.nextSibling;
+          }
+          else { // find the next sibling of an ancestor in the subtree
+            while (node != null
+                   && node.nextSibling == null) {
+              node = node.parentNode;
+              if (node == this.root)
+                return root;
+            }
+            if (node != null && node.nextSibling != null)
+              node = node.nextSibling;
+          }
+	      }
+        if (beforeNode)
+          beforeNode = false;
+	    }
+      else { // STEP 3.1.b
+        if (beforeNode) {
+          if (node.lastChild != null)
+            node = node.lastChild;
+          else if (node.previousSibling != null) {
+            if (node == this.root)
+              return null;
+            node = node.previousSibling;
+          }
+          else { // find the previous sibling of an ancestor in the subtree
+            while (node != null
+                   && node.previousSibling == null) {
+              node = node.parentNode;
+              if (node == this.root)
+                return root;
+            }
+            if (node != null && node.previousSibling != null)
+              node = node.previousSibling;
+          }
+        }
+        if (!beforeNode)
+          beforeNode = true;
+      }
+    }
+
+    // STEP 4
+    this.referenceNode = node;
+    this.pointerBeforeRefenceNode = beforeNode;
+    return node;
   }
 
   public function new(root: Node, whatToShow: FlagsWithAllState<WhatToShowFlag>, filter: NodeFilter)
