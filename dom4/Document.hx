@@ -37,6 +37,9 @@
 
 
 package dom4;
+
+import dom4.NodeFilter;
+
 import dom4.utils.Either;
 import dom4.utils.Namespaces;
 
@@ -331,6 +334,16 @@ class Document extends Node
 
   public function _detachRange(r: Range): Void {
     this._ranges.remove(r);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-document-createnodeiterator
+   */
+  public function createNodeIterator(root: Node,
+                                     ?whatToShow: Int = 0xFFFFFFFF,
+                                     ?filter: NodeFilter = null): NodeIterator {
+    var flags = new FlagsWithAllState<WhatToShowFlag>(whatToShow);
+    return (new NodeIterator(root, flags, filter));
   }
 
   /**********************************************

@@ -37,11 +37,48 @@
 
 package dom4;
 
+import dom4.NodeFilter;
+
 /*
- * STUB
+ * https://dom.spec.whatwg.org/#interface-nodeiterator
  */
 
 class NodeIterator {
-  
-  public function new() {}
+
+  public var root(default, null): Node;
+
+  public var referenceNode(default, null): Node;
+
+  public var pointerBeforeRefenceNode(default, null): Bool;
+
+  public var whatToShow(default, null): FlagsWithAllState<WhatToShowFlag>;
+
+  public var filter(default, null): NodeFilter;
+
+  public function nextNode(): Node
+  {
+    // TBD
+    return null;
+  }
+
+  public function previousNode(): Node
+  {
+    // TBD
+    return null;
+  }
+
+  public function detach(): Void
+  {
+    // TBD
+  }
+
+  public function new(root: Node, whatToShow: FlagsWithAllState<WhatToShowFlag>, filter: NodeFilter)
+  {
+    this.root = root;
+    this.whatToShow = whatToShow;
+    this.filter = filter;
+
+    this.referenceNode = root;
+    this.pointerBeforeRefenceNode = true;
+  }
 }

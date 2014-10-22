@@ -38,10 +38,64 @@
 package dom4;
 
 /*
- * STUB
+ * https://dom.spec.whatwg.org/#interface-nodefilter
  */
 
-class NodeFilter {
-  
-  public function new() {}
+// Constants for acceptNode()
+enum NodeFilterResponse {
+  FILTER_ACCEPT;
+  FILTER_REJECT;
+  FILTER_SKIP;
+}
+
+// Constants for whatToShow
+enum WhatToShowFlag {
+  SHOW_ALL;
+  SHOW_ELEMENT;
+  SHOW_ATTRIBUTE;
+  SHOW_TEXT;
+  SHOW_CDATA_SECTION;
+  SHOW_ENTITY_REFERENCE;
+  SHOW_ENTITY;
+  SHOW_PROCESSING_INSTRUCTION;
+  SHOW_COMMENT;
+  SHOW_DOCUMENT;
+  SHOW_DOCUMENT_TYPE;
+  SHOW_DOCUMENT_FRAGMENT;
+  SHOW_NOTATION;
+}
+
+class FlagsWithAllState<T:EnumValue>
+{
+    var i:Int;
+
+    public function new(?i=0)
+    {
+        this.i = i;
+    }
+
+    public inline function has( v : T ) : Bool {
+        return i & (1 << ((Type.enumIndex(v) > 1) ? Type.enumIndex(v) - 1 : 0xFFFFFFFF)) != 0;
+    }
+
+    public inline function set( v : T ) : Void {
+        i |= 1 << ((Type.enumIndex(v) > 1) ? Type.enumIndex(v) - 1 : 0xFFFFFFFF);
+    }
+
+    public inline function unset( v : T ) : Void {
+        i &= 0xFFFFFFFF - (1 << ((Type.enumIndex(v) > 1) ? Type.enumIndex(v) - 1 : 0xFFFFFFFF));
+    }
+
+    public inline static function ofInt<T:EnumValue>( i : Int ) : FlagsWithAllState<T> {
+        return new FlagsWithAllState<T>(i);
+    }
+
+    public inline function toInt() : Int {
+        return i;
+    }
+}
+
+interface NodeFilter {
+
+  public function acceptNode(node: Node): NodeFilterResponse;
 }
