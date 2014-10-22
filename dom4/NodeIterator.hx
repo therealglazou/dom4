@@ -107,9 +107,9 @@ class NodeIterator {
     // STEP 3
     do { // STEP 3.2
       // STEP 3.1.a
-	    if (direction == NODE_ITERATOR_NEXT) {
-	      if (!beforeNode) {
-	        if (node.firstChild != null)
+      if (direction == NODE_ITERATOR_NEXT) {
+        if (!beforeNode) {
+          if (node.firstChild != null)
             node = node.firstChild;
           else if (node.nextSibling != null) {
             if (node == this.root)
@@ -126,10 +126,10 @@ class NodeIterator {
             if (node != null && node.nextSibling != null)
               node = node.nextSibling;
           }
-	      }
+        }
         if (beforeNode)
           beforeNode = false;
-	    }
+      }
       else { // STEP 3.1.b
         if (beforeNode) {
           if (node.lastChild != null)
