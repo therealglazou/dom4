@@ -102,6 +102,7 @@ class DOMTokenList implements ArrayAccess<DOMString> {
    */
   public function toString(): DOMString
   {
+    this._sort();
     return this.stringArray.join(" ");
   }
 
@@ -174,7 +175,6 @@ class DOMTokenList implements ArrayAccess<DOMString> {
   {
     if (this.element == null || this.attribute == null)
       return;
-    this._sort();
     this.element.setAttributeNS(null, this.attribute, this.toString());
   }
 

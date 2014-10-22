@@ -35,13 +35,29 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+
 package dom4;
 
 /*
- * STUB
+ * https://dom.spec.whatwg.org/#domsettabletokenlist
  */
 
-class DOMSettableTokenList {
-  
-  public function new() {}
+class DOMSettableTokenList extends DOMTokenList {
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-domsettabletokenlist-value
+   */
+  public var value(get, set): DOMString;
+      private function get_value(): DOMString {
+        return this.toString();
+      }
+      private function set_value(v: DOMString): DOMString {
+		    this.stringArray = StringTools.trim(DOMTokenList.SPACE_MATCHING_EREG.replace(v, " ")).split(" ");
+        return this.toString();
+      }
+
+  public function new(v:DOMString)
+  {
+    super(v, null, null);
+  }
 }
