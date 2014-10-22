@@ -37,11 +37,27 @@
 
 package dom4;
 
+import dom4.NodeFilter;
+
 /*
- * STUB
+ * https://dom.spec.whatwg.org/#treewalker
  */
 
 class TreeWalker {
-  
-  public function new() {}
+
+  public var root(default, null): Node;
+
+  public var whatToShow(default, null): FlagsWithAllState<WhatToShowFlag>;
+
+  public var filter(default, null): NodeFilter;
+
+  public var currentNode(default, default): Node;
+
+  public function new(root: Node, whatToShow: FlagsWithAllState<WhatToShowFlag>, filter: NodeFilter)
+  {
+    this.root = root;
+    this.currentNode = root;
+    this.whatToShow = whatToShow;
+    this.filter = filter;
+  }
 }

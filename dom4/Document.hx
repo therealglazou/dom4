@@ -346,6 +346,16 @@ class Document extends Node
     return (new NodeIterator(root, flags, filter));
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#treewalker
+   */
+  public function createTreeWalker(root: Node,
+                                     ?whatToShow: Int = 0xFFFFFFFF,
+                                     ?filter: NodeFilter = null): TreeWalker {
+    var flags = new FlagsWithAllState<WhatToShowFlag>(whatToShow);
+    return (new TreeWalker(root, flags, filter));
+  }
+
   /**********************************************
    * IMPLEMENTATION HELPERS
    **********************************************/
