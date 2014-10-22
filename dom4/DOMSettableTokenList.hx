@@ -52,7 +52,7 @@ class DOMSettableTokenList extends DOMTokenList {
         return this.toString();
       }
       private function set_value(v: DOMString): DOMString {
-		    this.stringArray = StringTools.trim(DOMTokenList.SPACE_MATCHING_EREG.replace(v, " ")).split(" ");
+        this.stringArray = StringTools.trim(DOMTokenList.SPACE_MATCHING_EREG.replace(v, " ")).split(" ");
         return this.toString();
       }
 

@@ -79,9 +79,151 @@ class TreeWalker {
     return null;
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-treewalker-firstchild
+   */
+  public function firstChild(): Node
+  {
+    return this._traverseChildren(TREE_WALKER_FIRST);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-treewalker-lastchild
+   */
+  public function lastChild(): Node
+  {
+    return this._traverseChildren(TREE_WALKER_LAST);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-treewalker-previoussibling
+   */
+  public function previousSibling(): Node
+  {
+    return this._traverseSiblings(TREE_WALKER_PREVIOUS);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-treewalker-nextsibling
+   */
+  public function nextSibling(): Node
+  {
+    return this._traverseSiblings(TREE_WALKER_NEXT);
+  }
+
   /**********************************************
    * HELPERS DEFINED BY SPECIFICATION
    **********************************************/
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-traverse-children
+   */
+  private function _traverseChildren(type: TreeWalkerType) : Node
+  {
+    // STEP 1
+    var node = this.currentNode;
+    // STEP 2
+    node = ((type == TREE_WALKER_FIRST)
+            ? node.firstChild
+            : node.lastChild);
+    // STEP 3
+    while (node != null) {
+      // STEP 3.1
+      var result = NodeIterator._filterNode(node, whatToShow, filter);
+      // STEP 3.2
+      if (result == FILTER_ACCEPT) {
+        this.currentNode = node;
+        return node;
+      }
+      // STEP 3.3
+      if (result == FILTER_SKIP) {
+        // STEP 3.3.1
+        var child = ((type == TREE_WALKER_FIRST)
+                     ? node.firstChild
+                     : node.lastChild);
+        // STEP 3.3.2
+        if (child != null) {
+          node = child;
+          continue;
+        }
+      }
+      // STEP 3.4
+      while (node != null) {
+        // STEP 3.4.1
+        var sibling = ((type == TREE_WALKER_FIRST)
+                       ? node.nextSibling
+                       : node.previousSibling);
+        // STEP 3.4.2
+        if (sibling != null) {
+          node = sibling;
+          continue;
+        }
+        // STEP 3.4.3
+        var parent = node.parentNode;
+        // STEP 3.4.4
+        if (parent == null
+            || parent == this.root
+            || parent == this.currentNode)
+          return null;
+        // STEP 3.4.5
+        node = parent;
+      }
+    }
+    // STEP 4
+    return null; 
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#concept-traverse-siblings
+   */
+  private function _traverseSiblings(type: TreeWalkerType) : Node
+  {
+    // STEP 1
+    var node = this.currentNode;
+    // STEP 2
+    if (node == this.root)
+      return null;
+    // STEP 3
+    do {
+      // STEP 3.1
+      var sibling = ((type == TREE_WALKER_NEXT)
+                     ? node.nextSibling
+                     : node.previousSibling);
+      // STEP 3.2
+      while (sibling != null) {
+        // STEP 3.2.1
+        node = sibling;
+        // STEP 3.2.2
+        var result = NodeIterator._filterNode(node, whatToShow, filter);
+        // STEP 3.2.3
+        if (result == FILTER_ACCEPT) {
+          this.currentNode = node;
+          return node;
+        }
+        // STEP 3.2.4
+        sibling = ((type == TREE_WALKER_NEXT)
+                   ? node.firstChild
+                   : node.lastChild);
+        // STEP 3.2.5
+        if (result == FILTER_REJECT
+            || sibling == null) {
+          sibling = ((type == TREE_WALKER_NEXT)
+                     ? node.nextSibling
+                     : node.previousSibling);
+        }
+      }
+      // STEP 3.3
+      node = node.parentNode;
+      // STEP 3.4
+      if (node == null || node == this.root)
+        return null;
+      // STEP 3.5
+      if (NodeIterator._filterNode(node, whatToShow, filter) == FILTER_ACCEPT)
+        return null;
+      // STEP 3.6
+    }
+    while (true);
+  }
 
   public function new(root: Node, whatToShow: FlagsWithAllState<WhatToShowFlag>, filter: NodeFilter)
   {

@@ -163,12 +163,12 @@ class DOMTokenList implements ArrayAccess<DOMString> {
 
   private function _sort(): Void
   {
-		this.stringArray.sort( function(a:String, b:String):Int
-		{
-		    if (a < b) return -1;
-		    if (a > b) return 1;
-		    return 0;
-		} );
+    this.stringArray.sort( function(a:String, b:String):Int
+    {
+        if (a < b) return -1;
+        if (a > b) return 1;
+        return 0;
+    } );
   }
 
   private function _update(): Void
