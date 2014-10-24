@@ -67,6 +67,8 @@ class Node extends EventTarget {
   public static inline var DOCUMENT_POSITION_CONTAINED_BY: Int = 0x10;
   public static inline var DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: Int = 0x20;
 
+  private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
+
   /*
    * https://dom.spec.whatwg.org/#dom-node-nodetype
    */
@@ -539,10 +541,12 @@ class Node extends EventTarget {
     }
 
     if ((node.nodeType == Node.TEXT_NODE
+         && this.NOT_WHITESPACE_ONLY_EREG.match(cast(node, Text).data)
          && this.nodeType == Node.DOCUMENT_NODE)
         || (node.nodeType == Node.DOCUMENT_TYPE_NODE
-            && this.nodeType != Node.DOCUMENT_NODE))
+            && this.nodeType != Node.DOCUMENT_NODE)) {
       throw (new DOMException("HierarchyRequestError"));
+    }
 
     if (this.nodeType == Node.DOCUMENT_NODE) {
       if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
