@@ -38,15 +38,23 @@
 import dom4.Document;
 import dom4.DOMParser;
 
+import dom4.utils.TestContentSink;
 import dom4.utils.Serializer;
+
+import dom4.NodeFilter;
+import dom4.NodeIterator;
+import dom4.TreeWalker;
+
+import wx.App;
 
 class Test {
 
     static function main() : Void {
 
-        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  aaaaa  <p>   foobar<span>blag</span>  sdsdsdf</p>  <myelem label='foo'/></foobar>";
+        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  aaaaa  <p>   foobar<span>blag</span>  sdsdsdf</p>  <myelem label='foo'/></foobar>  ";
 
-        var parser = new DOMParser();
+        var contentSink = new TestContentSink();
+        var parser      = new DOMParser(contentSink);
         try {
           var document = parser.parseFromString(str, "text/xml"); 
   

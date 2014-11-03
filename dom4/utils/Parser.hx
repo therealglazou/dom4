@@ -49,6 +49,7 @@ extern private class S {
 
 class Parser
 {
+  private var contentSink: ContentSink;
   private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
 
   var document: Document;
@@ -100,7 +101,7 @@ class Parser
       if (parent.nodeType == Node.ELEMENT_NODE)
         namespace = cast(parent, Element).namespaceURI;
     }
-    var xml = ContentSink.createElement(document, namespace, this.elementName);
+    var xml = this.contentSink.createElement(document, namespace, this.elementName);
     parent.appendChild(xml);
     // we can't rely on prefix/namespace validation here because
     // the xmlns attributes are possibly not here yet...
@@ -457,5 +458,7 @@ class Parser
     return (c >= 'a'.code && c <= 'z'.code) || (c >= 'A'.code && c <= 'Z'.code) || (c >= '0'.code && c <= '9'.code) || c == ':'.code || c == '.'.code || c == '_'.code || c == '-'.code;
   }
 
-  public function new() {}
+  public function new(contentSink: ContentSink) {
+    this.contentSink = contentSink;
+  }
 }

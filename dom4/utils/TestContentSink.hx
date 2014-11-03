@@ -34,31 +34,16 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+ 
+package dom4.utils;
 
-package dom4;
-import dom4.utils.Parser;
-
-/*
- * https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#the-domparser-interface
- */
-
-class DOMParser {
-
-  private var contentSink: ContentSink;
-
-  public function new(contentSink: ContentSink) {
-    this.contentSink = contentSink;
-  }
-
-  public function parseFromString(str: DOMString, type: DOMString) : Document
+class TestContentSink implements ContentSink 
+{
+  public function createElement(document: Document, namespace: DOMString, name: DOMString): Element
   {
-    switch (type) {
-      case "text/xml"
-           | "application/xml"
-           | "application/xhtml+xml"
-           | "image/svg+xml" :
-        return (new Parser(contentSink)).parse(str);
-      case _: return null;
-    }
+    // almost a stub, to be replaced according to your needs and wishes
+    return document.createElementNS(namespace, name);
   }
+
+  public function new() {}
 }
