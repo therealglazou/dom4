@@ -38,7 +38,7 @@
 import dom4.Document;
 import dom4.DOMParser;
 
-import dom4.utils.TestContentSink;
+import dom4.utils.BasicContentSink;
 import dom4.utils.Serializer;
 
 import dom4.NodeFilter;
@@ -51,9 +51,9 @@ class Test {
 
     static function main() : Void {
 
-        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  aaaaa  <p>   foobar<span>blag</span>  sdsdsdf</p>  <myelem label='foo'/></foobar>  ";
+        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  aaaaa  <html:p>   foobar<span>blag</span>  sdsdsdf</html:p>  <myelem label='foo'/></foobar>  ";
 
-        var contentSink = new TestContentSink();
+        var contentSink = new BasicContentSink();
         var parser      = new DOMParser(contentSink);
         try {
           var document = parser.parseFromString(str, "text/xml"); 
