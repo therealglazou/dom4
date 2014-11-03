@@ -245,6 +245,8 @@ class Parser
         case S.TAG_NAME:
           if (!isValidChar(c))
           {
+            this.elementName = "";
+            this.elementPrefix = "";
             if( p == start )
               throw("Expected node name");
             var name = str.substr(start, p - start);
@@ -366,8 +368,10 @@ class Parser
             var match = Namespaces.PREFIXED_NAME_EREG.match(v);
             if ( match ) {
               if (null == Namespaces.PREFIXED_NAME_EREG.matched(3)) {
-                if (v != parent.nodeName)
+                // no prefix found
+                if (v != cast(parent, Element).localName) {
                   throw (new DOMException("Expected </" +parent.nodeName + ">"));
+                }
               }
               else {
                 var prefix = Namespaces.PREFIXED_NAME_EREG.matched(1);

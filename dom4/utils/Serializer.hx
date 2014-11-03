@@ -131,6 +131,10 @@ class Serializer
 
         case Node.ELEMENT_NODE:
           var prefix = cast(node, Element).prefix;
+          if (node.parentNode != null
+              && node.parentNode.nodeType == Node.ELEMENT_NODE
+              && prefix == cast(node.parentNode, Element).prefix)
+            prefix = "";
           toBeAdded = "<";
           toBeAdded += ((prefix != "") ? prefix + ":" : "") + cast(node, Element).localName;
           var elt = cast(node, Element);

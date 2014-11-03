@@ -37,7 +37,7 @@
  
 package dom4.utils;
 
-class TestContentSink implements ContentSink 
+class BasicContentSink implements ContentSink 
 {
   public function createElement(document: Document, namespace: DOMString, name: DOMString): Element
   {
