@@ -141,7 +141,7 @@ class Serializer
           var l = toBeAdded.length + 1;
           for (i in 0...elt.attributes.length) {
             var attr = elt.attributes.item(i);
-            var attrStr = (i == 0 ? " " : "") + ((attr.prefix != "" && attr.prefix != null) ? attr.prefix + ":" : "") + attr.name + "=\"" + attr.value + "\"";
+            var attrStr = " " + ((attr.prefix != "" && attr.prefix != null) ? attr.prefix + ":" : "") + attr.name + "=\"" + attr.value + "\"";
             if (i != 0 && this.wrap && attrStr.length + toBeAdded.length > this.maxColumns) {
               toBeAdded += "\n";
               for (j in 0...l + (this.indentation ? indent.length : 0))
