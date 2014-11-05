@@ -45,5 +45,10 @@ class BasicContentSink implements ContentSink
     return document.createElementNS(namespace, name);
   }
 
+  public function postCreateElement(element: Element): Void {}
+  public function finalizeElement(element: Element): Void {}
+  
+
+
   public function new() {}
 }

@@ -40,4 +40,6 @@ package dom4;
 interface ContentSink
 {
   public function createElement(document: Document, namespace: DOMString, name: DOMString): Element;
+  public function postCreateElement(element: Element): Void;
+  public function finalizeElement(element: Element): Void;
 }
