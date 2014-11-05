@@ -47,6 +47,7 @@ class Serializer
 
   private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
   private var TRIM_LEADING_TRAILING_CRS_EREG = new EReg("^[\r\n \t]*([^\r\n]*)[\r\n \t]*$", "");
+  private var COALESCE_WHITESPACES_EREG = new EReg("[ \t\r\n]+", "g");
 
   private function addString(node:Node, str: String, toBeAdded: String, indent: String): String
   {
@@ -84,6 +85,7 @@ class Serializer
             }
 
             if (this.wrap) {
+              toBeAdded = this.COALESCE_WHITESPACES_EREG.replace(toBeAdded, " ");
               while (toBeAdded.length != 0) {
                 var lastCR = str.lastIndexOf("\n");
                 var length = str.length - lastCR;
