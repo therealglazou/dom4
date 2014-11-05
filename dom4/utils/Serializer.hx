@@ -85,7 +85,6 @@ class Serializer
 
             if (this.wrap) {
               while (toBeAdded.length != 0) {
-                  trace(toBeAdded.length);
                 var lastCR = str.lastIndexOf("\n");
                 var length = str.length - lastCR;
                 if (length + toBeAdded.length > this.maxColumns) {
