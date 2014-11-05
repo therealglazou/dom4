@@ -46,47 +46,73 @@ class Serializer
   private var indentation: Bool = false;
 
   private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
-  private var TRIM_LEADING_TRAILING_CRS_EREG = new EReg("^[\r\n]*([^\r\n]*)[\r\n]*$", "");
+  private var TRIM_LEADING_TRAILING_CRS_EREG = new EReg("^[\r\n \t]*([^\r\n]*)[\r\n \t]*$", "");
 
   private function addString(node:Node, str: String, toBeAdded: String, indent: String): String
   {
     // should we add a trailing return?
     var addedCR = (str.fastCodeAt(str.length - 1) == '\n'.code);
-    if (this.wrap) {
-      var lastCR = str.lastIndexOf("\n");
-      var length = str.length - lastCR;
-      if (!addedCR && length + toBeAdded.length > this.maxColumns) {
-        str += "\n";
-        addedCR = true;
-      }
-    }
 
     if (this.indentation) {
       switch (node.nodeType) {
         case Node.DOCUMENT_TYPE_NODE:
+          // do not pretty-print or wrap
           str += toBeAdded;
         case Node.TEXT_NODE:
-          if (!this.NOT_WHITESPACE_ONLY_EREG.match(toBeAdded)) {
-            // only whitespace, do nothing
-            return str;
-          }
-          // alone in its parent element ?
           if (node.parentNode != null
-              && ((node.parentNode.nodeType == Node.ELEMENT_NODE
-                   && cast(node.parentNode, Element).firstElementChild != null)
-                  || node.parentNode.nodeType != Node.ELEMENT_NODE)) {
-            if (!addedCR)
-              str += "\n";
-            str += indent + StringTools.trim(toBeAdded);
+              && node.parentNode.nodeType == Node.ELEMENT_NODE
+              && (node.parentNode.nodeName == "STYLE"
+                  || node.parentNode.nodeName == "SCRIPT"
+                  || node.parentNode.nodeName == "PRE")) {
+            // special case, do NOT wrap or pretty-print
+            str += toBeAdded;
           }
-          else { // get rid of trailing and leading CRs
-            if (!this.TRIM_LEADING_TRAILING_CRS_EREG.match(toBeAdded)) {
-              str += this.TRIM_LEADING_TRAILING_CRS_EREG.matched(1);
+          else { // just the regular text in a rgular element
+            if (!this.NOT_WHITESPACE_ONLY_EREG.match(toBeAdded)) {
+              // only whitespace, do nothing
+              return str;
+            }
+            // alone in its parent element ?
+            if (node.parentNode != null
+                && ((node.parentNode.nodeType == Node.ELEMENT_NODE
+                     && cast(node.parentNode, Element).firstElementChild != null)
+                    || node.parentNode.nodeType != Node.ELEMENT_NODE)) {
+              // no, not alone
+              if (!addedCR)
+                str += "\n";
+              str += indent;
+            }
+
+            if (this.wrap) {
+              while (toBeAdded.length != 0) {
+                  trace(toBeAdded.length);
+                var lastCR = str.lastIndexOf("\n");
+                var length = str.length - lastCR;
+                if (length + toBeAdded.length > this.maxColumns) {
+                  var lastSpace = toBeAdded.lastIndexOf(" ", this.maxColumns - length);
+                  str += StringTools.trim(toBeAdded.substr(0, lastSpace)) + "\n" + indent;
+                  toBeAdded = toBeAdded.substring(lastSpace + 1);
+                  addedCR = true;
+                }
+                else {
+                  str += StringTools.trim(toBeAdded);
+                  toBeAdded = "";
+                }
+              }
             }
             else
-              str += toBeAdded;
+              str += StringTools.trim(toBeAdded);
           }
         case Node.ELEMENT_NODE:
+          // that's for attribute pretty-printing
+          if (this.wrap) {
+            var lastCR = str.lastIndexOf("\n");
+            var length = str.length - lastCR;
+            if (!addedCR && length + toBeAdded.length > this.maxColumns) {
+              str += "\n";
+              addedCR = true;
+            }
+          }
           if (!addedCR)
             str += "\n";
           str += indent + toBeAdded;

@@ -76,6 +76,11 @@ class Parser
     return document;
   }
 
+  public function doFinalizeElement(element: Element): Void
+  {
+    this.contentSink.finalizeElement(element);
+  }
+
   public function doCreateElement(parent: Node): Node
   {
     if (parent == null
@@ -100,8 +105,17 @@ class Parser
     else {
       if (parent.nodeType == Node.ELEMENT_NODE)
         namespace = cast(parent, Element).namespaceURI;
+      else {
+        // case of the root element if the context document is known as a HTML document
+        if (document.doctype != null && document.doctype.name == "html")
+          namespace = Namespaces.HTML_NAMESPACE;
+      }
     }
-    var xml = this.contentSink.createElement(document, namespace, this.elementName);
+
+    var xml = this.contentSink.createElement(document, namespace,
+                  ((namespace == Namespaces.HTML_NAMESPACE)
+                   ? this.elementName.toLowerCase()
+                   : this.elementName));
     parent.appendChild(xml);
     // we can't rely on prefix/namespace validation here because
     // the xmlns attributes are possibly not here yet...
@@ -113,18 +127,20 @@ class Parser
       var prefix = attribute[0];
       var name   = attribute[1];
       var value  = attribute[2];
-      if (prefix == "")
+      if (prefix == "") {
         xml.setAttribute(name, value);
         if (name == "xmlns") {
           if (this.elementPrefix != "")
             throw (new DOMException("NamespaceError"));
           cast(xml, Element)._setNamespaceURI(value);
         }
+      }
       else {
         var namespace = cast(xml, Node)._locateNamespace(prefix);
         xml.setAttributeNS(namespace, (prefix != "" ? prefix + ":" : "") + name, value);
       }
     }
+    this.contentSink.postCreateElement(xml);
 
     this.elementName = null;
     return xml;
@@ -343,6 +359,7 @@ class Parser
           {
             case '>'.code:
               xml = doCreateElement(parent);
+              doFinalizeElement(cast(xml, Element));
               state = S.BEGIN;
             default :
               throw("Expected >");
@@ -352,6 +369,8 @@ class Parser
           {
             case '>'.code:
               xml = doCreateElement(parent);
+              if (this.elementName == "" || this.elementName == null)
+                doFinalizeElement(cast(parent, Element));
               if( nsubs == 0 && parent.nodeType == Node.ELEMENT_NODE)
                 parent.appendChild(document.createTextNode(""));
               return p;
