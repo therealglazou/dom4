@@ -73,7 +73,6 @@ class DOMTokenList implements ArrayAccess<DOMString> {
    */
   public function contains(token: DOMString): Bool
   {
-      trace("foo");
     if (token == "")
       throw (new DOMException("SyntaxError"));
     if (SPACE_MATCHING_EREG.match(token))
