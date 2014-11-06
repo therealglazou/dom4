@@ -379,6 +379,13 @@ class Document extends Node
     }
   }
 
+  static public function _setURL(doc: Document, URL: DOMString): Void
+  {
+    if (doc == null)
+      return;
+    doc.URL = URL;
+  }
+
   /**********************************************
    * HELPERS DEFINED BY SPECIFICATION
    **********************************************/
