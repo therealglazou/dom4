@@ -121,9 +121,15 @@ class Document extends Node
     var node = cast(this.documentElement, Node);
     var rv: Array<Element> = [];
     while (node != null) {
-      if (node.nodeType == Node.ELEMENT_NODE
-          && (localName == "*" || node.nodeName == localName))
+      if (node.nodeType == Node.ELEMENT_NODE) {
+        var elt = cast(node, Element);
+        if (localName == "*" // STEP 1
+            || (this.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE // STEP 2
+                && ((elt.namespaceURI == Namespaces.HTML_NAMESPACE && localName == elt.localName.toLowerCase())
+                    || (elt.namespaceURI != Namespaces.HTML_NAMESPACE && localName == elt.localName)))
+            || localName == elt.localName) // STEP 3
         rv.push(cast(node, Element));
+      }
       if (node.firstChild != null)
         node = node.firstChild;
       else if (node.nextSibling != null)
@@ -131,6 +137,8 @@ class Document extends Node
       else {
         while (node != null && node.nextSibling == null)
           node = node.parentNode;
+        if (node != null)
+          node = node.nextSibling;
       }
     }
     return new HTMLCollection(rv);
