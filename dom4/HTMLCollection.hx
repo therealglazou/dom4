@@ -45,6 +45,10 @@ class HTMLCollection implements ArrayAccess<Element> {
    */
 
   private var elements: Array<Element>;
+  public var _elements(get, null): Array<Element>;
+      private function get__elements(): Array<Element> {
+        return this.elements;
+      }
 
   /*
    * https://dom.spec.whatwg.org/#dom-htmlcollection-length
