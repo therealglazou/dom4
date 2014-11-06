@@ -104,7 +104,13 @@ class Element extends Node
   /*
    * https://dom.spec.whatwg.org/#dom-element-classlist
    */
-  public var classList(default, null): DOMTokenList;
+  public var classList(get, null): DOMTokenList;
+      private function get_classList(): DOMTokenList
+      {
+        return (new DOMTokenList(this.getAttribute("class"),
+                                 this,
+                                 "class"));
+      }
 
   /*
    * https://dom.spec.whatwg.org/#dom-element-hasattributes

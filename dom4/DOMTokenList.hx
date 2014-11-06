@@ -73,6 +73,7 @@ class DOMTokenList implements ArrayAccess<DOMString> {
    */
   public function contains(token: DOMString): Bool
   {
+      trace("foo");
     if (token == "")
       throw (new DOMException("SyntaxError"));
     if (SPACE_MATCHING_EREG.match(token))
@@ -185,6 +186,7 @@ class DOMTokenList implements ArrayAccess<DOMString> {
     this.element = element;
     this.attribute = attribute;
 
+    if (v == null) v = "";
     this.stringArray = StringTools.trim(DOMTokenList.SPACE_MATCHING_EREG.replace(v, " ")).split(" ");
     this.stringArray.sort( function(a:String, b:String):Int
                            {
