@@ -153,7 +153,7 @@ class CSSParser  {
           // we need a new selector in the chain but we can't allow
           // two consecutive commas
           if (newInGroup || parsingNegation)
-            throw (new DOMException("SyntaxError"));
+            throw (new DOMException("Syntax error, a comma cannot start a selector"));
           newInGroup = true;
           // don't watch whitespaces after a comma
           token = this.getToken(true, true);
@@ -175,7 +175,7 @@ class CSSParser  {
         if (newInGroup) {
           // cannot have a combinator as first thing in a group
           if (this.isTokenCombinator(token))
-            throw (new DOMException("SyntaxError"));
+            throw (new DOMException("Syntax error, a combinator cannot lead a selector"));
 
           newInGroup = false;
           firstInChain = true;
@@ -230,7 +230,7 @@ class CSSParser  {
         else if (token.isSymbol("#")) {
           token = this.getToken(false, true);
           if (!token.isNotNull() || !token.isIdent())
-            throw (new DOMException("SyntaxError"));
+            throw (new DOMException("Syntax error after a hash noting a class selector"));
           selector.IDList.push(token.value);
         }
 
@@ -238,7 +238,7 @@ class CSSParser  {
         else if (token.isSymbol(".")) {
           token = this.getToken(false, true);
           if (!token.isNotNull() || !token.isIdent())
-            throw (new DOMException("SyntaxError"));
+            throw (new DOMException("Syntax error after a period noting a class selector"));
           selector.ClassList.push(token.value);
         }
 
@@ -253,7 +253,7 @@ class CSSParser  {
             if (!token.isNotNull() || !token.isIdent())
               throw (new DOMException("SyntaxError"));
             if (!CSSSelector.isPseudoElement(token.value))
-              throw (new DOMException("SyntaxError"));
+              throw (new DOMException("Unknown pseudo-element"));
             selector.pseudoElement = token.value;
           }
           else if (token.isIdent()) {
@@ -265,7 +265,7 @@ class CSSParser  {
               selector.PseudoClassList.push(token.value);
             }
             else // unknown...
-              throw (new DOMException("SyntaxError"));
+              throw (new DOMException("Unknown pseudo-class"));
           }
           else if (token.isFunction()
                    && CSSSelector.isFunctionalPseudoClass(token.value)) {
@@ -294,7 +294,7 @@ class CSSParser  {
                   expectingString = false;
                 }
                 else
-                  throw (new DOMException("SyntaxError"));
+                  throw (new DOMException("Syntax error in :lang() argument"));
 
                 token = this.getToken(true, true);
               }
@@ -305,7 +305,7 @@ class CSSParser  {
                 selector.negation = new CSSSelector();
               this.parseSelector("", true, selector.negation);
             }
-            else { // must be an+b
+            else { // must be an+b/even/odd
               var type = token.value;
               var s = "";
               token = this.getToken(true, false);
@@ -349,10 +349,12 @@ class CSSParser  {
                 };
                 selector.NthPseudoclassList.push(p);
               }
+              else
+                throw (new DOMException("Syntax error in :nth-*() argument"));
             }
           }
           else // not a known pseudo-class
-            throw (new DOMException("SyntaxError"));
+            throw (new DOMException("Unknown functional pseudo-class"));
         }
 
         // ATTR SELECTORS
