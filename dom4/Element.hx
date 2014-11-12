@@ -334,6 +334,98 @@ class Element extends Node
     this.parentNode.removeChild(this);
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-getelementsbytagname
+   */
+  public function getElementsByTagName(localName: DOMString): HTMLCollection
+  {
+    var node = cast(this, Node);
+    var sourceNode = node;
+    var ns = sourceNode.ownerDocument.documentElement.namespaceURI;
+    var rv: Array<Element> = [];
+    do {
+      if (node.nodeType == Node.ELEMENT_NODE) {
+        var elt = cast(node, Element);
+        if (localName == "*" // STEP 1
+            || (ns == Namespaces.HTML_NAMESPACE // STEP 2
+                && ((elt.namespaceURI == Namespaces.HTML_NAMESPACE && localName == elt.localName.toLowerCase())
+                    || (elt.namespaceURI != Namespaces.HTML_NAMESPACE && localName == elt.localName)))
+            || localName == elt.localName) // STEP 3
+        rv.push(cast(node, Element));
+      }
+      if (node.firstChild != null)
+        node = node.firstChild;
+      else if (node != sourceNode && node.nextSibling != null)
+        node = node.nextSibling;
+      else {
+        while (node != sourceNode && node.nextSibling == null)
+          node = node.parentNode;
+        if (node != sourceNode)
+          node = node.nextSibling;
+      }
+    } while (node != sourceNode);
+    return new HTMLCollection(rv);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-getelementsbytagnamens
+   */
+  public function getElementsByTagNameNS(?namespace: DOMString, localName: DOMString): HTMLCollection
+  {
+    var node = cast(this, Node);
+    var sourceNode = node;
+    var rv: Array<Element> = [];
+    do {
+      if (node.nodeType == Node.ELEMENT_NODE) {
+        var elt = cast(node, Element);
+        if ((localName == "*" || elt.localName == localName)
+            && (namespace == "*" || elt.namespaceURI == namespace))
+          rv.push(elt);
+      }
+      if (node.firstChild != null)
+        node = node.firstChild;
+      else if (node != sourceNode && node.nextSibling != null)
+        node = node.nextSibling;
+      else {
+        while (node != sourceNode && node.nextSibling == null)
+          node = node.parentNode;
+      }
+    } while (node != sourceNode);
+    return new HTMLCollection(rv);
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-element-getelementsbyclassname
+   */
+  public function getElementsByClassName(classNames: DOMString): HTMLCollection
+  {
+    var node = cast(this, Node);
+    var sourceNode = node;
+    var domTokens = new DOMTokenList(classNames);
+    // early way out if we can
+    if (domTokens.length == 0)
+      return new HTMLCollection();
+
+    var rv: Array<Element> = [];
+    do {
+      if (node.nodeType == Node.ELEMENT_NODE) {
+        var elt = cast(node, Element);
+        var elementDomTokens = new DOMTokenList(elt.className);
+        if (elementDomTokens.supersets(domTokens))
+          rv.push(elt);
+      }
+      if (node.firstChild != null)
+        node = node.firstChild;
+      else if (node != sourceNode && node.nextSibling != null)
+        node = node.nextSibling;
+      else {
+        while (node != sourceNode && node.nextSibling == null)
+          node = node.parentNode;
+      }
+    } while (node != sourceNode);
+    return new HTMLCollection(rv);
+  }
+
   public function _setPrefix(n: DOMString): Void
   {
     this.prefix = n;
