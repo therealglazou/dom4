@@ -29,6 +29,16 @@ class Token {
     public var value : Dynamic;
     public var unit : String;
 
+    public function toString(): DOMString
+    {
+      return switch(this.type) {
+        case NULL_TYPE:        "null";
+        case WHITESPACE_TYPE:  " ";
+        case DIMENSION_TYPE:   this.value + this.unit;
+        case _ :  this.value;
+      };
+    }
+
     public function new(aType : TokenType, aValue : Dynamic, aUnit: String) {
         type = aType;
         value = aValue;

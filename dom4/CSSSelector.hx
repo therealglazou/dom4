@@ -60,7 +60,7 @@ typedef NthFunctionalPseudo = {
 
 class CSSSelector {
 
-    public var elementType : DOMString; // could become an Atom
+    public var elementTypeList : Array<DOMString>; // could become an Atom
     public var IDList : Array<DOMString>;
     public var ClassList : Array<DOMString>;
 
@@ -71,7 +71,7 @@ class CSSSelector {
     public var PseudoClassList : Array<DOMString>;
 
     public var pseudoElement: DOMString;
-    public var negations : Array<CSSSelector>;
+    public var negation : CSSSelector;
     public var parent : CSSSelector;
 
     public var next : CSSSelector;
@@ -127,13 +127,14 @@ class CSSSelector {
     }
 
     public function new() {
-        this.elementType = "*";
+        this.elementTypeList = [];
         this.IDList = [];
         this.ClassList = [];
         this.AttrList = [];
         this.LangPseudoClassList = [];
         this.PseudoClassList = [];
-        this.negations = [];
+        this.NthPseudoclassList = [];
+        this.negation = null;
         this.parent = null;
         this.next = null;
         this.combinator = COMBINATOR_NONE;

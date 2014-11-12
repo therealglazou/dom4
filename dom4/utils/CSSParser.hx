@@ -51,6 +51,8 @@ class CSSParser  {
      */
     private var mPreservedTokens : Array<Token>;
     private var mError : String;
+    // specific for the an+b notation
+    private var ANB_EREG = new EReg("^([\\-\\+]?[0-9]+)n$|^([\\-\\+]?[0-9]+)n[ \t\r\n]*([\\-\\+])[ \t\r\n]*([0-9]+)$|^([\\-\\+]?[0-9]+)$", "");
 
     /*
      * for tokenization
@@ -133,23 +135,24 @@ class CSSParser  {
                || aToken.isSymbol(">"));
     }
 
-    public function parseSelector(aString: DOMString): CSSSelector
+    public function parseSelector(aString: DOMString, ?parsingNegation: Bool = false, ?selector:CSSSelector = null): CSSSelector
     {
-      var selector:CSSSelector = null;
       var newInGroup = true;
       var firstInChain = true;
 
-      // init the scanner with our string to parse
-      mScanner = new Scanner(aString);
+      if (!parsingNegation) {
+        // init the scanner with our string to parse
+        mScanner = new Scanner(aString);
+      }
       // let's dance, baby...
       var token = this.getToken(true, true);
 
-      while (token.isNotNull()) {
-
+      while (token.isNotNull()
+             && (!parsingNegation || !token.isSymbol(")"))) {
         if (token.isSymbol(",")) { // group of selectors;
           // we need a new selector in the chain but we can't allow
           // two consecutive commas
-          if (newInGroup)
+          if (newInGroup || parsingNegation)
             throw (new DOMException("SyntaxError"));
           newInGroup = true;
           // don't watch whitespaces after a comma
@@ -176,15 +179,17 @@ class CSSParser  {
 
           newInGroup = false;
           firstInChain = true;
-          var s = new CSSSelector();
-          s.next = selector;
-          selector = s;
+          if (!parsingNegation) {
+            var s = new CSSSelector();
+            s.next = selector;
+            selector = s;
+          }
         }
 
         // is it a combinator?
         if (token.isWhiteSpace()) {
           var nextToken = this.lookAhead(true, true);
-          if (!token.isSymbol(",") && !this.isTokenCombinator(nextToken)) {
+          if (!token.isSymbol(",") && !this.isTokenCombinator(nextToken) && !parsingNegation) {
             // yes, it's a combinator
             var s = new CSSSelector();
             s.parent = selector;
@@ -197,7 +202,7 @@ class CSSParser  {
           }
         }
         // other combinators
-        if (this.isTokenCombinator(token)) {
+        else if (!parsingNegation && this.isTokenCombinator(token)) {
           var s = new CSSSelector();
           s.parent = selector;
           selector = s;
@@ -214,11 +219,11 @@ class CSSParser  {
         }
 
         // TYPE ELEMENT SELECTOR
-        if (firstInChain
+        else if (firstInChain
             && (token.isSymbol("*")
                 || token.isIdent())) {
           // this is a type element selector
-          selector.elementType = token.value;
+          selector.elementTypeList.push(token.value);
         }
 
         // ID SELECTOR
@@ -281,7 +286,7 @@ class CSSParser  {
                   langArray.push(token.value);
                   expectingString = false;
                 }
-                else if (token.isSymbol("*") && !expectingString) {
+                else if (token.isSymbol("*") && expectingString) {
                   token = this.getToken(false, true);
                   if (!token.isIdent())
                     throw (new DOMException("SyntaxError"));
@@ -295,9 +300,55 @@ class CSSParser  {
               }
               selector.LangPseudoClassList.push(langArray);
             }
-            else {
-              // that's a nth-*() function
-              // TBD
+            else if (!parsingNegation && token.value == "not(") {
+              if (selector.negation == null)
+                selector.negation = new CSSSelector();
+              this.parseSelector("", true, selector.negation);
+            }
+            else { // must be an+b
+              var type = token.value;
+              var s = "";
+              token = this.getToken(true, false);
+              while (token.isNotNull()) {
+                if (token.isSymbol(")")) {
+                  break;
+                }
+                s += token.toString();
+                token = this.getToken(false, false);
+              }
+              if (!token.isSymbol(")"))
+                throw (new DOMException("SyntaxError"));
+              var a: Int = 0;
+              var b: Int = 0;
+              if (s == "even") {
+                a = 2;
+              }
+              else if (s == "odd") {
+                a = 2;
+                b = 1;
+              }
+              else if (this.ANB_EREG.match(StringTools.trim(s))) {
+                // we should be dealing here with the CSS token types but
+                // that's so ugly, hacky and painful a good'ol'regexp is a better,
+                // cheaper and less error-prone solution. That's wrong but that's
+                // life...
+                if (this.ANB_EREG.matched(1) != null) {
+                  a = Std.parseInt(this.ANB_EREG.matched(1));
+                }
+                else if (this.ANB_EREG.matched(5) != null) {
+                  b = Std.parseInt(this.ANB_EREG.matched(5));
+                }
+                else {
+                  a = Std.parseInt(this.ANB_EREG.matched(2));
+                  b = Std.parseInt(this.ANB_EREG.matched(3) + this.ANB_EREG.matched(4));
+                }
+                var p = {
+                  type: type.substr(0, type.length - 1),
+                  a: a,
+                  b: b
+                };
+                selector.NthPseudoclassList.push(p);
+              }
             }
           }
           else // not a known pseudo-class
@@ -305,7 +356,7 @@ class CSSParser  {
         }
 
         // ATTR SELECTORS
-        if (token.isSymbol("[")) {
+        else if (token.isSymbol("[")) {
           
         }
 
