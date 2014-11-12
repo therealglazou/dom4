@@ -38,6 +38,8 @@
 package dom4;
 
 import dom4.utils.Either;
+import dom4.utils.CSSParser;
+import dom4.utils.SelectorMatching;
 
 class ParentNodeImpl {
 
@@ -159,5 +161,25 @@ class ParentNodeImpl {
     // STEP 1
     var node = ParentNodeImpl._mutationMethod(refNode, nodes);
     refNode.appendChild(node);
-  }  
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-parentnode-queryselector
+   */
+  static public function querySelector(refNode: Node, selectors: DOMString): Element
+  {
+    var parser = new CSSParser();
+    var parsedSelectors = parser.parseSelector(selectors);
+
+    var iter = refNode.ownerDocument.createNodeIterator(refNode, 1);
+    var node = iter.nextNode();
+    while (node != null) {
+      var elt = cast(node, Element);
+      if (SelectorMatching.matches(elt, parsedSelectors))
+        return elt;
+      node = iter.nextNode();
+    }
+
+    return null;
+  }
 }

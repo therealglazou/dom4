@@ -11,11 +11,11 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is JSCSSP code.
+ * The Original Code is dom4 code.
  *
  * The Initial Developer of the Original Code is
-* Disruptive Innovations SAS
- * Portions created by the Initial Developer are Copyright (C) 2010
+ * Disruptive Innovations SAS
+ * Portions created by the Initial Developer are Copyright (C) 2014
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -35,27 +35,46 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package dom4;
+package dom4.utils;
 
-enum CSSAttrSelectorFunction {
-    ATTR_EXISTS;
-    ATTR_EQUALS;
-    ATTR_INCLUDES;
-    ATTR_DASHMATCH;
-    ATTR_BEGINSMATCH;
-    ATTR_ENDSMATCH;
-    ATTR_CONTAINSMATCH;
-}
+class SelectorMatching {
 
-class CSSAttrSelector {
-    public var name : String;
-    public var value : String;
-    public var caseInsensitive : Bool;
-    public var operator : CSSAttrSelectorFunction;
-
-    public function new() {
-        this.name = "";
-        this.value = "";
-        this.caseInsensitive = false;
+  static public function matches(elt: Element, selector: CSSSelector): Bool
+  {
+    // test all selectors in the group, exit on positive answer
+    if (selector.next != null) {
+      if (SelectorMatching.matches(elt, selector.next))
+        return true;
     }
+
+    if (selector == null) // sanity case
+      throw (new DOMException("Unknown error, parsed selector should not be null"));
+
+    var id = elt.getAttribute("id");
+    if (selector.IDList.length != 0 && selector.IDList.filter(
+            function(f) {
+              return (id == f);
+            }).length == 0)
+      return false;
+
+    var n = elt.localName;
+    if (elt.ownerDocument.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE)
+      n = n.toLowerCase();
+    if (selector.elementTypeList.length != 0 && selector.elementTypeList.filter(
+            function(f) {
+                return (f == "*") || ((elt.namespaceURI == Namespaces.HTML_NAMESPACE)
+                        ? n == f.toLowerCase()
+                        : n == f);
+            }).length == 0)
+      return false;
+
+    var cl = elt.classList;
+    if (selector.ClassList.length != 0 && selector.ClassList.filter(
+            function(f) {
+              return cl.contains(f);
+            }).length == 0)
+      return false;
+
+    return true;
+  }
 }

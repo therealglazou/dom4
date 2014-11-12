@@ -19,7 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *   Daniel Glazman <d.glazman@partner.samsung.com>
+ *   Daniel Glazman <daniel.glazman@disruptive-innovations.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -87,6 +87,7 @@ class CSSSelector {
     ];
 
     static private var mPeudoClassList = [
+    /*
         "hover",
         "active",
         "focus",
@@ -94,6 +95,7 @@ class CSSSelector {
         "disabled",
         "checked",
         "indeterminate",
+    */
         "root",
         "first-child",
         "last-child",

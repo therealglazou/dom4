@@ -86,7 +86,7 @@ class NodeIterator {
     // STEP 1
     var n = node.nodeType - 1;
     // STEP 2
-    if (w.toInt() & (1 << n) != 0)
+    if (w.toInt() & (1 << n) == 0)
       return FILTER_SKIP;
     // STEP 3
     if (f == null)
@@ -111,50 +111,46 @@ class NodeIterator {
         if (!beforeNode) {
           if (node.firstChild != null)
             node = node.firstChild;
-          else if (node.nextSibling != null) {
-            if (node == this.root)
-              return null;
+          else if (node != this.root && node.nextSibling != null) {
             node = node.nextSibling;
           }
           else { // find the next sibling of an ancestor in the subtree
-            while (node != null
+            while (node != null && node != this.root
                    && node.nextSibling == null) {
               node = node.parentNode;
-              if (node == this.root)
-                return root;
             }
-            if (node != null && node.nextSibling != null)
+            if (node != null && node != this.root && node.nextSibling != null)
               node = node.nextSibling;
           }
+          if (node == this.root)
+            return null;
         }
-        if (beforeNode)
+        else
           beforeNode = false;
       }
       else { // STEP 3.1.b
         if (beforeNode) {
           if (node.lastChild != null)
             node = node.lastChild;
-          else if (node.previousSibling != null) {
-            if (node == this.root)
-              return null;
+          else if (node != this.root && node.previousSibling != null) {
             node = node.previousSibling;
           }
           else { // find the previous sibling of an ancestor in the subtree
-            while (node != null
+            while (node != null && node != this.root
                    && node.previousSibling == null) {
               node = node.parentNode;
-              if (node == this.root)
-                return root;
             }
-            if (node != null && node.previousSibling != null)
+            if (node != null && node != this.root && node.previousSibling != null)
               node = node.previousSibling;
           }
+          if (node == this.root)
+            return null;
         }
-        if (!beforeNode)
+        else
           beforeNode = true;
       }
     }
-    while (node != null && NodeIterator._filterNode(node, whatToShow, filter) != FILTER_ACCEPT);
+    while (node != null && node != this.root && NodeIterator._filterNode(node, whatToShow, filter) != FILTER_ACCEPT);
 
     // STEP 4
     this.referenceNode = node;
