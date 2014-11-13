@@ -37,6 +37,8 @@
 
 package dom4.utils;
 
+import dom4.CSSSelector;
+
 class SelectorMatching {
 
   static public function matches(elt: Element, selector: CSSSelector): Bool
@@ -50,31 +52,110 @@ class SelectorMatching {
     if (selector == null) // sanity case
       throw (new DOMException("Unknown error, parsed selector should not be null"));
 
-    var id = elt.getAttribute("id");
-    if (selector.IDList.length != 0 && selector.IDList.filter(
-            function(f) {
-              return (id == f);
-            }).length == 0)
-      return false;
+    var rv: Bool;
+    var currentCombinator = COMBINATOR_NONE;
+    do {
+      rv = true;
+      var id = elt.getAttribute("id");
+      if (selector.IDList.length != 0 && selector.IDList.filter(
+              function(f) {
+                return (id == f);
+              }).length == 0)
+        rv = false;
+  
+      var n = elt.localName;
+      if (elt.ownerDocument.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE)
+        n = n.toLowerCase();
+      if (rv && selector.elementTypeList.length != 0 && selector.elementTypeList.filter(
+              function(f) {
+                  return (f == "*") || ((elt.namespaceURI == Namespaces.HTML_NAMESPACE)
+                          ? n == f.toLowerCase()
+                          : n == f);
+              }).length != selector.elementTypeList.length)
+        rv = false;
+  
+      var cl = elt.classList;
+      if (rv && selector.ClassList.length != 0 && selector.ClassList.filter(
+              function(f) {
+                return cl.contains(f);
+              }).length != selector.ClassList.length)
+        rv = false;
+  
+      if (rv && selector.AttrList.length != 0 && selector.AttrList.filter(
+              function(f) {
+                trace(f.name);
+                return (elt.hasAttribute(f.name) && switch (f.operator) {
+                  case ATTR_EXISTS: true;
+                  case ATTR_EQUALS:        (f.caseInsensitive
+                                            ? elt.getAttribute(f.name).toLowerCase() == f.value.toLowerCase()
+                                            : elt.getAttribute(f.name) == f.value);
+                  case ATTR_CONTAINSMATCH: (f.caseInsensitive
+                                            ? (elt.getAttribute(f.name).toLowerCase().indexOf(f.value.toLowerCase()) != -1)
+                                            : (elt.getAttribute(f.name).indexOf(f.value) != -1));
+                  case ATTR_BEGINSMATCH:   (f.caseInsensitive
+                                            ? StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase())
+                                            : StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase()));
+                  case ATTR_ENDSMATCH:     (f.caseInsensitive
+                                            ? StringTools.endsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase())
+                                            : StringTools.endsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase()));
+                  case ATTR_DASHMATCH:     (f.caseInsensitive
+                                            ? elt.getAttribute(f.name).toLowerCase() == f.value.toLowerCase()
+                                            : elt.getAttribute(f.name) == f.value)
+                                           || (f.caseInsensitive
+                                               ? StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase() + "-")
+                                               : StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase() + "-"));
+                  case ATTR_INCLUDES:      (f.caseInsensitive
+                                            ? (elt.getAttribute(f.name).toLowerCase().split(" ").indexOf(f.value.toLowerCase()) != -1)
+                                            : (elt.getAttribute(f.name).split(" ").indexOf(f.value) != -1));
+                });
+              }).length != selector.AttrList.length)
+        rv = false;
 
-    var n = elt.localName;
-    if (elt.ownerDocument.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE)
-      n = n.toLowerCase();
-    if (selector.elementTypeList.length != 0 && selector.elementTypeList.filter(
-            function(f) {
-                return (f == "*") || ((elt.namespaceURI == Namespaces.HTML_NAMESPACE)
-                        ? n == f.toLowerCase()
-                        : n == f);
-            }).length == 0)
-      return false;
+      /*
+       * PSEUDO-CLASSES
+       */
 
-    var cl = elt.classList;
-    if (selector.ClassList.length != 0 && selector.ClassList.filter(
-            function(f) {
-              return cl.contains(f);
-            }).length == 0)
-      return false;
-
-    return true;
+      if (rv && selector.combinator == COMBINATOR_NONE)
+        return rv;
+      if (rv) {
+        currentCombinator = selector.combinator;
+        switch (selector.combinator) {
+          case COMBINATOR_NONE: return rv;
+          case COMBINATOR_DESCENDANT
+               | COMBINATOR_CHILD    :       var n = elt.parentNode;
+                                             if (n != null && n.nodeType == Node.ELEMENT_NODE)
+                                               elt = cast(n, Element);
+                                             else
+                                               return false;
+                                             selector = selector.parent;
+          case COMBINATOR_ADJACENT_SIBLING
+               | COMBINATOR_SIBLING        : var n = elt.previousSibling;
+                                             if (n != null && n.nodeType == Node.ELEMENT_NODE)
+                                               elt = cast(n, Element);
+                                             else
+                                               return false;
+                                             selector = selector.parent;
+        }
+      }
+      else {
+        switch (currentCombinator) {
+          case COMBINATOR_NONE:             return rv; // should never happen
+          case COMBINATOR_CHILD:            return false;
+          case COMBINATOR_ADJACENT_SIBLING: return false;
+          case COMBINATOR_SIBLING:          var n = elt.previousSibling;
+                                            if (n != null && n.nodeType == Node.ELEMENT_NODE)
+                                              elt = cast(n, Element);
+                                            else
+                                              return false;
+          case COMBINATOR_DESCENDANT:       var n = elt.parentNode;
+                                            if (n != null && n.nodeType == Node.ELEMENT_NODE)
+                                              elt = cast(n, Element);
+                                            else
+                                              return false;
+        }
+      }
+    } while (elt != null && true);
+    
+    return rv;
   }
 }

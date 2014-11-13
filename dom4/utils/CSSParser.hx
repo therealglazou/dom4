@@ -366,8 +366,8 @@ class CSSParser  {
           token = this.getToken(true, true);
           if (!token.isIdent())
             throw (new DOMException("Syntax error, attribute name expected in attribute selector"));
-          token = this.getToken(true, true);
           var name = token.value;
+          token = this.getToken(true, true);
           if (token.isSymbol("]")) {
             var attrSelector = new CSSAttrSelector();
             attrSelector.name = name;
