@@ -99,7 +99,7 @@ class SelectorMatching {
                                             : (elt.getAttribute(f.name).indexOf(f.value) != -1));
                   case ATTR_BEGINSMATCH:   (f.caseInsensitive
                                             ? StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase())
-                                            : StringTools.startsWith(elt.getAttribute(f.name), f.value);
+                                            : StringTools.startsWith(elt.getAttribute(f.name), f.value));
                   case ATTR_ENDSMATCH:     (f.caseInsensitive
                                             ? StringTools.endsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase())
                                             : StringTools.endsWith(elt.getAttribute(f.name), f.value));
@@ -176,8 +176,48 @@ class SelectorMatching {
       if (rv)
         for (i in 0...selector.NthPseudoclassList.length) {
           var f = selector.NthPseudoclassList[i];
+          var n: Int = 0;
+          trace(f.type);
           switch (f.type) {
-            case "nth-child(":
+            case "nth-child": n = 1;
+                               var sibling = elt.previousElementSibling;
+                               while (sibling != null) {
+                                n++;
+                                sibling = sibling.previousElementSibling;
+                               }
+            case "nth-last-child": n = 1;
+                               var sibling = elt.nextElementSibling;
+                               while (sibling != null) {
+                                n++;
+                                sibling = sibling.nextElementSibling;
+                               }
+            case "nth-of-type": var ns = elt.namespaceURI;
+                                var type = elt.localName;
+                                var sibling = elt.previousElementSibling;
+                                while (sibling != null) {
+                                  if (sibling.namespaceURI == ns && sibling.localName == type)
+                                    n++;
+                                  sibling = sibling.previousElementSibling;
+                                }
+            case "nth-last-of-type": var ns = elt.namespaceURI;
+                                var type = elt.localName;
+                                var sibling = elt.nextElementSibling;
+                                while (sibling != null) {
+                                  if (sibling.namespaceURI == ns && sibling.localName == type)
+                                    n++;
+                                  sibling = sibling.nextElementSibling;
+                                }
+          }
+          if (n != 0) {
+            if (f.a != 0) {
+              var q = (n - f.b)/f.a;
+              rv = (Math.floor(q) == q);
+            }
+            else {
+              rv = (f.b == n);
+            }
+            if (!rv)
+              break;
           }
         }
 
