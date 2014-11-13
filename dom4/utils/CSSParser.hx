@@ -37,6 +37,8 @@
  
 package dom4.utils;
 
+import dom4.CSSAttrSelector;
+
 typedef SelectorSpecificity = {
     var a : UInt;
     var b : UInt;
@@ -359,7 +361,56 @@ class CSSParser  {
 
         // ATTR SELECTORS
         else if (token.isSymbol("[")) {
-          
+          token = this.getToken(true, true);
+          if (!token.isIdent())
+            throw (new DOMException("Syntax error, attribute name expected in attribute selector"));
+          token = this.getToken(true, true);
+          var name = token.value;
+          if (token.isSymbol("]")) {
+            var attrSelector = new CSSAttrSelector();
+            attrSelector.name = name;
+            attrSelector.operator = ATTR_EXISTS;
+            selector.AttrList.push(attrSelector);
+          }
+          else {
+            var operator = ATTR_EXISTS;
+            if (token.isSymbol("="))
+              operator = ATTR_EQUALS;
+            else if (token.isIncludes())
+              operator = ATTR_INCLUDES;
+            else if (token.isDashmatch())
+              operator = ATTR_DASHMATCH;
+            else if (token.isBeginsmatch())
+              operator = ATTR_BEGINSMATCH;
+            else if (token.isEndsmatch())
+              operator = ATTR_ENDSMATCH;
+            else if (token.isContainsmatch())
+              operator = ATTR_CONTAINSMATCH;
+            else
+              throw (new DOMException("Syntax error, unknown operator in attribute selector"));
+
+            token = this.getToken(true, true);
+            if (!token.isIdent() && !token.isString())
+              throw (new DOMException("Syntax error, value in attribute selector must be ident or string"));
+            var value = token.isIdent()
+                        ? token.value
+                        : token.value.substr(1, token.value.length - 2);
+
+            var caseInsensitive = false;
+            token = this.getToken(true, true);
+            if (token.isIdent("i")) {
+              caseInsensitive = true;
+              token = this.getToken(true, true);
+            }
+            if (!token.isSymbol("]"))
+              throw (new DOMException("Syntax error, closing bracket not found in attribute selector"));
+            var attrSelector = new CSSAttrSelector();
+            attrSelector.name            = name;
+            attrSelector.value           = value;
+            attrSelector.caseInsensitive = caseInsensitive;
+            attrSelector.operator        = operator;
+            selector.AttrList.push(attrSelector);
+          }
         }
 
         else
