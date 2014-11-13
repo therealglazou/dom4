@@ -129,10 +129,8 @@ class SelectorMatching {
                                                return false;
                                              selector = selector.parent;
           case COMBINATOR_ADJACENT_SIBLING
-               | COMBINATOR_SIBLING        : var n = elt.previousSibling;
-                                             if (n != null && n.nodeType == Node.ELEMENT_NODE)
-                                               elt = cast(n, Element);
-                                             else
+               | COMBINATOR_SIBLING        : elt = elt.previousElementSibling;
+                                             if (elt == null)
                                                return false;
                                              selector = selector.parent;
         }
@@ -142,10 +140,8 @@ class SelectorMatching {
           case COMBINATOR_NONE:             return rv; // should never happen
           case COMBINATOR_CHILD:            return false;
           case COMBINATOR_ADJACENT_SIBLING: return false;
-          case COMBINATOR_SIBLING:          var n = elt.previousSibling;
-                                            if (n != null && n.nodeType == Node.ELEMENT_NODE)
-                                              elt = cast(n, Element);
-                                            else
+          case COMBINATOR_SIBLING:          elt = elt.previousElementSibling;
+                                            if (elt == null)
                                               return false;
           case COMBINATOR_DESCENDANT:       var n = elt.parentNode;
                                             if (n != null && n.nodeType == Node.ELEMENT_NODE)

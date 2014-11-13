@@ -46,12 +46,12 @@ class NonDocumentTypeChildNodeImpl {
   /*
    * https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-previouselementsibling
    */
-  static public function previousElementSibling(refNode: Node): Node
+  static public function previousElementSibling(refNode: Node): Element
   {
         var node = refNode.previousSibling;
         while (node != null) {
           if (node.nodeType == Node.ELEMENT_NODE)
-            return node;
+            return cast(node, Element);
           node = node.previousSibling;
         }
         return null;
@@ -60,12 +60,12 @@ class NonDocumentTypeChildNodeImpl {
   /*
    * https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-nextelementsibling
    */
-  static public function nextElementSibling(refNode: Node): Node
+  static public function nextElementSibling(refNode: Node): Element
   {
         var node = refNode.nextSibling;
         while (node != null) {
           if (node.nodeType == Node.ELEMENT_NODE)
-            return node;
+            return cast(node, Element);
           node = node.nextSibling;
         }
         return null;

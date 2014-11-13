@@ -46,10 +46,10 @@ interface NonDocumentTypeChildNode {
   /*
    * https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-previouselementsibling
    */
-  public var previousElementSibling(get, null): Node;
+  public var previousElementSibling(get, null): Element;
 
   /*
    * https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-nextelementsibling
    */
-  public var nextElementSibling(get, null): Node;
+  public var nextElementSibling(get, null): Element;
 }

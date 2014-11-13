@@ -61,13 +61,13 @@ class CharacterData extends Node
         return this.data.length;
       }
 
-  public var previousElementSibling(get, null): Node;
-      private function get_previousElementSibling(): Node
+  public var previousElementSibling(get, null): Element;
+      private function get_previousElementSibling(): Element
       {
         return NonDocumentTypeChildNodeImpl.previousElementSibling(this);
       }
-  public var nextElementSibling(get, null): Node;
-      private function get_nextElementSibling(): Node
+  public var nextElementSibling(get, null): Element;
+      private function get_nextElementSibling(): Element
       {
         return NonDocumentTypeChildNodeImpl.nextElementSibling(this);
       }

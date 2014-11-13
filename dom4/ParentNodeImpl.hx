@@ -86,23 +86,23 @@ class ParentNodeImpl {
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
    */
-  static public function firstElementChild(refNode: Node): Node
+  static public function firstElementChild(refNode: Node): Element
   {
     var child = refNode.firstChild;
     while (child != null) {
       if (child.nodeType == Node.ELEMENT_NODE)
-        return child;
+        return cast(child, Element);
       child = child.nextSibling;
     }
     return null;
   }
   
-  static public function lastElementChild(refNode: Node): Node
+  static public function lastElementChild(refNode: Node): Element
   {
     var child = refNode.lastChild;
     while (child != null) {
       if (child.nodeType == Node.ELEMENT_NODE)
-        return child;
+        return cast(child, Element);
       child = child.previousSibling;
     }
     return null;

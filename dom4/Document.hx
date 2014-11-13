@@ -292,13 +292,13 @@ class Document extends Node
     return df;
   }
 
-  public var firstElementChild(get, null): Node;
-      private function get_firstElementChild(): Node
+  public var firstElementChild(get, null): Element;
+      private function get_firstElementChild(): Element
       {
         return ParentNodeImpl.firstElementChild(this);
       }
-  public var lastElementChild(get, null): Node;
-  private function get_lastElementChild(): Node
+  public var lastElementChild(get, null): Element;
+  private function get_lastElementChild(): Element
   {
     return ParentNodeImpl.lastElementChild(this);
   }

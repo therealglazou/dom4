@@ -47,12 +47,12 @@ interface ParentNode {
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
    */
-  public var firstElementChild(get, null): Node;
+  public var firstElementChild(get, null): Element;
 
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-lastelementchild
    */
-  public var lastElementChild(get, null): Node;
+  public var lastElementChild(get, null): Element;
 
   /*
    * https://dom.spec.whatwg.org/#dom-parentnode-children

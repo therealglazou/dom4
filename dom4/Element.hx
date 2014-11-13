@@ -246,24 +246,24 @@ class Element extends Node
     return this.attributes.removeAttributeNode(attr);
   }
 
-  public var previousElementSibling(get, null): Node;
-      private function get_previousElementSibling(): Node
+  public var previousElementSibling(get, null): Element;
+      private function get_previousElementSibling(): Element
       {
         return NonDocumentTypeChildNodeImpl.previousElementSibling(this);
       }
-  public var nextElementSibling(get, null): Node;
-      private function get_nextElementSibling(): Node
+  public var nextElementSibling(get, null): Element;
+      private function get_nextElementSibling(): Element
       {
         return NonDocumentTypeChildNodeImpl.nextElementSibling(this);
       }
 
-  public var firstElementChild(get, null): Node;
-      private function get_firstElementChild(): Node
+  public var firstElementChild(get, null): Element;
+      private function get_firstElementChild(): Element
       {
         return ParentNodeImpl.firstElementChild(this);
       }
-  public var lastElementChild(get, null): Node;
-      private function get_lastElementChild(): Node
+  public var lastElementChild(get, null): Element;
+      private function get_lastElementChild(): Element
       {
         return ParentNodeImpl.lastElementChild(this);
       }
