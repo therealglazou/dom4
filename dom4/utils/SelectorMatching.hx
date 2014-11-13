@@ -57,34 +57,39 @@ class SelectorMatching {
     do {
       rv = true;
       var id = elt.getAttribute("id");
-      if (selector.IDList.length != 0 && selector.IDList.filter(
-              function(f) {
-                return (id == f);
-              }).length == 0)
-        rv = false;
+      for (i in 0...selector.IDList.length) {
+        var f = selector.IDList[i];
+        rv = (id == f);
+        if (!rv)
+          break;
+      }
   
       var n = elt.localName;
       if (elt.ownerDocument.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE)
         n = n.toLowerCase();
-      if (rv && selector.elementTypeList.length != 0 && selector.elementTypeList.filter(
-              function(f) {
-                  return (f == "*") || ((elt.namespaceURI == Namespaces.HTML_NAMESPACE)
-                          ? n == f.toLowerCase()
-                          : n == f);
-              }).length != selector.elementTypeList.length)
-        rv = false;
+      if (rv)
+        for (i in 0...selector.elementTypeList.length) {
+          var f = selector.elementTypeList[i];
+          rv = (f == "*") || ((elt.namespaceURI == Namespaces.HTML_NAMESPACE)
+                              ? n == f.toLowerCase()
+                              : n == f);
+          if (!rv)
+            break;
+        }
   
       var cl = elt.classList;
-      if (rv && selector.ClassList.length != 0 && selector.ClassList.filter(
-              function(f) {
-                return cl.contains(f);
-              }).length != selector.ClassList.length)
-        rv = false;
+      if (rv)
+        for (i in 0...selector.ClassList.length) {
+          var f = selector.ClassList[i];
+          rv = cl.contains(f);
+          if (!rv)
+            break;
+        }
   
-      if (rv && selector.AttrList.length != 0 && selector.AttrList.filter(
-              function(f) {
-                trace(f.name);
-                return (elt.hasAttribute(f.name) && switch (f.operator) {
+      if (rv)
+        for (i in 0...selector.AttrList.length) {
+          var f = selector.AttrList[i];
+          rv = (elt.hasAttribute(f.name) && switch (f.operator) {
                   case ATTR_EXISTS: true;
                   case ATTR_EQUALS:        (f.caseInsensitive
                                             ? elt.getAttribute(f.name).toLowerCase() == f.value.toLowerCase()
@@ -108,8 +113,9 @@ class SelectorMatching {
                                             ? (elt.getAttribute(f.name).toLowerCase().split(" ").indexOf(f.value.toLowerCase()) != -1)
                                             : (elt.getAttribute(f.name).split(" ").indexOf(f.value) != -1));
                 });
-              }).length != selector.AttrList.length)
-        rv = false;
+          if (!rv)
+            break;
+        }
 
       /*
        * PSEUDO-CLASSES
