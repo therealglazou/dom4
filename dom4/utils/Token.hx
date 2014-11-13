@@ -27,6 +27,16 @@ class Token {
 
     public var type : TokenType;
     public var value : Dynamic;
+    public var ivalue(get, null): Dynamic;
+        private function get_ivalue(): Dynamic
+        {
+          return switch (type) {
+            case STRING_TYPE
+                 | IDENT_TYPE
+                 | FUNCTION_TYPE: this.value.toLowerCase();
+            case _: this.value;
+          };
+        }
     public var unit : String;
 
     public function toString(): DOMString

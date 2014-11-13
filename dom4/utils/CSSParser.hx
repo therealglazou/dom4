@@ -254,24 +254,24 @@ class CSSParser  {
             token = this.getToken(false, true);
             if (!token.isNotNull() || !token.isIdent())
               throw (new DOMException("SyntaxError"));
-            if (!CSSSelector.isPseudoElement(token.value))
+            if (!CSSSelector.isPseudoElement(token.ivalue))
               throw (new DOMException("Unknown pseudo-element"));
-            selector.pseudoElement = token.value;
+            selector.pseudoElement = token.ivalue;
           }
           else if (token.isIdent()) {
             // no, it's supposed to be a pseudo-class or a single-
             // colon pseudo-element
-            if (CSSSelector.isPseudoElement(token.value))
-              selector.pseudoElement = token.value;
-            else if (CSSSelector.isPseudoClass(token.value)) {
-              selector.PseudoClassList.push(token.value);
+            if (CSSSelector.isPseudoElement(token.ivalue))
+              selector.pseudoElement = token.ivalue;
+            else if (CSSSelector.isPseudoClass(token.ivalue)) {
+              selector.PseudoClassList.push(token.ivalue);
             }
             else // unknown...
               throw (new DOMException("Unknown pseudo-class"));
           }
           else if (token.isFunction()
-                   && CSSSelector.isFunctionalPseudoClass(token.value)) {
-            if (token.value == "lang(") {
+                   && CSSSelector.isFunctionalPseudoClass(token.ivalue)) {
+            if (token.ivalue == "lang(") {
               var langArray: Array<DOMString> = [];
               token = this.getToken(true, true);
               var expectingString = true;
@@ -302,13 +302,13 @@ class CSSParser  {
               }
               selector.LangPseudoClassList.push(langArray);
             }
-            else if (!parsingNegation && token.value == "not(") {
+            else if (!parsingNegation && token.ivalue == "not(") {
               if (selector.negation == null)
                 selector.negation = new CSSSelector();
               this.parseSelector("", true, selector.negation);
             }
             else { // must be an+b/even/odd
-              var type = token.value;
+              var type = token.ivalue;
               var s = "";
               token = this.getToken(true, false);
               while (token.isNotNull()) {
@@ -320,8 +320,10 @@ class CSSParser  {
               }
               if (!token.isSymbol(")"))
                 throw (new DOMException("SyntaxError"));
+
               var a: Int = 0;
               var b: Int = 0;
+              s = StringTools.trim(s).toLowerCase();
               if (s == "even") {
                 a = 2;
               }
@@ -329,7 +331,7 @@ class CSSParser  {
                 a = 2;
                 b = 1;
               }
-              else if (this.ANB_EREG.match(StringTools.trim(s))) {
+              else if (this.ANB_EREG.match(s)) {
                 // we should be dealing here with the CSS token types but
                 // that's so ugly, hacky and painful a good'ol'regexp is a better,
                 // cheaper and less error-prone solution. That's wrong but that's
