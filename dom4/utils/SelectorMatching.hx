@@ -99,16 +99,16 @@ class SelectorMatching {
                                             : (elt.getAttribute(f.name).indexOf(f.value) != -1));
                   case ATTR_BEGINSMATCH:   (f.caseInsensitive
                                             ? StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase())
-                                            : StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase()));
+                                            : StringTools.startsWith(elt.getAttribute(f.name), f.value);
                   case ATTR_ENDSMATCH:     (f.caseInsensitive
                                             ? StringTools.endsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase())
-                                            : StringTools.endsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase()));
+                                            : StringTools.endsWith(elt.getAttribute(f.name), f.value));
                   case ATTR_DASHMATCH:     (f.caseInsensitive
                                             ? elt.getAttribute(f.name).toLowerCase() == f.value.toLowerCase()
                                             : elt.getAttribute(f.name) == f.value)
                                            || (f.caseInsensitive
                                                ? StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase() + "-")
-                                               : StringTools.startsWith(elt.getAttribute(f.name).toLowerCase(), f.value.toLowerCase() + "-"));
+                                               : StringTools.startsWith(elt.getAttribute(f.name), f.value + "-"));
                   case ATTR_INCLUDES:      (f.caseInsensitive
                                             ? (elt.getAttribute(f.name).toLowerCase().split(" ").indexOf(f.value.toLowerCase()) != -1)
                                             : (elt.getAttribute(f.name).split(" ").indexOf(f.value) != -1));
@@ -118,7 +118,7 @@ class SelectorMatching {
         }
 
       /*
-       * PSEUDO-CLASSES
+       * STRUCTURAL PSEUDO-CLASSES
        */
       if (rv)
         for (i in 0...selector.PseudoClassList.length) {
@@ -170,6 +170,17 @@ class SelectorMatching {
             break;
         }
 
+      /*
+       * NTH PSEUDO-CLASSES
+       */
+      if (rv)
+        for (i in 0...selector.NthPseudoclassList.length) {
+          var f = selector.NthPseudoclassList[i];
+          switch (f.type) {
+            case "nth-child(":
+          }
+        }
+
       if (rv && selector.combinator == COMBINATOR_NONE)
         return rv;
       if (rv) {
@@ -205,7 +216,7 @@ class SelectorMatching {
                                               return false;
         }
       }
-    } while (elt != null && true);
+    } while (elt != null);
     
     return rv;
   }
