@@ -90,7 +90,7 @@ class SelectorMatching {
         for (i in 0...selector.AttrList.length) {
           var f = selector.AttrList[i];
           rv = (elt.hasAttribute(f.name) && switch (f.operator) {
-                  case ATTR_EXISTS: true;
+                  case ATTR_EXISTS:        true;
                   case ATTR_EQUALS:        (f.caseInsensitive
                                             ? elt.getAttribute(f.name).toLowerCase() == f.value.toLowerCase()
                                             : elt.getAttribute(f.name) == f.value);
@@ -120,6 +120,55 @@ class SelectorMatching {
       /*
        * PSEUDO-CLASSES
        */
+      if (rv)
+        for (i in 0...selector.PseudoClassList.length) {
+          switch (selector.PseudoClassList[i]) {
+            case "root":        rv = (elt.ownerDocument.documentElement == elt);
+            case "first-child": rv = (elt.parentNode != null
+                                      && elt.parentNode.nodeType == Node.ELEMENT_NODE
+                                      && cast(elt.parentNode, Element).firstElementChild == elt);
+            case "last-child": rv = (elt.parentNode != null
+                                      && elt.parentNode.nodeType == Node.ELEMENT_NODE
+                                      && cast(elt.parentNode, Element).lastElementChild == elt);
+            case "only-child": rv = (elt.parentNode != null
+                                      && elt.parentNode.nodeType == Node.ELEMENT_NODE
+                                      && cast(elt.parentNode, Element).lastElementChild == elt
+                                      && cast(elt.parentNode, Element).firstElementChild == elt);
+            case "empty":      var child = elt.firstChild;
+                               while (rv && child != null) {
+                                rv = (child.nodeType != Node.ELEMENT_NODE && child.nodeType != Node.TEXT_NODE);
+                                child = child.nextSibling;
+                               }
+            case "first-of-type": var ns = elt.namespaceURI;
+                                  var type = elt.localName;
+                                  var sibling = elt.previousElementSibling;
+                                  while (rv && sibling != null) {
+                                    rv = (ns != sibling.namespaceURI || type != sibling.localName);
+                                    sibling = sibling.previousElementSibling;
+                                  }
+            case "last-of-type":  var ns = elt.namespaceURI;
+                                  var type = elt.localName;
+                                  var sibling = elt.nextElementSibling;
+                                  while (rv && sibling != null) {
+                                    rv = (ns != sibling.namespaceURI || type != sibling.localName);
+                                    sibling = sibling.nextElementSibling;
+                                  }
+            case "only-of-type":  var ns = elt.namespaceURI;
+                                  var type = elt.localName;
+                                  var sibling = elt.previousElementSibling;
+                                  while (rv && sibling != null) {
+                                    rv = (ns != sibling.namespaceURI || type != sibling.localName);
+                                    sibling = sibling.previousElementSibling;
+                                  }
+                                  var sibling = elt.nextElementSibling;
+                                  while (rv && sibling != null) {
+                                    rv = (ns != sibling.namespaceURI || type != sibling.localName);
+                                    sibling = sibling.nextElementSibling;
+                                  }
+          }
+          if (!rv)
+            break;
+        }
 
       if (rv && selector.combinator == COMBINATOR_NONE)
         return rv;
