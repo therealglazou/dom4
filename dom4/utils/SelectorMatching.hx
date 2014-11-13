@@ -208,7 +208,7 @@ class SelectorMatching {
                                   sibling = sibling.nextElementSibling;
                                 }
           }
-          if (n != 0) {
+          if (n != 0) { // sanity case
             if (f.a != 0) {
               var q = (n - f.b)/f.a;
               rv = (Math.floor(q) == q);
@@ -220,6 +220,42 @@ class SelectorMatching {
               break;
           }
         }
+
+      /*
+       * LANG PSEUDO-CLASS...
+       */
+      if (rv) {
+        var eltLang = ""; 
+        var e = elt;
+        while (e != null && e.nodeType == Node.ELEMENT_NODE && eltLang == "") {
+          if (e.hasAttribute("lang"))
+            eltLang = e.getAttribute("lang");
+          else if (e.hasAttributeNS(Namespaces.XML_NAMESPACE, "lang"))
+            eltLang = e.getAttributeNS(Namespaces.XML_NAMESPACE, "lang");
+          if (e.parentNode != null && e.parentNode.nodeType == Node.ELEMENT_NODE)
+            e = cast(e.parentNode, Element);
+          else
+            e = null;
+        }
+        for (i in 0...selector.LangPseudoClassList.length) {
+          var f = selector.LangPseudoClassList[i];
+          var lrv = false;
+          for (j in 0...f.length) {
+            var l = f[j].toLowerCase();
+            if (l.charAt(0) == "*")
+              lrv = StringTools.endsWith(eltLang, l.substr(1));
+            else
+              lrv = StringTools.startsWith(eltLang, l);
+            if (lrv)
+              break;
+          }
+          if (!lrv) {
+            rv = false;
+            break;
+          }
+        }
+      }
+
 
       if (rv && selector.combinator == COMBINATOR_NONE)
         return rv;
