@@ -60,7 +60,7 @@ class SelectorMatching {
       for (i in 0...selector.IDList.length) {
         var f = selector.IDList[i];
         rv = (id == f);
-        if (!(isNegation ? !rv : rv))
+        if ((isNegation ? rv : !rv))
           break;
       }
   
@@ -73,7 +73,7 @@ class SelectorMatching {
           rv = (f == "*") || ((elt.namespaceURI == Namespaces.HTML_NAMESPACE)
                               ? n == f.toLowerCase()
                               : n == f);
-          if (!(isNegation ? !rv : rv))
+          if ((isNegation ? rv : !rv))
             break;
         }
   
@@ -82,7 +82,7 @@ class SelectorMatching {
         for (i in 0...selector.ClassList.length) {
           var f = selector.ClassList[i];
           rv = cl.contains(f);
-          if (!(isNegation ? !rv : rv))
+          if ((isNegation ? rv : !rv))
             break;
         }
   
@@ -113,7 +113,7 @@ class SelectorMatching {
                                             ? (elt.getAttribute(f.name).toLowerCase().split(" ").indexOf(f.value.toLowerCase()) != -1)
                                             : (elt.getAttribute(f.name).split(" ").indexOf(f.value) != -1));
                 });
-          if (!(isNegation ? !rv : rv))
+          if ((isNegation ? rv : !rv))
             break;
         }
 
@@ -166,7 +166,7 @@ class SelectorMatching {
                                     sibling = sibling.nextElementSibling;
                                   }
           }
-          if (!(isNegation ? !rv : rv))
+          if ((isNegation ? rv : !rv))
             break;
         }
 
@@ -216,7 +216,7 @@ class SelectorMatching {
             else {
               rv = (f.b == n);
             }
-            if (!(isNegation ? !rv : rv))
+            if ((isNegation ? rv : !rv))
               break;
           }
         }
