@@ -45,8 +45,6 @@ import dom4.NodeFilter;
 import dom4.NodeIterator;
 import dom4.TreeWalker;
 
-import wx.App;
-
 class Test {
 
     static function main() : Void {
