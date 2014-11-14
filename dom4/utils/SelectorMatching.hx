@@ -41,10 +41,10 @@ import dom4.CSSSelector;
 
 class SelectorMatching {
 
-  static public function matches(elt: Element, selector: CSSSelector): Bool
+  static public function matches(elt: Element, selector: CSSSelector, ?isNegation: Bool = false): Bool
   {
     // test all selectors in the group, exit on positive answer
-    if (selector.next != null) {
+    if (!isNegation && selector.next != null) {
       if (SelectorMatching.matches(elt, selector.next))
         return true;
     }
@@ -55,38 +55,38 @@ class SelectorMatching {
     var rv: Bool;
     var currentCombinator = COMBINATOR_NONE;
     do {
-      rv = true;
+      rv = !isNegation;
       var id = elt.getAttribute("id");
       for (i in 0...selector.IDList.length) {
         var f = selector.IDList[i];
         rv = (id == f);
-        if (!rv)
+        if (!(isNegation ? !rv : rv))
           break;
       }
   
       var n = elt.localName;
       if (elt.ownerDocument.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE)
         n = n.toLowerCase();
-      if (rv)
+      if ((isNegation ? !rv : rv))
         for (i in 0...selector.elementTypeList.length) {
           var f = selector.elementTypeList[i];
           rv = (f == "*") || ((elt.namespaceURI == Namespaces.HTML_NAMESPACE)
                               ? n == f.toLowerCase()
                               : n == f);
-          if (!rv)
+          if (!(isNegation ? !rv : rv))
             break;
         }
   
       var cl = elt.classList;
-      if (rv)
+      if ((isNegation ? !rv : rv))
         for (i in 0...selector.ClassList.length) {
           var f = selector.ClassList[i];
           rv = cl.contains(f);
-          if (!rv)
+          if (!(isNegation ? !rv : rv))
             break;
         }
   
-      if (rv)
+      if ((isNegation ? !rv : rv))
         for (i in 0...selector.AttrList.length) {
           var f = selector.AttrList[i];
           rv = (elt.hasAttribute(f.name) && switch (f.operator) {
@@ -113,14 +113,14 @@ class SelectorMatching {
                                             ? (elt.getAttribute(f.name).toLowerCase().split(" ").indexOf(f.value.toLowerCase()) != -1)
                                             : (elt.getAttribute(f.name).split(" ").indexOf(f.value) != -1));
                 });
-          if (!rv)
+          if (!(isNegation ? !rv : rv))
             break;
         }
 
       /*
        * STRUCTURAL PSEUDO-CLASSES
        */
-      if (rv)
+      if ((isNegation ? !rv : rv))
         for (i in 0...selector.PseudoClassList.length) {
           switch (selector.PseudoClassList[i]) {
             case "root":        rv = (elt.ownerDocument.documentElement == elt);
@@ -135,45 +135,45 @@ class SelectorMatching {
                                       && cast(elt.parentNode, Element).lastElementChild == elt
                                       && cast(elt.parentNode, Element).firstElementChild == elt);
             case "empty":      var child = elt.firstChild;
-                               while (rv && child != null) {
+                               while ((isNegation ? !rv : rv) && child != null) {
                                 rv = (child.nodeType != Node.ELEMENT_NODE && child.nodeType != Node.TEXT_NODE);
                                 child = child.nextSibling;
                                }
             case "first-of-type": var ns = elt.namespaceURI;
                                   var type = elt.localName;
                                   var sibling = elt.previousElementSibling;
-                                  while (rv && sibling != null) {
+                                  while ((isNegation ? !rv : rv) && sibling != null) {
                                     rv = (ns != sibling.namespaceURI || type != sibling.localName);
                                     sibling = sibling.previousElementSibling;
                                   }
             case "last-of-type":  var ns = elt.namespaceURI;
                                   var type = elt.localName;
                                   var sibling = elt.nextElementSibling;
-                                  while (rv && sibling != null) {
+                                  while ((isNegation ? !rv : rv) && sibling != null) {
                                     rv = (ns != sibling.namespaceURI || type != sibling.localName);
                                     sibling = sibling.nextElementSibling;
                                   }
             case "only-of-type":  var ns = elt.namespaceURI;
                                   var type = elt.localName;
                                   var sibling = elt.previousElementSibling;
-                                  while (rv && sibling != null) {
+                                  while ((isNegation ? !rv : rv) && sibling != null) {
                                     rv = (ns != sibling.namespaceURI || type != sibling.localName);
                                     sibling = sibling.previousElementSibling;
                                   }
                                   var sibling = elt.nextElementSibling;
-                                  while (rv && sibling != null) {
+                                  while ((isNegation ? !rv : rv) && sibling != null) {
                                     rv = (ns != sibling.namespaceURI || type != sibling.localName);
                                     sibling = sibling.nextElementSibling;
                                   }
           }
-          if (!rv)
+          if (!(isNegation ? !rv : rv))
             break;
         }
 
       /*
        * NTH PSEUDO-CLASSES
        */
-      if (rv)
+      if ((isNegation ? !rv : rv))
         for (i in 0...selector.NthPseudoclassList.length) {
           var f = selector.NthPseudoclassList[i];
           var n: Int = 0;
@@ -216,7 +216,7 @@ class SelectorMatching {
             else {
               rv = (f.b == n);
             }
-            if (!rv)
+            if (!(isNegation ? !rv : rv))
               break;
           }
         }
@@ -224,7 +224,7 @@ class SelectorMatching {
       /*
        * LANG PSEUDO-CLASS...
        */
-      if (rv) {
+      if ((isNegation ? !rv : rv)) {
         var eltLang = ""; 
         var e = elt;
         while (e != null && e.nodeType == Node.ELEMENT_NODE && eltLang == "") {
@@ -249,13 +249,18 @@ class SelectorMatching {
             if (lrv)
               break;
           }
-          if (!lrv) {
-            rv = false;
+          if ((isNegation ? lrv : !lrv)) {
+            rv = isNegation;
             break;
           }
         }
       }
 
+      if (!isNegation && rv && selector.negation != null)
+        rv = !SelectorMatching.matches(elt, selector.negation, true);
+
+      if (isNegation)
+        return rv;
 
       if (rv && selector.combinator == COMBINATOR_NONE)
         return rv;
