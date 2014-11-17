@@ -38,12 +38,7 @@
 package dom4;
 
 /*
- * https://dom.spec.whatwg.org/#eventtarget
+ * http://heycam.github.io/webidl/#common-DOMTimeStamp
  */
+typedef DOMTimeStamp = Float;
 
-interface EventTarget {
-
-  public function addEventListener(type: DOMString, callback: EventListener, ?capture: Bool = false): Void;
-  public function removeEventListener(type: DOMString, callback: EventListener, ?capture: Bool = false): Void;
-  public function dispatchEvent(event: Event): Bool;
-}

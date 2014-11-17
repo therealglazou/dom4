@@ -38,12 +38,10 @@
 package dom4;
 
 /*
- * https://dom.spec.whatwg.org/#eventtarget
+ * https://dom.spec.whatwg.org/#eventlistener
  */
 
-interface EventTarget {
+interface EventListener {
 
-  public function addEventListener(type: DOMString, callback: EventListener, ?capture: Bool = false): Void;
-  public function removeEventListener(type: DOMString, callback: EventListener, ?capture: Bool = false): Void;
-  public function dispatchEvent(event: Event): Bool;
+  public function handleEvent(event: Event): Void;
 }

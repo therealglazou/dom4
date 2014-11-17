@@ -41,7 +41,12 @@ package dom4;
 import dom4.utils.Namespaces;
 import dom4.utils.MutationUtils;
 
-class Node extends EventTarget {
+typedef NodeEventListener = {
+    var type : DOMString;
+    var callback : EventListener;
+    var capture : Bool;
+}
+class Node implements EventTarget {
 
   /*
    * https://dom.spec.whatwg.org/#interface-node
@@ -69,6 +74,7 @@ class Node extends EventTarget {
 
   private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
 
+  private var eventListeners: Array<NodeEventListener>;
   /*
    * https://dom.spec.whatwg.org/#dom-node-nodetype
    */
@@ -902,7 +908,79 @@ class Node extends EventTarget {
     throw (new DOMException("ShouldNeverHitError"));
   }
 
+  /*
+   * https://dom.spec.whatwg.org/#dom-eventtarget-addeventlistener
+   */
+  public function addEventListener(type: DOMString, callback: EventListener, ?capture: Bool = false): Void
+  {
+    // STEP 1
+    if (callback == null)
+      return;
+
+    // STEP 2
+    if (this.eventListeners.filter(
+          function(f) {
+            return (f.type == type
+                    && f.callback == callback
+                    && f.capture == capture);
+          }).length != 0)
+      return;
+    this.eventListeners.push({type: type, callback: callback, capture: capture});
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-eventtarget-addeventlistener
+   */
+  public function removeEventListener(type: DOMString, callback: EventListener, ?capture: Bool = false): Void
+  {
+    if (callback == null)
+      return;
+
+    this.eventListeners = this.eventListeners.filter(
+          function(f) {
+            return (f.type != type
+                    || f.callback != callback
+                    || f.capture != capture);
+          });
+  }
+
+  /*
+   * https://dom.spec.whatwg.org/#dom-eventtarget-dispatchevent
+   */
+  public function dispatchEvent(event: Event): Bool
+  {
+    // STEP 1
+    if (event.dispatchFlag || !event.initializedFlag)
+      throw (new DOMException("InvalidStateError"));
+
+    // STEP 2
+    event.set_isTrusted(false);
+    // STEP 3
+    return Event.dispatch(event, this);
+  }
+
+  public function _evokeListeners(event: Event): Void
+  {
+    // STEP 3
+    event.set_currentTarget(this);
+    // STEP 4 and 4.2
+    for (listener in this.eventListeners) {
+      // STEP 4.1
+      if (event.stopImmediatePropagationFlag)
+        return;
+      // STEP 4.3
+      if (listener.type != event.type)
+        return;
+      if ((event.eventPhase == event.CAPTURING_PHASE && !listener.capture)
+          || (event.eventPhase == event.BUBBLING_PHASE && listener.capture)) {
+        // do nothing, STEPS 4.4 and 4.5
+      }
+      else {
+        listener.callback.handleEvent(event);
+      }
+    }
+  }
+
   public function new() {
-    super();
   }
 }
