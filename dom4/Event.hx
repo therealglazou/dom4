@@ -123,6 +123,9 @@ class Event {
     this.initializedFlag = true;
     this.dispatchFlag = false;
 
+    this.isTrusted = false;
+    this.target = null;
+
     this.timeStamp =  Math.floor((Date.now()).getTime());
   }
 
@@ -191,6 +194,9 @@ class Event {
     this.canceledFlag = false;
     this.initializedFlag = true;
     this.dispatchFlag = false;
+
+    this.isTrusted = false;
+    this.target = null;
 
     this.timeStamp = Math.floor((Date.now()).getTime());
   }
