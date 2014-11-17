@@ -37,8 +37,6 @@
 
 package dom4;
 
-import cpp.vm.Thread;
-
 /*
  * https://dom.spec.whatwg.org/#concept-event
  */
