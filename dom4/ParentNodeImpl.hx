@@ -182,4 +182,25 @@ class ParentNodeImpl {
 
     return null;
   }
+
+  /*
+   * 
+   */
+  static public function querySelectorAll(refNode: Node, selectors: DOMString): NodeList
+  {
+    var parser = new CSSParser();
+    var parsedSelectors = parser.parseSelector(selectors);
+    var rv = new NodeList(null);
+
+    var iter = refNode.ownerDocument.createNodeIterator(refNode, 1);
+    var node = iter.nextNode();
+    while (node != null) {
+      var elt = cast(node, Element);
+      if (SelectorMatching.matches(elt, parsedSelectors))
+        rv._getNodes().push(elt);
+      node = iter.nextNode();
+    }
+
+    return rv;
+  }
 }

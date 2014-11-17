@@ -332,7 +332,10 @@ class Document extends Node
   {
     return ParentNodeImpl.querySelector(this.documentElement, selectors);
   }
-  public function querySelectorAll(selectors: DOMString): NodeList {throw (new DOMException("Not yet implemented")); }
+  public function querySelectorAll(selectors: DOMString): NodeList
+  {
+    return ParentNodeImpl.querySelectorAll(this, selectors);
+  }
 
   /*
    * https://dom.spec.whatwg.org/#dom-document-createrange

@@ -123,22 +123,22 @@ class SelectorMatching {
       if ((isNegation ? !rv : rv))
         for (i in 0...selector.PseudoClassList.length) {
           switch (selector.PseudoClassList[i]) {
-            case "root":        rv = (elt.ownerDocument.documentElement == elt);
-            case "first-child": rv = (elt.parentNode != null
-                                      && elt.parentNode.nodeType == Node.ELEMENT_NODE
-                                      && cast(elt.parentNode, Element).firstElementChild == elt);
-            case "last-child": rv = (elt.parentNode != null
-                                      && elt.parentNode.nodeType == Node.ELEMENT_NODE
-                                      && cast(elt.parentNode, Element).lastElementChild == elt);
-            case "only-child": rv = (elt.parentNode != null
-                                      && elt.parentNode.nodeType == Node.ELEMENT_NODE
-                                      && cast(elt.parentNode, Element).lastElementChild == elt
-                                      && cast(elt.parentNode, Element).firstElementChild == elt);
-            case "empty":      var child = elt.firstChild;
-                               while ((isNegation ? !rv : rv) && child != null) {
-                                rv = (child.nodeType != Node.ELEMENT_NODE && child.nodeType != Node.TEXT_NODE);
-                                child = child.nextSibling;
-                               }
+            case "root":          rv = (elt.ownerDocument.documentElement == elt);
+            case "first-child":   rv = (elt.parentNode != null
+                                        && elt.parentNode.nodeType == Node.ELEMENT_NODE
+                                        && cast(elt.parentNode, Element).firstElementChild == elt);
+            case "last-child":    rv = (elt.parentNode != null
+                                        && elt.parentNode.nodeType == Node.ELEMENT_NODE
+                                        && cast(elt.parentNode, Element).lastElementChild == elt);
+            case "only-child":    rv = (elt.parentNode != null
+                                        && elt.parentNode.nodeType == Node.ELEMENT_NODE
+                                        && cast(elt.parentNode, Element).lastElementChild == elt
+                                        && cast(elt.parentNode, Element).firstElementChild == elt);
+            case "empty":         var child = elt.firstChild;
+                                  while ((isNegation ? !rv : rv) && child != null) {
+                                    rv = (child.nodeType != Node.ELEMENT_NODE && child.nodeType != Node.TEXT_NODE);
+                                    child = child.nextSibling;
+                                  }
             case "first-of-type": var ns = elt.namespaceURI;
                                   var type = elt.localName;
                                   var sibling = elt.previousElementSibling;
@@ -179,34 +179,34 @@ class SelectorMatching {
           var n: Int = 0;
           trace(f.type);
           switch (f.type) {
-            case "nth-child": n = 1;
-                               var sibling = elt.previousElementSibling;
-                               while (sibling != null) {
-                                n++;
-                                sibling = sibling.previousElementSibling;
-                               }
-            case "nth-last-child": n = 1;
-                               var sibling = elt.nextElementSibling;
-                               while (sibling != null) {
-                                n++;
-                                sibling = sibling.nextElementSibling;
-                               }
-            case "nth-of-type": var ns = elt.namespaceURI;
-                                var type = elt.localName;
-                                var sibling = elt.previousElementSibling;
-                                while (sibling != null) {
-                                  if (sibling.namespaceURI == ns && sibling.localName == type)
-                                    n++;
-                                  sibling = sibling.previousElementSibling;
-                                }
+            case "nth-child":       n = 1;
+                                    var sibling = elt.previousElementSibling;
+                                    while (sibling != null) {
+                                      n++;
+                                      sibling = sibling.previousElementSibling;
+                                    }
+            case "nth-last-child":  n = 1;
+                                    var sibling = elt.nextElementSibling;
+                                    while (sibling != null) {
+                                      n++;
+                                      sibling = sibling.nextElementSibling;
+                                    }
+            case "nth-of-type":     var ns = elt.namespaceURI;
+                                    var type = elt.localName;
+                                    var sibling = elt.previousElementSibling;
+                                    while (sibling != null) {
+                                      if (sibling.namespaceURI == ns && sibling.localName == type)
+                                         n++;
+                                       sibling = sibling.previousElementSibling;
+                                     }
             case "nth-last-of-type": var ns = elt.namespaceURI;
-                                var type = elt.localName;
-                                var sibling = elt.nextElementSibling;
-                                while (sibling != null) {
-                                  if (sibling.namespaceURI == ns && sibling.localName == type)
-                                    n++;
-                                  sibling = sibling.nextElementSibling;
-                                }
+                                     var type = elt.localName;
+                                     var sibling = elt.nextElementSibling;
+                                     while (sibling != null) {
+                                       if (sibling.namespaceURI == ns && sibling.localName == type)
+                                       n++;
+                                       sibling = sibling.nextElementSibling;
+                                     }
           }
           if (n != 0) { // sanity case
             if (f.a != 0) {
@@ -269,14 +269,14 @@ class SelectorMatching {
         switch (selector.combinator) {
           case COMBINATOR_NONE: return rv;
           case COMBINATOR_DESCENDANT
-               | COMBINATOR_CHILD    :       var n = elt.parentNode;
+               | COMBINATOR_CHILD:           var n = elt.parentNode;
                                              if (n != null && n.nodeType == Node.ELEMENT_NODE)
                                                elt = cast(n, Element);
                                              else
                                                return false;
                                              selector = selector.parent;
           case COMBINATOR_ADJACENT_SIBLING
-               | COMBINATOR_SIBLING        : elt = elt.previousElementSibling;
+               | COMBINATOR_SIBLING:         elt = elt.previousElementSibling;
                                              if (elt == null)
                                                return false;
                                              selector = selector.parent;

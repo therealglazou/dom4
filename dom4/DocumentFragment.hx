@@ -87,7 +87,10 @@ class DocumentFragment extends Node
   {
     return ParentNodeImpl.querySelector(this, selectors);
   }
-  public function querySelectorAll(selectors: DOMString): NodeList {throw (new DOMException("Not yet implemented")); }
+  public function querySelectorAll(selectors: DOMString): NodeList
+  {
+    return ParentNodeImpl.querySelectorAll(this, selectors);
+  }
 
   public function new() {
     super();
