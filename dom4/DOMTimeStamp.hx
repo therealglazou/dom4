@@ -40,5 +40,5 @@ package dom4;
 /*
  * http://heycam.github.io/webidl/#common-DOMTimeStamp
  */
-typedef DOMTimeStamp = Float;
+typedef DOMTimeStamp = Int;
 

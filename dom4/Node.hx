@@ -929,7 +929,7 @@ class Node implements EventTarget {
   }
 
   /*
-   * https://dom.spec.whatwg.org/#dom-eventtarget-addeventlistener
+   * https://dom.spec.whatwg.org/#dom-eventtarget-removeeventlistener
    */
   public function removeEventListener(type: DOMString, callback: EventListener, ?capture: Bool = false): Void
   {
@@ -959,7 +959,10 @@ class Node implements EventTarget {
     return Event.dispatch(event, this);
   }
 
-  public function _evokeListeners(event: Event): Void
+  /*
+   * https://dom.spec.whatwg.org/#concept-event-listener-invoke
+   */
+  public function _invokeListeners(event: Event): Void
   {
     // STEP 3
     event.set_currentTarget(this);

@@ -123,7 +123,7 @@ class Event {
     this.initializedFlag = true;
     this.dispatchFlag = false;
 
-    this.timeStamp = (Date.now()).getTime();
+    this.timeStamp =  Math.floor((Date.now()).getTime());
   }
 
   /*
@@ -151,14 +151,14 @@ class Event {
     var i = ancestors.length - 1;
     while (i >= 0) {
       if (!event.stopPropagationFlag)
-        ancestors[i]._evokeListeners(event);
+        ancestors[i]._invokeListeners(event);
       i--;
     }
     // STEP 7
     event.eventPhase = event.AT_TARGET;
     // STEP8
     if (!event.stopPropagationFlag)
-      cast(event.target, Node)._evokeListeners(event);
+      cast(event.target, Node)._invokeListeners(event);
 
     // STEP 9
     if (event.bubbles) {
@@ -168,7 +168,7 @@ class Event {
       // STEP 9.3
       while (i < ancestors.length) {
         if (!event.stopPropagationFlag)
-          ancestors[i]._evokeListeners(event);
+          ancestors[i]._invokeListeners(event);
         i++;
       }
     }
@@ -192,6 +192,6 @@ class Event {
     this.initializedFlag = true;
     this.dispatchFlag = false;
 
-    this.timeStamp = (Date.now()).getTime();
+    this.timeStamp = Math.floor((Date.now()).getTime());
   }
 }
