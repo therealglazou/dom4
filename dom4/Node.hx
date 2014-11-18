@@ -985,5 +985,6 @@ class Node implements EventTarget {
   }
 
   public function new() {
+    this.eventListeners = [];
   }
 }
