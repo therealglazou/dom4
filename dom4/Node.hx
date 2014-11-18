@@ -972,9 +972,8 @@ class Node implements EventTarget {
       if (event.stopImmediatePropagationFlag)
         return;
       // STEP 4.3
-      if (listener.type != event.type)
-        return;
-      if ((event.eventPhase == event.CAPTURING_PHASE && !listener.capture)
+      if (listener.type != event.type
+          || (event.eventPhase == event.CAPTURING_PHASE && !listener.capture)
           || (event.eventPhase == event.BUBBLING_PHASE && listener.capture)) {
         // do nothing, STEPS 4.4 and 4.5
       }
