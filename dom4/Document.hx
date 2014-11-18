@@ -237,9 +237,9 @@ class Document extends Node
   {
     Namespaces._validateAsXMLName(localName);
 
-    if (this.ownerDocument.documentElement != null
-        && this.ownerDocument.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE
-        && this.ownerDocument.documentElement.localName.toLowerCase() == "html")
+    if (this.documentElement != null
+        && this.documentElement.namespaceURI == Namespaces.HTML_NAMESPACE
+        && this.documentElement.localName.toLowerCase() == "html")
       localName = localName.toLowerCase();
 
     var e = new Element(Namespaces.HTML_NAMESPACE, localName, "");
