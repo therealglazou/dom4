@@ -177,7 +177,6 @@ class SelectorMatching {
         for (i in 0...selector.NthPseudoclassList.length) {
           var f = selector.NthPseudoclassList[i];
           var n: Int = 0;
-          trace(f.type);
           switch (f.type) {
             case "nth-child":       n = 1;
                                     var sibling = elt.previousElementSibling;
