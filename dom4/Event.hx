@@ -150,7 +150,7 @@ class Event {
     event.eventPhase = event.CAPTURING_PHASE;
     // STEP 6
     var i = ancestors.length - 1;
-    while (i >= 0) {
+    while (i > 0) {
       if (!event.stopPropagationFlag)
         ancestors[i]._invokeListeners(event);
       i--;
@@ -165,7 +165,7 @@ class Event {
     if (event.bubbles) {
       // STEP 9.2
       event.eventPhase = event.BUBBLING_PHASE;
-      i = 0;
+      i = 1;
       // STEP 9.3
       while (i < ancestors.length) {
         if (!event.stopPropagationFlag)
