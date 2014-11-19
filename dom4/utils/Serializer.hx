@@ -66,7 +66,7 @@ class Serializer
                   || node.parentNode.nodeName == "SCRIPT"
                   || node.parentNode.nodeName == "PRE")) {
             // special case, do NOT wrap or pretty-print
-            str += toBeAdded;
+            str += StringTools.htmlEscape(toBeAdded);
           }
           else { // just the regular text in a rgular element
             if (!this.NOT_WHITESPACE_ONLY_EREG.match(toBeAdded)) {
@@ -96,13 +96,13 @@ class Serializer
                   addedCR = true;
                 }
                 else {
-                  str += StringTools.trim(toBeAdded);
+                  str += StringTools.trim(StringTools.htmlEscape(toBeAdded));
                   toBeAdded = "";
                 }
               }
             }
             else
-              str += StringTools.trim(toBeAdded);
+              str += StringTools.trim(StringTools.htmlEscape(toBeAdded));
           }
         case Node.ELEMENT_NODE:
           // that's for attribute pretty-printing
@@ -121,7 +121,7 @@ class Serializer
     }
     else {
       // raw mode
-      str += toBeAdded;
+      str += StringTools.htmlEscape(toBeAdded);
     }
 
     return str;
@@ -168,7 +168,7 @@ class Serializer
           var l = toBeAdded.length + 1;
           for (i in 0...elt.attributes.length) {
             var attr = elt.attributes.item(i);
-            var attrStr = " " + ((attr.prefix != "" && attr.prefix != null) ? attr.prefix + ":" : "") + attr.name + "=\"" + attr.value + "\"";
+            var attrStr = " " + ((attr.prefix != "" && attr.prefix != null) ? attr.prefix + ":" : "") + attr.name + "=\"" + StringTools.htmlEscape(attr.value, true) + "\"";
             if (i != 0 && this.wrap && attrStr.length + toBeAdded.length > this.maxColumns) {
               toBeAdded += "\n";
               for (j in 0...l + (this.indentation ? indent.length : 0))
