@@ -240,31 +240,40 @@ class Node implements EventTarget {
    */
   public function cloneNode(?deep: Bool = false) : Node
   {
-    // XXX
-    return null;
+    var doc: Document = this.ownerDocument;
+    var clone = this._cloneOneNode(null, deep);
+    return clone;
   }
 
-  private function _cloneOneNode() : Node
+  private function _cloneOneNode(parentNode: Node, deep: Bool) : Node
   {
+    var clone: Node = null;
     switch (this.nodeType) {
-      case DOCUMENT_TYPE_NODE: {
-        var dt = cast(this, DocumentType);
-        return cast(this.ownerDocument.implementation.createDocumentType(dt.name, dt.publicId, dt.systemId), Node);
-      }
+      case DOCUMENT_NODE:
+        clone = Document._clone(this);
+      case DOCUMENT_TYPE_NODE:
+        clone = DocumentType._clone(this);
       case TEXT_NODE:
-        return cast(this.ownerDocument.createTextNode(cast(this, Text).data), Node);
+        clone = Text._clone(this);
       case COMMENT_NODE:
-        return cast(this.ownerDocument.createComment(cast(this, Comment).data), Node);
-      case PROCESSING_INSTRUCTION_NODE: {
-        var pi = cast(this, ProcessingInstruction);
-        return cast(this.ownerDocument.createProcessingInstruction(pi.target, pi.data), Node);
-      }
-      case ELEMENT_NODE: {
-        var e = cast(this, Element);
-        var newElt = this.ownerDocument.createElementNS(e.namespaceURI, e.localName);
+        clone = Comment._clone(this);
+      case PROCESSING_INSTRUCTION_NODE:
+        clone = ProcessingInstruction._clone(this);
+      case ELEMENT_NODE:
+        clone = Element._clone(this);
+    }
+    if (clone != null) {
+      if (parentNode != null)
+        parentNode.appendChild(clone);
+      if (deep) {
+        var child: Node = this.firstChild;
+        while (child != null) {
+          child._cloneOneNode(clone, deep);
+          child = child.nextSibling;
+        }
       }
     }
-    return null; // should never happen
+    return clone; // should never happen
   }
 
   /*
@@ -512,7 +521,6 @@ class Node implements EventTarget {
       }
       return index;
     }
-
   /**********************************************
    * HELPERS DEFINED BY SPECIFICATION
    **********************************************/

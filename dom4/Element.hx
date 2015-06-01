@@ -452,6 +452,17 @@ class Element extends Node
     this.namespaceURI = n;
   }
 
+  /**********************************************
+   * IMPLEMENTATION HELPERS
+   **********************************************/
+  static public function _clone(eltNode: Node): Element
+  {
+    var d: Element = cast(eltNode, Element);
+    var n = new Element(d.namespaceURI, d.localName, d.prefix);
+    n.attributes = NamedNodeMap._clone(d.attributes);
+    return n;
+  }
+
   public function new(namespace: DOMString, localName: DOMString, ?prefix: DOMString = "") {
     super();
     this.attributes = new NamedNodeMap();
