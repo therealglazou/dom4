@@ -273,7 +273,7 @@ class Node implements EventTarget {
         }
       }
     }
-    return clone; // should never happen
+    return clone;
   }
 
   /*
