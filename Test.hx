@@ -37,19 +37,14 @@
 
 import dom4.Document;
 import dom4.DOMParser;
-
 import dom4.utils.BasicContentSink;
 import dom4.utils.Serializer;
-
-import dom4.NodeFilter;
-import dom4.NodeIterator;
-import dom4.TreeWalker;
 
 class Test {
 
     static function main() : Void {
 
-        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  aaaaa  <html:p>   foobar<span>blag</span>  sdsdsdf</html:p>  <myelem label='foo'/></foobar>  ";
+        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  a&lt;éaaaa  <html:p>   foobar<span>blag</span>  sdsdsdf</html:p>  <myelem label='fo\"o'/></foobar>  ";
 
         var contentSink = new BasicContentSink();
         var parser      = new DOMParser(contentSink);
