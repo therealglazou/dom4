@@ -83,7 +83,6 @@ class Element extends Node
 
   /*
    * https://dom.spec.whatwg.org/#dom-element-id
-   * XXX
    */
   public var id(get, set): DOMString;
       private function get_id(): DOMString
