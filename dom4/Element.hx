@@ -85,7 +85,18 @@ class Element extends Node
    * https://dom.spec.whatwg.org/#dom-element-id
    * XXX
    */
-  public var id: DOMString;
+  public var id(get, set): DOMString;
+      private function get_id(): DOMString
+      {
+        if (this.hasAttribute("id"))
+          return this.getAttribute("id");
+        return "";
+      }
+      private function set_id(v: DOMString): DOMString
+      {
+        this.setAttribute("id", v);
+        return v;
+      }
 
   /*
    * https://dom.spec.whatwg.org/#dom-element-classname
