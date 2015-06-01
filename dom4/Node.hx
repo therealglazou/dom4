@@ -281,8 +281,66 @@ class Node implements EventTarget {
    */
   public function isEqualNode(node: Node): Bool
   {
-    // TBD must run in depth
-    return (node == this);
+    if (node == null)
+      return false;
+
+    if (this.nodeType != node.nodeType)
+      return false;
+
+    switch (this.nodeType) {
+      case DOCUMENT_TYPE_NODE:
+        var t = cast(this, DocumentType);
+        var n = cast(node, DocumentType);
+        if (t.name != n.name
+            || t.publicId != n.publicId
+            || t.systemId != n.systemId)
+           return false;
+      case ELEMENT_NODE:
+        var t = cast(this, Element);
+        var n = cast(node, Element);
+        if (t.namespaceURI != n.namespaceURI
+            || t.prefix != n.prefix
+            || t.localName != n.localName
+            || t.attributes.length != n.attributes.length)
+          return false;
+        for (i in 0...t.attributes.length) {
+          var tAttr = t.attributes[i];
+          var nAttr = n.attributes.getNamedItemNS(tAttr.namespaceURI, tAttr.localName);
+          if (nAttr == null)
+            return false;
+          if (nAttr.value != tAttr.value)
+            return false;
+        }
+      case PROCESSING_INSTRUCTION_NODE:
+        var t = cast(this, ProcessingInstruction);
+        var n = cast(node, ProcessingInstruction);
+        if (t.target != n.target
+            || t.data != n.data)
+          return false;
+      case TEXT_NODE:
+        var t = cast(this, Text);
+        var n = cast(node, Text);
+        if (t.data != n.data)
+          return false;
+      case COMMENT_NODE:
+        var t = cast(this, Comment);
+        var n = cast(node, Comment);
+        if (t.data != n.data)
+          return false;
+    }
+
+    if (this._childrenCount != node._childrenCount)
+      return false;
+
+    var tChild = this.firstChild;
+    var nChild = node.firstChild;
+    while (tChild != null) {
+      if (!tChild.isEqualNode(nChild))
+        return false;
+      tChild = tChild.nextSibling;
+      nChild = nChild.nextSibling;
+    }
+    return true;
   }
 
   /* 
@@ -521,6 +579,18 @@ class Node implements EventTarget {
       }
       return index;
     }
+
+    private function _childrenCount(): Int
+    {
+      var count = 0;
+      var child: Node = this.firstChild;
+      while (child != null) {
+        count++;
+        child = child.nextSibling;
+      }
+      return count;
+    }
+
   /**********************************************
    * HELPERS DEFINED BY SPECIFICATION
    **********************************************/
