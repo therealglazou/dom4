@@ -78,6 +78,9 @@ class Attr {
     var n = new Attr(o.namespaceURI, o.prefix, o.localName, o.value);
     return n;
   }
+
+  /**********************************************/
+
   public function new(namespaceURI: DOMString, prefix: DOMString, localName: DOMString, value: DOMString)
   {
     this.namespaceURI = namespaceURI;

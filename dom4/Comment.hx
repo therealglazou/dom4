@@ -54,6 +54,8 @@ class Comment extends CharacterData {
     return n;
   }
 
+  /**********************************************/
+
   public function new(v: DOMString) {
     super(v);
     this.nodeType = Node.COMMENT_NODE;
