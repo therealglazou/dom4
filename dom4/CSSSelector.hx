@@ -58,6 +58,45 @@ typedef NthFunctionalPseudo = {
   var b: Int;
 }
 
+class CSSSelectorHelper {
+
+  static public var mPeudoElementList = [
+        "after",
+        "before",
+        "first-line",
+        "first-letter"
+    ];
+
+    static public var mPeudoClassList = [
+    /*
+        "hover",
+        "active",
+        "focus",
+        "enabled",
+        "disabled",
+        "checked",
+        "indeterminate",
+    */
+        "root",
+        "first-child",
+        "last-child",
+        "first-of-type",
+        "last-of-type",
+        "only-child",
+        "only-of-type",
+        "empty"
+    ];
+
+    static public var mFunctionalPseudoClassList = [
+        "lang(",
+        "nth-child(",
+        "nth-last-child(",
+        "nth-of-type(",
+        "nth-last-of-type(",
+        "not("
+    ];
+}
+
 class CSSSelector {
 
     public var elementTypeList : Array<DOMString>; // could become an Atom
@@ -79,54 +118,16 @@ class CSSSelector {
 
     public var combinator : CSSCombinator;
 
-
-    static private var mPeudoElementList = [
-        "after",
-        "before",
-        "first-line",
-        "first-letter"
-    ];
-
-    static private var mPeudoClassList = [
-    /*
-        "hover",
-        "active",
-        "focus",
-        "enabled",
-        "disabled",
-        "checked",
-        "indeterminate",
-    */
-        "root",
-        "first-child",
-        "last-child",
-        "first-of-type",
-        "last-of-type",
-        "only-child",
-        "only-of-type",
-        "empty"
-    ];
-
-    static private var mFunctionalPseudoClassList = [
-        "lang(",
-        "nth-child(",
-        "nth-last-child(",
-        "nth-of-type(",
-        "nth-last-of-type(",
-        "not("
-    ];
-
-
     static public function isPseudoElement(s: String) : Bool {
-        return (-1 != mPeudoElementList.indexOf(s));
+        return (-1 != CSSSelectorHelper.mPeudoElementList.indexOf(s));
     }
 
     static public function isPseudoClass(s: String) : Bool {
-        return (-1 != mPeudoClassList.indexOf(s));
+        return (-1 != CSSSelectorHelper.mPeudoClassList.indexOf(s));
     }
 
     static public function isFunctionalPseudoClass(s: String) : Bool {
-        return (-1 != mFunctionalPseudoClassList.indexOf(s));
+        return (-1 != CSSSelectorHelper.mFunctionalPseudoClassList.indexOf(s));
     }
 
     public function negateIfNeeded(s: DOMString): DOMString
