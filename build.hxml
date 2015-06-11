@@ -1,0 +1,7 @@
+-neko bin/test.n
+-lib utest
+-cp src
+-cp test
+-main Test
+
+-cmd neko bin/test.n

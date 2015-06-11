@@ -40,36 +40,45 @@ import dom4.DOMParser;
 import dom4.utils.BasicContentSink;
 import dom4.utils.Serializer;
 
+import utest.Assert;
+import utest.Runner;
+import utest.ui.Report;
+
 class Test {
+  public function new() {}
 
-    static function main() : Void {
+  static function main() : Void {
+    var runner = new Runner();
 
-        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  a&lt;éaaaa  <html:p>   foobar<span>blag</span>  sdsdsdf</html:p>  <myelem label='fo\"o'/></foobar>  ";
+    runner.addCase(new Test());
+    Report.create(runner);
+    runner.run();
 
-        var contentSink = new BasicContentSink();
-        var parser      = new DOMParser(contentSink);
-        try {
-          var document = parser.parseFromString(str, "text/xml"); 
-  
-          Sys.println("-----------------------");
-          Sys.println("Original XML string to parse:\n");
-          Sys.println(str);
-          Sys.println("-----------------------");
-          Sys.println("Name of the document element is: " + document.documentElement.nodeName);
-          Sys.println("Document element has " + document.documentElement.childNodes.length + " children");
-          Sys.println("Document element has " + document.documentElement.children.length + " element children");
+    var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  a&lt;éaaaa  <html:p>   foobar<span>blag</span>  sdsdsdf</html:p>  <myelem label='fo\"o'/></foobar>  ";
 
-          Sys.println("-----------------------");
-          Sys.println("Document serialization:\n");
-          var s = new Serializer();
-          s.enableIndentation();
-          s.enableWrapping(72);
-          Sys.println(s.serializeToString(document));
-          Sys.println("-----------------------");
-        }
-        catch(e: String) {
-          Sys.println("EXCEPTION CAUGHT: " + e);
-        }
+    var contentSink = new BasicContentSink();
+    var parser      = new DOMParser(contentSink);
+    try {
+      var document = parser.parseFromString(str, "text/xml");
+
+      Sys.println("-----------------------");
+      Sys.println("Original XML string to parse:\n");
+      Sys.println(str);
+      Sys.println("-----------------------");
+      Sys.println("Name of the document element is: " + document.documentElement.nodeName);
+      Sys.println("Document element has " + document.documentElement.childNodes.length + " children");
+      Sys.println("Document element has " + document.documentElement.children.length + " element children");
+
+      Sys.println("-----------------------");
+      Sys.println("Document serialization:\n");
+      var s = new Serializer();
+      s.enableIndentation();
+      s.enableWrapping(72);
+      Sys.println(s.serializeToString(document));
+      Sys.println("-----------------------");
     }
+    catch(e: String) {
+      Sys.println("EXCEPTION CAUGHT: " + e);
+    }
+  }
 }
-
