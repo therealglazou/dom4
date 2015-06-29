@@ -20,6 +20,7 @@
  *
  * Contributor(s):
  *   Daniel Glazman <daniel.glazman@disruptive-innovations.com>
+ *   Franco Ponticelli <franco.ponticelli@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -35,41 +36,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-import dom4.Document;
-import dom4.DOMParser;
-import dom4.utils.BasicContentSink;
-import dom4.utils.Serializer;
+package dom4;
 
-class Test {
-
-    static function main() : Void {
-
-        var str = "<!DOCTYPE foobar><foobar xmlns='http://example.org/example.org/example.org/example.org/example.org/example.org/' xmlns:html='http://www.w3.org/1999/xhtml'>  a&lt;éaaaa  <html:p>   foobar<span>blag</span>  sdsdsdf</html:p>  <myelem label='fo\"o'/></foobar>  ";
-
-        var contentSink = new BasicContentSink();
-        var parser      = new DOMParser(contentSink);
-        try {
-          var document = parser.parseFromString(str, "text/xml"); 
-  
-          Sys.println("-----------------------");
-          Sys.println("Original XML string to parse:\n");
-          Sys.println(str);
-          Sys.println("-----------------------");
-          Sys.println("Name of the document element is: " + document.documentElement.nodeName);
-          Sys.println("Document element has " + document.documentElement.childNodes.length + " children");
-          Sys.println("Document element has " + document.documentElement.children.length + " element children");
-
-          Sys.println("-----------------------");
-          Sys.println("Document serialization:\n");
-          var s = new Serializer();
-          s.enableIndentation();
-          s.enableWrapping(72);
-          Sys.println(s.serializeToString(document));
-          Sys.println("-----------------------");
-        }
-        catch(e: String) {
-          Sys.println("EXCEPTION CAUGHT: " + e);
-        }
-    }
+interface ContentSink
+{
+  public function createElement(document: Document, parent: Node, namespace: DOMString, name: DOMString, attributesArray: Array<Array<DOMString>>): Element;
+  public function postCreateElement(element: Element): Void;
+  public function finalizeElement(element: Element): Void;
 }
-

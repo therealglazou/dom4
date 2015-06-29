@@ -2,6 +2,7 @@
   "name": "dom4",
   "url": "http://glazman.org/",
   "license": "MPL",
+  "classPath": "src",
   "tags": ["xml", "W3C", "DOM"],
   "description": "haxe implementation of DOM 4",
   "version": "0.0.1",
