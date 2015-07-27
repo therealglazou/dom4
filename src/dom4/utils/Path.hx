@@ -42,7 +42,7 @@ class Path {
   private var SLASH     = "/";
   private var BACKSLASH = "\\";
 
-  private var mArray:Array<String> = [];
+  private var mArray: Array<String> = [];
 
   /*
    * Attributes
@@ -171,10 +171,8 @@ class Path {
   public function contains(path: Path): Bool {
     while (null != path) {
       path = path.parent;
-      if (null != path) {
-        if (this.equals(path))
-          return true;
-      }
+      if (null != path && this.equals(path))
+        return true;
     }
     return false;
   }
