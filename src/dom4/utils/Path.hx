@@ -79,8 +79,8 @@ class Path {
    * Constructor
    */
   public function new(s: String) {
-    var s1 = s.lastIndexOf(SLASH);
-    var s2 = s.lastIndexOf(BACKSLASH);
+    var s1 = s.lastIndexOf(this.SLASH);
+    var s2 = s.lastIndexOf(this.BACKSLASH);
     if (-1 == s1 && -1 == s2) {
       this.mArray = [s];
       return;
@@ -100,16 +100,16 @@ class Path {
    * Methods
    */
   public function append(s: String): Void {
-    var s1 = s.lastIndexOf(SLASH);
-    var s2 = s.lastIndexOf(BACKSLASH);
+    var s1 = s.lastIndexOf(this.SLASH);
+    var s2 = s.lastIndexOf(this.BACKSLASH);
     if (-1 != s1 || -1 != s2)
       throw "Path.append(): string cannot contain a slash or a backslash";
     this.mArray.push(s);
   }
 
   public function appendRelativePath(s: String): Void {
-    var s1 = s.lastIndexOf(SLASH);
-    var s2 = s.lastIndexOf(BACKSLASH);
+    var s1 = s.lastIndexOf(this.SLASH);
+    var s2 = s.lastIndexOf(this.BACKSLASH);
     if (-1 == s1 && -1 == s2) {
       this.mArray.push(s);
       return;
