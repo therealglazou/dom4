@@ -39,8 +39,8 @@ package dom4.utils;
 
 class Path {
 
-  private var SLASH     = "/";
-  private var BACKSLASH = "\\";
+  inline public static var SLASH     = "/";
+  inline public static var BACKSLASH = "\\";
 
   private var mArray: Array<String> = [];
 
@@ -79,8 +79,8 @@ class Path {
    * Constructor
    */
   public function new(s: String) {
-    var s1 = s.lastIndexOf(this.SLASH);
-    var s2 = s.lastIndexOf(this.BACKSLASH);
+    var s1 = s.lastIndexOf(Path.SLASH);
+    var s2 = s.lastIndexOf(Path.BACKSLASH);
     if (-1 == s1 && -1 == s2) {
       this.mArray = [s];
       return;
@@ -100,16 +100,16 @@ class Path {
    * Methods
    */
   public function append(s: String): Void {
-    var s1 = s.lastIndexOf(this.SLASH);
-    var s2 = s.lastIndexOf(this.BACKSLASH);
+    var s1 = s.lastIndexOf(Path.SLASH);
+    var s2 = s.lastIndexOf(Path.BACKSLASH);
     if (-1 != s1 || -1 != s2)
       throw "Path.append(): string cannot contain a slash or a backslash";
     this.mArray.push(s);
   }
 
   public function appendRelativePath(s: String): Void {
-    var s1 = s.lastIndexOf(this.SLASH);
-    var s2 = s.lastIndexOf(this.BACKSLASH);
+    var s1 = s.lastIndexOf(Path.SLASH);
+    var s2 = s.lastIndexOf(Path.BACKSLASH);
     if (-1 == s1 && -1 == s2) {
       this.mArray.push(s);
       return;
@@ -150,8 +150,12 @@ class Path {
     this.mArray = resultArray;
   }
 
-  public function toString(): String {
+  @:to public function toString(): String {
     return this.mArray.join(this.separator);
+  }
+
+  @:from static public function fromString(s:String): Path {
+    return new Path(s);
   }
 
   public function clone(): Path {
