@@ -38,6 +38,10 @@
 
 import dom4.Document;
 import dom4.DOMParser;
+import dom4.Element;
+import dom4.MutationObserver;
+import dom4.MutationRecord;
+import dom4.Node;
 import dom4.utils.BasicContentSink;
 import dom4.utils.Serializer;
 
@@ -78,6 +82,26 @@ class Test {
   </html:p>
   <myelem label="fo&quot;o" />
 </foobar>', s.serializeToString(document));
+  }
+  
+  public function testMutationObserver() {
+	var c = [];
+    new MutationObserver(function (changes:Array<MutationRecord>, obs:MutationObserver):Void {
+		for (i in changes) c.push(i);
+	}).observe(document.documentElement, {
+		childList: true,
+		subtree: true
+	});
+	var div = document.createElement('DIV');
+	var span = document.createElement('SPAN');
+	document.documentElement.removeChild(document.documentElement.children[0]);
+	document.documentElement.appendChild(div);
+	div.appendChild(span);
+	
+	Assert.equals(1, c[0].removedNodes.length);
+	Assert.equals(1, c[1].addedNodes.length);
+	Assert.equals('DIV', cast(c[1].addedNodes[0], Element).tagName);
+	Assert.equals('SPAN', cast(c[2].addedNodes[0], Element).tagName);
   }
 
   static function main() : Void {
