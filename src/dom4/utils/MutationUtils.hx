@@ -52,6 +52,9 @@ class MutationUtils {
                                             addedNodes: Array<Node>, removedNodes: Array<Node>,
                                             previousSibling: Node, nextSibling: Node) : Void
   {
+	if (addedNodes == null) addedNodes = [];
+	if (removedNodes == null) removedNodes = [];
+	
 	/**
 	 * https://dom.spec.whatwg.org/#mutation-observers
 	 * 
