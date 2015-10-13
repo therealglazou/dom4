@@ -75,6 +75,9 @@ class Node implements EventTarget {
   private var NOT_WHITESPACE_ONLY_EREG = new EReg("[^ \t\r\n]", "g");
 
   private var eventListeners: Array<NodeEventListener>;
+  @:allow(dom4.MutationObserver) @:allow(dom4.utils.MutationUtils)
+	private var mutationObservers: Array<{ observer:MutationObserver, options:dom4.MutationObserver.MutationObserverInit }>;
+
   /*
    * https://dom.spec.whatwg.org/#dom-node-nodetype
    */
@@ -1064,5 +1067,6 @@ class Node implements EventTarget {
 
   public function new() {
     this.eventListeners = [];
+	this.mutationObservers = [];
   }
 }
